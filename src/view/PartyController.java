@@ -1,0 +1,41 @@
+package view;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Region;
+
+import viewModel.PartyViewModel;
+
+public class PartyController
+{
+
+  private Region root;
+  private PartyViewModel viewmodel;
+  private ViewHandler viewhandler;
+
+
+  public void init(ViewHandler viewhandler, PartyViewModel viewmodel, Region root){
+    this.root = root;
+    this.viewmodel = viewmodel;
+    this.viewhandler = viewhandler;
+
+    //bindings to viewmodel
+  }
+
+  @FXML public void onDiscover() {
+    viewhandler.openView("discover");
+  }
+
+
+  public Region getRoot()
+  {
+    return root;
+  }
+
+  public void reset(){}
+
+}
