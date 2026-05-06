@@ -1,22 +1,9 @@
-package mediator;
-
-import com.google.gson.Gson;
-import model.PartyModel;
-import model.Party;
-import model.User;
-import model.Participant;
+package model;
 
 import java.util.List;
 
-public class PartyClientModel implements PartyModel
+public class ModelManager implements  PartyModel
 {
-  private final PartyClient client;
-  private final Gson gson;
-
-  public PartyClientModel(String host, int port) {
-    this.client = new PartyClient(host, port);
-    this.gson = new Gson();
-  }
   @Override public User login(String username, String password)
   {
     return null;

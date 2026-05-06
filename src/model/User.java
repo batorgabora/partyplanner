@@ -24,6 +24,10 @@ public class User {
   public String getPassword() { return password; }
   public List<User> getFriendList() { return friendList; }
   public List<Party> getPartyList() { return partyList; }
+  public String getId()
+  {
+    return id;
+  }
 
   // Setters
   public void setUsername(String username) { this.username = username; }

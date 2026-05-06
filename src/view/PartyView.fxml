@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #17223c;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.PartyController">
+<BorderPane prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: #17223c;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.PartyController">
 
     <top>
         <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: #111124; -fx-border-color: #354572; -fx-border-width: 0 0 1 0;">
@@ -32,7 +32,7 @@
     </top>
 
     <left>
-        <VBox prefWidth="230.0" spacing="16.0" style="-fx-background-color: #123e6b; -fx-border-color: #354572; -fx-border-width: 0 1 0 0;">
+        <VBox prefHeight="626.0" prefWidth="196.0" spacing="16.0" style="-fx-background-color: #123e6b; -fx-border-color: #354572; -fx-border-width: 0 1 0 0;">
             <padding>
                 <Insets bottom="24.0" left="24.0" right="24.0" top="26.0" />
             </padding>
@@ -43,20 +43,20 @@
                 <Label text="call it pp tho" textFill="#8580a6" />
                 <Label style="-fx-padding: 24 0 0 0;" text="MAIN" textFill="#8580a6" />
                 <Label text="My Parties" textFill="#d8d8df" />
-            <Label onMouseClicked="#onDiscover" text="Discover" textFill="#d8d8df" />
-                <Label style="-fx-background-color: #29477e; -fx-background-radius: 6; -fx-padding: 10 12 10 12;" text="Party Detail" textFill="#cbc4ff">
-                    <font><Font name="System Bold" size="16.0" /></font>
+                <Label onMouseClicked="#onDiscover" text="Discover" textFill="#d8d8df" />
+                <Label onMouseClicked="#onDiscover" prefHeight="25.0" prefWidth="104.0" text="Party Detail" textFill="#d8d8df">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
                 </Label>
                 <Label text="Friends" textFill="#d8d8df" />
-                <Label text="Invites" textFill="#d8d8df" />
                 <Region VBox.vgrow="ALWAYS" />
-                <Label text="Hugh J" textFill="#62e0b7" />
             </children>
         </VBox>
     </left>
 
     <center>
-        <ScrollPane fitToWidth="true" style="-fx-background: #17223c; -fx-background-color: #17223c;">
+        <ScrollPane fitToWidth="true" prefHeight="575.0" prefWidth="673.0" style="-fx-background: #17223c; -fx-background-color: #17223c;">
             <content>
                 <VBox spacing="18.0" style="-fx-background-color: #17223c;">
                     <padding>
@@ -87,7 +87,7 @@
                                 <HBox>
                                     <children>
                                         <Label textFill="#ecebf6" />
-                              <CheckBox mnemonicParsing="false" text="Lemons" />
+                                        <CheckBox mnemonicParsing="false" text="Lemons" />
                                         <Region HBox.hgrow="ALWAYS" />
                                         <Label text="Gandolf" textFill="#62e0b7" />
                                     </children>
@@ -95,7 +95,7 @@
                                 <HBox>
                                     <children>
                                         <Label textFill="#ecebf6" />
-                              <CheckBox mnemonicParsing="false" text="Discombobulators" />
+                                        <CheckBox mnemonicParsing="false" text="Discombobulators" />
                                         <Region HBox.hgrow="ALWAYS" />
                                         <Label text="You" textFill="#62e0b7" />
                                     </children>
@@ -103,7 +103,7 @@
                                 <HBox>
                                     <children>
                                         <Label textFill="#8580a6" />
-                              <CheckBox mnemonicParsing="false" text="Bazookas" />
+                                        <CheckBox mnemonicParsing="false" text="Bazookas" />
                                         <Region HBox.hgrow="ALWAYS" />
                                         <Label text="Unclaimed" textFill="#8580a6" />
                                     </children>
@@ -111,7 +111,7 @@
                                 <HBox>
                                     <children>
                                         <Label textFill="#8580a6" />
-                              <CheckBox mnemonicParsing="false" text="nickel and zinc" />
+                                        <CheckBox mnemonicParsing="false" text="nickel and zinc" />
                                         <Region HBox.hgrow="ALWAYS" />
                                         <Label text="Unclaimed" textFill="#8580a6" />
                                     </children>
@@ -131,7 +131,7 @@
                                         <Label text="2 votes" textFill="#cbc4ff" />
                                     </children>
                                 </HBox>
-                        <ProgressBar prefWidth="200.0" progress="0.5" style="-fx-background-color: #123e6b;" />
+                                <ProgressBar prefWidth="200.0" progress="0.5" style="-fx-background-color: #123e6b;" />
                                 <HBox>
                                     <children>
                                         <Label text="April 15 1989 16:00" textFill="#ecebf6" />
@@ -139,7 +139,7 @@
                                         <Label text="2 votes" textFill="#cbc4ff" />
                                     </children>
                                 </HBox>
-                        <ProgressBar prefWidth="200.0" progress="0.5" />
+                                <ProgressBar prefWidth="200.0" progress="0.5" />
                             </children>
                         </VBox>
 

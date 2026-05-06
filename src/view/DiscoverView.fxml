@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #17223c;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.DiscoverController">
+<BorderPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #17223c;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.DiscoverController">
 
     <top>
         <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: #111124; -fx-border-color: #354572; -fx-border-width: 0 0 1 0;">
@@ -19,9 +19,6 @@
                 <Insets bottom="18.0" left="24.0" right="24.0" top="18.0" />
             </padding>
             <children>
-                <Label text="Discover" textFill="#cbc4ff">
-                    <font><Font name="System Bold" size="26.0" /></font>
-                </Label>
                 <Region HBox.hgrow="ALWAYS" />
                 <TextField prefWidth="260.0" promptText="Search parties..." style="-fx-background-color: #111124; -fx-text-fill: white; -fx-prompt-text-fill: #8580a6; -fx-border-color: #384778; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;" />
                 <Label style="-fx-background-color: #5b3fc6; -fx-background-radius: 22; -fx-padding: 10 12 10 12;" text="HJ" textFill="#e6e1ff">
@@ -32,7 +29,7 @@
     </top>
 
     <left>
-        <VBox prefWidth="230.0" spacing="16.0" style="-fx-background-color: #123e6b; -fx-border-color: #354572; -fx-border-width: 0 1 0 0;">
+        <VBox prefHeight="508.0" prefWidth="230.0" spacing="16.0" style="-fx-background-color: #123e6b; -fx-border-color: #354572; -fx-border-width: 0 1 0 0;">
             <padding>
                 <Insets bottom="24.0" left="24.0" right="24.0" top="26.0" />
             </padding>
@@ -43,8 +40,10 @@
                 <Label text="call it PP tho" textFill="#8580a6" />
                 <Label style="-fx-padding: 24 0 0 0;" text="MAIN" textFill="#8580a6" />
                 <Label onMousePressed="#onParty" text="My Parties" textFill="#d8d8df" />
-                <Label style="-fx-background-color: #29477e; -fx-background-radius: 6; -fx-padding: 10 12 10 12;" text="Discover" textFill="#cbc4ff">
-                    <font><Font name="System Bold" size="16.0" /></font>
+                <Label onMousePressed="#onParty" prefHeight="25.0" prefWidth="98.0" text="Discover" textFill="#d8d8df">
+                    <font>
+                        <Font name="System Bold" size="26.0" />
+                    </font>
                 </Label>
                 <Label text="Friends" textFill="#d8d8df" />
                 <Label text="Invites" textFill="#d8d8df" />
@@ -71,64 +70,64 @@
                             </children>
                         </HBox>
 
-                <Label text="ALL PARTIES" textFill="#8580a6">
-                    <font><Font size="18.0" /></font>
-                </Label>
+                        <Label text="ALL PARTIES" textFill="#8580a6">
+                            <font><Font size="18.0" /></font>
+                        </Label>
 
-                <VBox spacing="16.0">
-                    <children>
-                        <VBox spacing="10.0" style="-fx-background-color: #202b49; -fx-background-radius: 8; -fx-border-color: #887cf2; -fx-border-radius: 8; -fx-padding: 24;">
+                        <VBox spacing="16.0">
                             <children>
-                                <HBox alignment="CENTER_LEFT">
+                                <VBox spacing="10.0" style="-fx-background-color: #202b49; -fx-background-radius: 8; -fx-border-color: #887cf2; -fx-border-radius: 8; -fx-padding: 24;">
                                     <children>
-                                        <Label text="Hungarian election celebration" textFill="#ecebf6">
-                                            <font><Font name="System Bold" size="24.0" /></font>
-                                        </Label>
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Label text="Open" textFill="#65e0b7" />
+                                        <HBox alignment="CENTER_LEFT">
+                                            <children>
+                                                <Label text="Hungarian election celebration" textFill="#ecebf6">
+                                                    <font><Font name="System Bold" size="24.0" /></font>
+                                                </Label>
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label text="Open" textFill="#65e0b7" />
+                                            </children>
+                                        </HBox>
+                                        <Label text="Fri 23 May - and adress here" textFill="#8580a6" />
+                                        <Label text="Attendees: 38    Spots left: 12    Friends going: 4" textFill="#8580a6" />
+                                        <Button style="-fx-background-color: transparent; -fx-border-color: #66718c; -fx-text-fill: white; -fx-padding: 10 26 10 26;" text="Join party" />
                                     </children>
-                                </HBox>
-                                <Label text="Fri 23 May - and adress here" textFill="#8580a6" />
-                                <Label text="Attendees: 38    Spots left: 12    Friends going: 4" textFill="#8580a6" />
-                                <Button style="-fx-background-color: transparent; -fx-border-color: #66718c; -fx-text-fill: white; -fx-padding: 10 26 10 26;" text="Join party" />
+                                </VBox>
+
+                                <VBox spacing="10.0" style="-fx-background-color: #202b49; -fx-background-radius: 8; -fx-border-color: #354572; -fx-border-radius: 8; -fx-padding: 24;">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" onMouseClicked="#onParty" onMousePressed="#onParty">
+                                            <children>
+                                                <Label text="Lemon Party" textFill="#ecebf6">
+                                                    <font><Font name="System Bold" size="24.0" /></font>
+                                                </Label>
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label text="Open" textFill="#65e0b7" />
+                                            </children>
+                                        </HBox>
+                                        <Label onContextMenuRequested="#onParty" text="Fri 23 May - and adress here" textFill="#8580a6" />
+                                        <Label onContextMenuRequested="#onParty" text="2 friends going" textFill="#cbc4ff" />
+                                        <Button style="-fx-background-color: transparent; -fx-border-color: #66718c; -fx-text-fill: white; -fx-padding: 10 26 10 26;" text="Joined" />
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="10.0" style="-fx-background-color: #202b49; -fx-background-radius: 8; -fx-border-color: #354572; -fx-border-radius: 8; -fx-padding: 24;">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT">
+                                            <children>
+                                                <Label text="Old school hollywood buffet" textFill="#ecebf6">
+                                                    <font><Font name="System Bold" size="24.0" /></font>
+                                                </Label>
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label text="Invite Only" textFill="#f4b44d" />
+                                            </children>
+                                        </HBox>
+                                        <Label text="Hosted by Lena H. - Jun 6 - Location TBD" textFill="#8580a6" />
+                                        <Label text="1 friend going" textFill="#cbc4ff" />
+                                        <Button style="-fx-background-color: transparent; -fx-border-color: #66718c; -fx-text-fill: white; -fx-padding: 10 26 10 26;" text="Join party" />
+                                    </children>
+                                </VBox>
                             </children>
                         </VBox>
-
-                        <VBox spacing="10.0" style="-fx-background-color: #202b49; -fx-background-radius: 8; -fx-border-color: #354572; -fx-border-radius: 8; -fx-padding: 24;">
-                            <children>
-                                <HBox alignment="CENTER_LEFT" onMouseClicked="#onParty" onMousePressed="#onParty">
-                                    <children>
-                                        <Label text="Lemon Party" textFill="#ecebf6">
-                                            <font><Font name="System Bold" size="24.0" /></font>
-                                        </Label>
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Label text="Open" textFill="#65e0b7" />
-                                    </children>
-                                </HBox>
-                                <Label onContextMenuRequested="#onParty" text="Fri 23 May - and adress here" textFill="#8580a6" />
-                                <Label onContextMenuRequested="#onParty" text="2 friends going" textFill="#cbc4ff" />
-                                <Button style="-fx-background-color: transparent; -fx-border-color: #66718c; -fx-text-fill: white; -fx-padding: 10 26 10 26;" text="Joined" />
-                            </children>
-                        </VBox>
-
-                        <VBox spacing="10.0" style="-fx-background-color: #202b49; -fx-background-radius: 8; -fx-border-color: #354572; -fx-border-radius: 8; -fx-padding: 24;">
-                            <children>
-                                <HBox alignment="CENTER_LEFT">
-                                    <children>
-                                        <Label text="Old school hollywood buffet" textFill="#ecebf6">
-                                            <font><Font name="System Bold" size="24.0" /></font>
-                                        </Label>
-                                        <Region HBox.hgrow="ALWAYS" />
-                                        <Label text="Invite Only" textFill="#f4b44d" />
-                                    </children>
-                                </HBox>
-                                <Label text="Hosted by Lena H. - Jun 6 - Location TBD" textFill="#8580a6" />
-                                <Label text="1 friend going" textFill="#cbc4ff" />
-                                <Button style="-fx-background-color: transparent; -fx-border-color: #66718c; -fx-text-fill: white; -fx-padding: 10 26 10 26;" text="Join party" />
-                            </children>
-                        </VBox>
-                    </children>
-                </VBox>
                     </children>
                 </VBox>
             </content>

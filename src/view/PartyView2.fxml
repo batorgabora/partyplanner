@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #17223c;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.PartyController">
+
+    <left>
+        <VBox prefHeight="600.0" prefWidth="154.0" spacing="16.0" style="-fx-background-color: #123e6b; -fx-border-color: #354572; -fx-border-width: 0 1 0 0;">
+            <padding>
+                <Insets bottom="24.0" left="24.0" right="24.0" top="26.0" />
+            </padding>
+            <children>
+                <Label onMouseClicked="#onMyParties" text="my parties" textFill="#d8d8df" />
+                <Label onMouseClicked="#onDiscover" text="discover" textFill="#d8d8df" />
+                <Label prefHeight="25.0" prefWidth="104.0" text="party details" textFill="#d8d8df">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+                <Label onMouseClicked="#onFriends" text="friends" textFill="#d8d8df" />
+                <Region VBox.vgrow="ALWAYS" />
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <ScrollPane fitToWidth="true" prefHeight="623.0" prefWidth="791.0" style="-fx-background: #17223c; -fx-background-color: #17223c;">
+            <content>
+                <VBox prefHeight="572.0" prefWidth="665.0" spacing="18.0" style="-fx-background-color: #17223c;">
+                    <padding>
+                        <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+                    </padding>
+               <children>
+                  <Label text="party name">
+                     <font>
+                        <Font size="26.0" />
+                     </font>
+                  </Label>
+                  <Label prefHeight="51.0" prefWidth="642.0" text="description about the party so it is a good party lemon party do not look it up good party type shit description about the party so it is a good party lemon party do not look it up good party type shit description about the party so it is a good party lemon party do not look it up good party type shit description about the party so it is a good party lemon party do not look it up good party type shit" />
+               </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>
