@@ -26,7 +26,7 @@ public class LoginController
     //bindings to viewmodel
   }
 
-  @FXML public void onDiscover() {
+  @FXML public void onForward() {
     viewhandler.openView("discover");
   }
 

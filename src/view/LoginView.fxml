@@ -9,15 +9,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="720.0"
-            style="-fx-background-color: #1a1a2e;"
-            xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="view.LoginController">
+<AnchorPane prefHeight="600.0" prefWidth="720.0" style="-fx-background-color: #1a1a2e;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.LoginController">
     <children>
-        <VBox alignment="CENTER" layoutX="123.0" layoutY="77.0" prefWidth="540.0" spacing="22.0"
-              AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="90.0"
-              AnchorPane.topAnchor="76.0">
+        <VBox alignment="CENTER" layoutX="123.0" layoutY="77.0" prefWidth="540.0" spacing="22.0" AnchorPane.leftAnchor="90.0" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="76.0">
             <children>
                 <Label text="Party Planner" textFill="#afa9ec">
                     <font>
@@ -41,8 +35,7 @@
                                 <Font size="16.0" />
                             </font>
                         </Label>
-                        <TextField prefHeight="50.0" prefWidth="540.0"
-                                   style="-fx-background-color: #101022; -fx-text-fill: white; -fx-border-color: #34436f; -fx-border-width: 1.5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 0 14 0 14;">
+                        <TextField prefHeight="50.0" prefWidth="540.0" style="-fx-background-color: #101022; -fx-text-fill: white; -fx-border-color: #34436f; -fx-border-width: 1.5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 0 14 0 14;">
                             <font>
                                 <Font size="16.0" />
                             </font>
@@ -53,29 +46,26 @@
                                 <Font size="16.0" />
                             </font>
                         </Label>
-                        <PasswordField prefHeight="42.0" prefWidth="540.0"
-                                       style="-fx-background-color: #101022; -fx-text-fill: white; -fx-border-color: #34436f; -fx-border-width: 1.5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 0 14 0 14;">
+                        <PasswordField prefHeight="42.0" prefWidth="540.0" style="-fx-background-color: #101022; -fx-text-fill: white; -fx-border-color: #34436f; -fx-border-width: 1.5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 0 14 0 14;">
                             <font>
                                 <Font size="16.0" />
                             </font>
                         </PasswordField>
                     </children>
                 </VBox>
-
-                <Button mnemonicParsing="false" prefHeight="55.0" prefWidth="210.0"
-                        style="-fx-background-color: #7f77dd; -fx-background-radius: 5; -fx-cursor: hand; -fx-text-fill: white;"
-                        text="Sign in">
-                    <font>
-                        <Font size="18.0" />
-                    </font>
-                </Button>
-
-                <Label text="No account? Register here" textFill="#8580a6">
-                    <font>
-                        <Font size="16.0" />
-                    </font>
-                </Label>
             </children>
         </VBox>
+
+          <Label layoutX="272.0" layoutY="540.0" text="No account? Register here" textFill="#8580a6">
+              <font>
+                  <Font size="16.0" />
+              </font>
+          </Label>
+
+          <Button layoutX="256.0" layoutY="434.0" mnemonicParsing="false" onAction="#onForward" prefHeight="55.0" prefWidth="210.0" style="-fx-background-color: #7f77dd; -fx-background-radius: 5; -fx-cursor: hand; -fx-text-fill: white;" text="Sign in">
+              <font>
+                  <Font size="18.0" />
+              </font>
+          </Button>
     </children>
 </AnchorPane>

@@ -29,6 +29,12 @@ public class PartyController
   @FXML public void onDiscover() {
     viewhandler.openView("discover");
   }
+  @FXML public void onFriends() {
+    viewhandler.openView("friends");
+  }
+  @FXML public void onMyParties() {
+    viewhandler.openView("my parties");
+  }
 
 
   public Region getRoot()
