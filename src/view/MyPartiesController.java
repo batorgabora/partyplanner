@@ -31,6 +31,7 @@ public class MyPartiesController
     this.viewhandler = viewhandler;
 
     //bindings to viewmodel
+
   }
 
   @FXML public void onMyParties() {

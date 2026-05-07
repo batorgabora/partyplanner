@@ -9,6 +9,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
+import model.LocalUser;
+import model.User;
 import viewModel.LoginViewModel;
 
 public class LoginController
@@ -18,10 +20,10 @@ public class LoginController
   private LoginViewModel viewmodel;
   private ViewHandler viewhandler;
 
-  private TextField usernameField;
-  private TextField passwordField;
-  private Button signInButton;
-  private Button registerButton;
+  @FXML private TextField usernameField;
+  @FXML private TextField passwordField;
+  @FXML private Button signInButton;
+  @FXML private Button registerButton;
 
   public void init(ViewHandler viewhandler, LoginViewModel viewmodel, Region root){
     this.root = root;
@@ -29,11 +31,17 @@ public class LoginController
     this.viewhandler = viewhandler;
 
     //bindings to viewmodel
+    usernameField.textProperty().bindBidirectional(viewmodel.usernameProperty());
+    passwordField.textProperty().bindBidirectional(viewmodel.passwordProperty());
   }
 
-  @FXML public void onForward() {
-    viewhandler.openView("discover");
+  @FXML
+  public void onForward() {
+    if (viewmodel.login()) {
+      viewhandler.openView("discover");
+    }
   }
+  
   @FXML public void onRegister() {
     viewhandler.openView("register");
   }
@@ -44,5 +52,10 @@ public class LoginController
   }
 
   public void reset(){}
+
+  @FXML private void onOpenCreateAccount()
+  {
+    viewhandler.openView("create account");
+  }
 
 }

@@ -18,7 +18,7 @@ public class DiscoverController
   private DiscoverViewModel viewmodel;
   private ViewHandler viewhandler;
 
-  private ListView partyList;
+  private ListView<Party> partyList;
   private Label selectedLabel;
   private Button onFurtherButton;
 
@@ -29,9 +29,30 @@ public class DiscoverController
     this.viewhandler = viewhandler;
 
     //bindings to viewmodel
+    partyList.setItems(viewmodel.getParties());
+    //what is selected can later be used --> we just forward it to the other view
+    partyList.getSelectionModel().selectedItemProperty().addListener(
+        (obs, oldVal, newVal) -> viewmodel.selectedPartyProperty().set(newVal)
+    );
+
+    //make selected one show up:
+    partyList.getSelectionModel().selectedItemProperty().addListener(
+        (obs, oldVal, newVal) -> {
+          if (newVal != null) {
+            selectedLabel.setText(newVal.toString());
+          }
+          else {
+            selectedLabel.setText("no selected vinyl");
+          }
+        }
+    );
   }
 
   @FXML public void onFurther() {
+    if (viewmodel.getSelectedParty() == null) {
+      selectedLabel.setText("please select a vinyl first");
+      return;
+    }
     viewhandler.openView("party");
   }
   @FXML private void onMyParties()

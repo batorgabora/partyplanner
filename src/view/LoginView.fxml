@@ -61,6 +61,15 @@
                   <Font size="16.0" />
               </font>
           </Label>
+        <Button layoutX="270.0" layoutY="540.0"
+                mnemonicParsing="false"
+                onAction="#onOpenCreateAccount"
+                style="-fx-background-color: transparent; -fx-text-fill: #8580a6; -fx-underline: true; -fx-cursor: hand;"
+                text="No account? Register here">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Button>
 
           <Button layoutX="256.0" layoutY="434.0" mnemonicParsing="false" onAction="#onForward" prefHeight="55.0" prefWidth="210.0" style="-fx-background-color: #7f77dd; -fx-background-radius: 5; -fx-cursor: hand; -fx-text-fill: white;" text="Sign in">
               <font>

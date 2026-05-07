@@ -8,9 +8,11 @@ import view.ViewHandler;
 
 public class Main extends Application {
 
+
   @Override
   public void start(Stage stage) throws Exception {
     PartyModel model = new ModelManager();
+
     ViewModelFactory viewModelFactory = new ViewModelFactory(model);
     ViewHandler viewHandler = new ViewHandler(viewModelFactory);
     viewHandler.start(stage);

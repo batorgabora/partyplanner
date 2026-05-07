@@ -11,10 +11,10 @@ public class User {
   private List<User> friendList;
   private List<Party> partyList;
 
-  public User(String username, String password) {
+  public User(String id, String username, String password) {
     this.username = username;
     this.password = password;
-    this.id = UUID.randomUUID().toString();
+    this.id = id;
     this.friendList = new ArrayList<>();
     this.partyList = new ArrayList<>();
   }

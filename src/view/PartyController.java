@@ -1,5 +1,7 @@
 package view;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,6 +10,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
+import model.Item;
+import model.Participant;
+import model.Party;
 import viewModel.PartyViewModel;
 
 public class PartyController
@@ -17,16 +22,18 @@ public class PartyController
   private PartyViewModel viewmodel;
   private ViewHandler viewhandler;
 
-  private Label roleLabel;
-  private Label nameLabel;
-  private Label descriptionLabel;
-  private Label dateLabel;
-  private Label locationLabel;
-  private ListView itemList;
-  private ListView timeList;
-  private ListView memberList;
-  private Button editButton;
-  private Button leaveButton;
+  @FXML private Label roleLabel;
+  @FXML private Label nameLabel;
+  @FXML private Label descriptionLabel;
+  @FXML private Label dateLabel;
+  @FXML private Label locationLabel;
+  @FXML private ListView<Item> itemList;
+  @FXML private ListView timeList;
+  @FXML private ListView<Participant> memberList;
+  @FXML private Button editButton;
+  @FXML private Button leaveButton;
+
+  private Party selected;
 
 
 
@@ -35,7 +42,17 @@ public class PartyController
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
 
+
     //bindings to viewmodel
+    partyload();
+  }
+
+  public void partyload() {
+    selected = viewmodel.getSelectedParty();
+    nameLabel.setText(selected.getName());
+    descriptionLabel.setText(selected.getDescription());
+    itemList.setItems(FXCollections.observableArrayList(selected.getItemList().getItems()));
+    memberList.setItems(FXCollections.observableArrayList(selected.getParticipants()));
   }
 
   @FXML public void onDiscover() {
@@ -47,6 +64,7 @@ public class PartyController
   @FXML public void onMyParties() {
     viewhandler.openView("my parties");
   }
+
 
 
   public Region getRoot()

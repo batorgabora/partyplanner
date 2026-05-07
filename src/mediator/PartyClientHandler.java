@@ -6,6 +6,8 @@ import com.google.gson.JsonParser;
 import model.ModelManager;
 import model.PartyModel;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,6 +22,7 @@ public class PartyClientHandler implements Runnable {
   private final BufferedReader inputReader;
   private final PrintWriter outputWriter;
   private final Gson gson;
+  private final PropertyChangeSupport support = new PropertyChangeSupport(this);;
 
   public PartyClientHandler(Socket socket, PartyModel model) {
     this.socket = socket;
@@ -50,21 +53,50 @@ public class PartyClientHandler implements Runnable {
       close();
     }
   }
+  public void addListener(String propertyName, PropertyChangeListener listener) {
+    support.addPropertyChangeListener(propertyName, listener);
+  }
 
   private void handleRequest(JsonObject request) {
     String action = request.get("action").getAsString();
-//idk if this is good tbh...
     switch (action) {
-      case "getAll" -> handleGetAll();
-      case "login" -> handleLogin(request);
-      case "joinParty" -> handleJoinParty(request);
-      case "leaveParty" -> handleLeaveParty(request);
-      case "createParty" -> handleCreateParty(request);
-      case "deleteParty" -> handleDeleteParty(request);
-      case "addParticipant" -> handleAddParticipant(request);
-      case "removeParticipant" -> handleRemoveParticipant(request);
-      case "addFriend" -> handleAddFriend(request);
-      default -> sendError("Unknown action: " + action);
+      case "getAll" -> {
+        handleGetAll();
+        support.firePropertyChange("parties", null, null);
+      }
+      case "joinParty" -> {
+        handleJoinParty(request);
+        support.firePropertyChange("parties", null, null);
+      }
+      case "leaveParty" -> {
+        handleLeaveParty(request);
+        support.firePropertyChange("parties", null, null);
+      }
+      case "createParty" ->{
+        handleCreateParty(request);
+        support.firePropertyChange("parties", null, null);
+      }
+      case "deleteParty" -> {
+        handleDeleteParty(request);
+        support.firePropertyChange("parties", null, null);
+      }
+      case "addParticipant" -> {
+        handleAddParticipant(request);
+        support.firePropertyChange("parties", null, null);
+      }
+
+      case "removeParticipant" -> {
+        handleRemoveParticipant(request);
+        support.firePropertyChange("parties", null, null);
+      }
+      case "addFriend" -> {
+        handleAddFriend(request);
+        support.firePropertyChange("parties", null, null);
+      }
+      default -> {
+        sendError("Unknown action: " + action);
+        support.firePropertyChange("parties", null, null);
+      }
     }
   }
 

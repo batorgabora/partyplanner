@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class ItemList {
   private String id;
-  private List<Item> items;
+  private ArrayList<Item> items;
 
   public ItemList() {
     this.id = UUID.randomUUID().toString();
@@ -15,7 +15,7 @@ public class ItemList {
 
   // Getters
   public String getId() { return id; }
-  public List<Item> getItems() { return items; }
+  public ArrayList<Item> getItems() { return items; }
 
   // Methods
   public void addItem(Item item) { items.add(item); }

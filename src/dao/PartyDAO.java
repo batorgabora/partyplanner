@@ -9,11 +9,11 @@ import java.util.List;
 
 public class PartyDAO {
 
-  public Party getById(int partyid) {
+  public Party getById(String partyid) {
     String sql = "SELECT * FROM party WHERE partyid = ?";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setInt(1, partyid);
+      ps.setString(1, partyid);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) return mapRow(rs);
     } catch (SQLException e) {
@@ -35,12 +35,12 @@ public class PartyDAO {
     return parties;
   }
 
-  public List<Party> getByUser(int userid) {
+  public List<Party> getByUser(String userid) {
     String sql = "SELECT p.* FROM party p JOIN partyusers pu ON p.partyid = pu.partyid WHERE pu.userid = ?";
     List<Party> parties = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setInt(1, userid);
+      ps.setString(1, userid);
       ResultSet rs = ps.executeQuery();
       while (rs.next()) parties.add(mapRow(rs));
     } catch (SQLException e) {
@@ -49,46 +49,46 @@ public class PartyDAO {
     return parties;
   }
 
-  public int create(String name, String description, LocalDate date) {
-    String sql = "INSERT INTO party (name, description, date) VALUES (?, ?, ?) RETURNING partyid";
+  public void create(String partyid, String name, String description, LocalDate date) {
+    String sql = "INSERT INTO party (partyid, name, description, date) VALUES (?, ?, ?, ?)";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, name);
-      ps.setString(2, description);
-      ps.setDate(3, Date.valueOf(date));
-      ResultSet rs = ps.executeQuery();
-      if (rs.next()) return rs.getInt(1);
+      ps.setString(1, partyid);
+      ps.setString(2, name);
+      ps.setString(3, description);
+      ps.setDate(4, Date.valueOf(date));
+      ps.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    throw new RuntimeException("Failed to create party");
   }
 
-  public void update(int partyid, String name, String description, LocalDate date) {
+  public void update(String partyid, String name, String description, LocalDate date) {
     String sql = "UPDATE party SET name = ?, description = ?, date = ? WHERE partyid = ?";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, name);
       ps.setString(2, description);
       ps.setDate(3, Date.valueOf(date));
-      ps.setInt(4, partyid);
+      ps.setString(4, partyid);
       ps.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public void delete(int partyid) {
+  public void delete(String partyid) {
     String sql = "DELETE FROM party WHERE partyid = ?";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setInt(1, partyid);
+      ps.setString(1, partyid);
       ps.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
+  // TODO: update after Party model gains String partyid and LocalDate date fields
   private Party mapRow(ResultSet rs) throws SQLException {
     return new Party(rs.getString("name"), rs.getString("description"), null, null);
   }

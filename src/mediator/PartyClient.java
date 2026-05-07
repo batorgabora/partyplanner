@@ -63,20 +63,32 @@ public class PartyClient
 
   // User operations
   public void requestLogin(String username, String password) {
-
+    JsonObject request = createRequest("login");
+    request.addProperty("username", username);
+    request.addProperty("password", password);
+    sendRequest(request);
   }
 
   public void requestAddFriend(int userId, int friendId) {
-
+    JsonObject request = createRequest("addFriend");
+    request.addProperty("userId", userId);
+    request.addProperty("friendId", friendId);
+    sendRequest(request);
   }
 
   // Party operations
   public void requestJoinParty(int userId, int partyId) {
-
+    JsonObject request = createRequest("joinParty");
+    request.addProperty("userId", userId);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
   }
 
   public void requestLeaveParty(int userId, int partyId) {
-
+    JsonObject request = createRequest("leaveParty");
+    request.addProperty("userId", userId);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
   }
 
   // Organizer operations

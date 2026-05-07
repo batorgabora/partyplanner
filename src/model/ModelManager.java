@@ -1,16 +1,23 @@
 package model;
 
+import java.awt.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 
 public class ModelManager implements  PartyModel
 {
   private List<User> users;
   private List<Party> parties;
+  private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
   public ModelManager() {
     this.users = new ArrayList<>();
     this.parties = new ArrayList<>();
+    addDemoData();
   }
 
   @Override public User login(String username, String password)
@@ -127,11 +134,62 @@ public class ModelManager implements  PartyModel
       participant.setParty(null);
     }
   }
-  private void addDemoData()
+
+
+  @Override public void addListener(String propertyName, PropertyChangeListener listener)
   {
-    User user1 = new User("anna", "1234");
-    User user2 = new User("mikkel", "1234");
-    User user3 = new User("sara", "1234");
+    support.addPropertyChangeListener(propertyName, listener);
+  }
+
+  @Override public void removeListener(String propertyName,
+      PropertyChangeListener listener)
+  {
+    support.removePropertyChangeListener(propertyName, listener);
+  }
+
+  @Override public User createAccount(String username, String password, String confirmPassword)
+  {
+    if (username == null || username.trim().isEmpty())
+    {
+      return null;
+    }
+
+    if (password == null || password.isEmpty())
+    {
+      return null;
+    }
+
+    if (confirmPassword == null || confirmPassword.isEmpty())
+    {
+      return null;
+    }
+
+    if (!password.equals(confirmPassword))
+    {
+      return null;
+    }
+
+    for (int i = 0; i < users.size(); i++)
+    {
+      User user = users.get(i);
+      if (user.getUsername().equals(username))
+      {
+        return null;
+      }
+    }
+
+    String id = UUID.randomUUID().toString();
+    User newUser = new User(id, username, password);
+    users.add(newUser);
+    return newUser;
+  }
+
+
+  public void addDemoData()
+  {
+    User user1 = new User("zrgzrefefr","anna", "1234");
+    User user2 = new User("zrgzreferr", "mikkel", "1234");
+    User user3 = new User("zrgzrefeee", "sara", "1234");
 
     users.add(user1);
     users.add(user2);
@@ -142,10 +200,16 @@ public class ModelManager implements  PartyModel
     Organizer organizer1 = new Organizer("", null);
     Party party1 = new Party("Beach Party", "Bring snacks and towels.", "Amager Beach", organizer1);
     organizer1.setParty(party1);
+    party1.getItemList().addItem(new Item("Chips"));
+    party1.getItemList().addItem(new Item("Soda"));
+    party1.getItemList().addItem(new Item("Blankets"));
 
     Organizer organizer2 = new Organizer("", null);
     Party party2 = new Party("Game Night", "Board games and pizza.", "Campus Lounge", organizer2);
     organizer2.setParty(party2);
+    party2.getItemList().addItem(new Item("Pizza"));
+    party2.getItemList().addItem(new Item("Cards"));
+    party2.getItemList().addItem(new Item("Soft drinks"));
 
     parties.add(party1);
     parties.add(party2);
@@ -154,4 +218,6 @@ public class ModelManager implements  PartyModel
     joinParty(user2, party1);
     joinParty(user3, party2);
   }
+
+
 }

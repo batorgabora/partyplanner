@@ -11,7 +11,7 @@ public class Party {
   private String description;
   private String location;
   private Organizer organizer;
-  private List<Participant> participants;
+  private ArrayList<Participant> participants;
   private ItemList itemList;
 
   @Override public boolean equals(Object o)
@@ -49,7 +49,7 @@ public class Party {
   public String getDescription() { return description; }
   public String getLocation() { return location; }
   public Organizer getOrganizer() { return organizer; }
-  public List<Participant> getParticipants() { return participants; }
+  public ArrayList<Participant> getParticipants() { return participants; }
   public ItemList getItemList() { return itemList; }
 
   // Setters
@@ -63,8 +63,6 @@ public class Party {
 
   @Override public String toString()
   {
-    return "Party{" + "id='" + id + '\'' + ", name='" + name + '\''
-        + ", description='" + description + '\'' + ", location='" + location
-        + '\'' + ", organizer=" + organizer;
+    return  name + " at " + location + "  -  " + description;
   }
 }
