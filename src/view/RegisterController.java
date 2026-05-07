@@ -10,20 +10,23 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
 import viewModel.LoginViewModel;
+import viewModel.RegisterViewModel;
 
-public class LoginController
+public class RegisterController
 {
 
   private Region root;
-  private LoginViewModel viewmodel;
+  private RegisterViewModel viewmodel;
   private ViewHandler viewhandler;
 
   private TextField usernameField;
+  private TextField emailField;
   private TextField passwordField;
-  private Button signInButton;
+  private TextField confirmpasswordField;
   private Button registerButton;
+  private Button backtologinButton;
 
-  public void init(ViewHandler viewhandler, LoginViewModel viewmodel, Region root){
+  public void init(ViewHandler viewhandler, RegisterViewModel viewmodel, Region root){
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
@@ -31,11 +34,13 @@ public class LoginController
     //bindings to viewmodel
   }
 
-  @FXML public void onForward() {
-    viewhandler.openView("discover");
-  }
   @FXML public void onRegister() {
-    viewhandler.openView("register");
+//    registration logic
+    viewhandler.openView("login");
+  }
+  @FXML public void onLogin() {
+    //    back to login
+    viewhandler.openView("login");
   }
 
   public Region getRoot()

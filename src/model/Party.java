@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Party {
@@ -12,6 +13,24 @@ public class Party {
   private Organizer organizer;
   private List<Participant> participants;
   private ItemList itemList;
+
+  @Override public boolean equals(Object o)
+  {
+    if (o == null || getClass() != o.getClass())
+      return false;
+    Party party = (Party) o;
+    return Objects.equals(id, party.id) && Objects.equals(name, party.name)
+        && Objects.equals(description, party.description) && Objects.equals(
+        location, party.location) && Objects.equals(organizer, party.organizer)
+        && Objects.equals(participants, party.participants) && Objects.equals(
+        itemList, party.itemList);
+  }
+
+  @Override public int hashCode()
+  {
+    return Objects.hash(id, name, description, location, organizer,
+        participants, itemList);
+  }
 
   public Party(String name, String description, String location, Organizer organizer) {
     this.id = UUID.randomUUID().toString();
@@ -41,4 +60,11 @@ public class Party {
   // Methods
   public void addParticipant(Participant participant) { participants.add(participant); }
   public void removeParticipant(Participant participant) { participants.remove(participant); }
+
+  @Override public String toString()
+  {
+    return "Party{" + "id='" + id + '\'' + ", name='" + name + '\''
+        + ", description='" + description + '\'' + ", location='" + location
+        + '\'' + ", organizer=" + organizer;
+  }
 }

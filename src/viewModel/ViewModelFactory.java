@@ -2,9 +2,6 @@ package viewModel;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import viewModel.DiscoverViewModel;
-import viewModel.LoginViewModel;
-import viewModel.PartyViewModel;
 import model.PartyModel;
 import model.Party;
 
@@ -13,6 +10,7 @@ public class ViewModelFactory {
   private LoginViewModel loginviewmodel;
   private PartyViewModel partyviewmodel;
   private MyPartiesViewModel mypartiesviewmodel;
+  private RegisterViewModel registerviewmodel;
   private ObjectProperty<Party> selectedParty;
 
   public ViewModelFactory(PartyModel model) {
@@ -21,10 +19,12 @@ public class ViewModelFactory {
     loginviewmodel = new LoginViewModel(model);
     partyviewmodel = new PartyViewModel(model, selectedParty);
     mypartiesviewmodel = new MyPartiesViewModel(model);
+    registerviewmodel = new RegisterViewModel(model);
   }
 
   public DiscoverViewModel getDiscoverViewModel() { return discoverviewmodel; }
   public LoginViewModel getLoginViewModel() { return loginviewmodel; }
   public PartyViewModel getPartyViewModel() { return partyviewmodel; }
   public MyPartiesViewModel getMyPartiesViewModel() {return mypartiesviewmodel;}
+  public RegisterViewModel getRegisterViewModel() {return registerviewmodel;}
 }

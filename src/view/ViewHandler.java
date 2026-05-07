@@ -16,6 +16,7 @@ public class ViewHandler
   private LoginController logincontroller;
   private PartyController partycontroller;
   private MyPartiesController mypartiescontroller;
+  private RegisterController registercontroller;
   private ViewModelFactory viewmodelfactory;
 
   public ViewHandler(ViewModelFactory viewmodelfactory)
@@ -29,7 +30,7 @@ public class ViewHandler
     this.primaryStage = stage;
     primaryStage.setResizable(false);
     //currentScene.getStylesheets().add(getClass().getResource("/view/styles.css").toExternalForm());
-    openView("discover"); // use id strings instead of fxml filenames
+    openView("login"); // use id strings instead of fxml filenames
   }
 
   public void openView(String id)
@@ -41,6 +42,7 @@ public class ViewHandler
         case "login" -> loadLoginView();
         case "party" -> loadPartyView();
         case "my parties" -> loadMyPartiesView();
+        case "register" -> loadRegisterView();
         default -> throw new IllegalArgumentException("Unknown view: " + id);
       };
 
@@ -139,5 +141,27 @@ public class ViewHandler
     }
 
     return mypartiescontroller.getRoot();
+  }
+
+  private Region loadRegisterView() throws IOException
+  {
+    if (registercontroller == null)
+    {
+      // first time opening --> load the FXML and wire everything up
+      var url = getClass().getResource("/view/RegisterView.fxml");
+      System.out.println("FXML URL: " + url); // add this
+      FXMLLoader loader = new FXMLLoader(url);
+      Region root = loader.load();
+
+      registercontroller = loader.getController();
+      registercontroller.init(this, viewmodelfactory.getRegisterViewModel(), root);
+    }
+    else
+    {
+      // already loaded before --> just clear the fields
+      registercontroller.reset();
+    }
+
+    return registercontroller.getRoot();
   }
 }

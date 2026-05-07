@@ -19,7 +19,7 @@ public class User {
     this.partyList = new ArrayList<>();
   }
 
-  // Getters
+
   public String getUsername() { return username; }
   public String getPassword() { return password; }
   public List<User> getFriendList() { return friendList; }
@@ -29,11 +29,11 @@ public class User {
     return id;
   }
 
-  // Setters
+
   public void setUsername(String username) { this.username = username; }
   public void setPassword(String password) { this.password = password; }
 
-  // Methods
+
   public void addFriend(User user) { friendList.add(user); }
   public void removeFriend(User user) { friendList.remove(user); }
   public void joinParty(Party party) { partyList.add(party); }

@@ -17,6 +17,18 @@ public class PartyController
   private PartyViewModel viewmodel;
   private ViewHandler viewhandler;
 
+  private Label roleLabel;
+  private Label nameLabel;
+  private Label descriptionLabel;
+  private Label dateLabel;
+  private Label locationLabel;
+  private ListView itemList;
+  private ListView timeList;
+  private ListView memberList;
+  private Button editButton;
+  private Button leaveButton;
+
+
 
   public void init(ViewHandler viewhandler, PartyViewModel viewmodel, Region root){
     this.root = root;

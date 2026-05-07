@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.PartyController">
    <children>
       <Pane layoutX="-1.0" layoutY="-2.0" prefHeight="534.0" prefWidth="118.0">
@@ -33,37 +32,36 @@
                </font>
             </Label>
             <Separator layoutX="123.0" layoutY="2.0" orientation="VERTICAL" prefHeight="528.0" prefWidth="0.0" />
-            <Label layoutX="34.0" layoutY="147.0" text="organizer" />
+            <Label fx:id="roleLabel" layoutX="34.0" layoutY="147.0" text="organizer" />
          </children>
       </Pane>
-      <Label layoutX="377.0" layoutY="13.0" prefHeight="30.0" prefWidth="172.0" text="party name">
+      <Label fx:id="nameLabel" layoutX="377.0" layoutY="13.0" prefHeight="30.0" prefWidth="172.0" text="party name">
          <font>
             <Font name="System Bold" size="31.0" />
          </font>
       </Label>
-      <Label layoutX="141.0" layoutY="52.0" prefHeight="62.0" prefWidth="675.0" text="this is the the description of the party woooooooo" wrapText="true" />
-      <Label layoutX="141.0" layoutY="118.0" text="list of items to bring:">
+      <Label fx:id="descriptionLabel" layoutX="141.0" layoutY="52.0" prefHeight="62.0" prefWidth="675.0" text="this is the the description of the party woooooooo" wrapText="true" />
+      <Label layoutX="141.0" layoutY="118.0" prefHeight="26.0" prefWidth="184.0" text="list of items to bring:">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <ListView layoutX="136.0" layoutY="153.0" prefHeight="202.0" prefWidth="286.0" />
-      <Button defaultButton="true" layoutX="775.0" layoutY="435.0" mnemonicParsing="false" text="edit" />
+      <ListView fx:id="itemList" layoutX="136.0" layoutY="153.0" prefHeight="202.0" prefWidth="286.0" />
+      <Button fx:id="editButton" defaultButton="true" layoutX="775.0" layoutY="435.0" mnemonicParsing="false" text="edit" />
       <Label layoutX="146.0" layoutY="371.0" text="time options:">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <ListView layoutX="140.0" layoutY="409.0" prefHeight="86.0" prefWidth="290.0" />
-      <Button layoutX="743.0" layoutY="478.0" mnemonicParsing="false" text="leave party" />
+      <ListView fx:id="timeList" layoutX="140.0" layoutY="409.0" prefHeight="86.0" prefWidth="290.0" />
+      <Button fx:id="leaveButton" layoutX="743.0" layoutY="478.0" mnemonicParsing="false" text="leave party" />
       <Label layoutX="455.0" layoutY="117.0" text="members:">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <ListView layoutX="459.0" layoutY="155.0" prefHeight="340.0" prefWidth="209.0" />
-      <Button layoutX="602.0" layoutY="118.0" mnemonicParsing="false" text="chat" />
-      <Label layoutX="665.0" layoutY="1.0" prefHeight="24.0" prefWidth="41.0" text="date:" />
-      <Label layoutX="664.0" layoutY="22.0" text="location: " />
+      <ListView fx:id="memberList" layoutX="459.0" layoutY="155.0" prefHeight="340.0" prefWidth="209.0" />
+      <Label fx:id="dateLabel" layoutX="665.0" layoutY="1.0" prefHeight="24.0" prefWidth="41.0" text="date:" />
+      <Label fx:id="locationLabel" layoutX="664.0" layoutY="22.0" text="location: " />
    </children>
 </Pane>

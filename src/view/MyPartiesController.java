@@ -18,6 +18,12 @@ public class MyPartiesController
   private MyPartiesViewModel viewmodel;
   private ViewHandler viewhandler;
 
+  private ListView partyList;
+  private Button furtherButton;
+  private Label selectedLabel;
+
+
+
 
   public void init(ViewHandler viewhandler, MyPartiesViewModel viewmodel, Region root){
     this.root = root;
@@ -38,7 +44,8 @@ public class MyPartiesController
   @FXML public void onFriends() {
     viewhandler.openView("friends");
   }
-  @FXML public void onParty() {
+
+  @FXML public void onFurther() {
     viewhandler.openView("party");
   }
 

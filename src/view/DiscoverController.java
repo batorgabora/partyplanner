@@ -18,6 +18,10 @@ public class DiscoverController
   private DiscoverViewModel viewmodel;
   private ViewHandler viewhandler;
 
+  private ListView partyList;
+  private Label selectedLabel;
+  private Button onFurtherButton;
+
 
   public void init(ViewHandler viewhandler, DiscoverViewModel viewmodel, Region root){
     this.root = root;
@@ -27,23 +31,20 @@ public class DiscoverController
     //bindings to viewmodel
   }
 
-  @FXML public void onParty() {
+  @FXML public void onFurther() {
     viewhandler.openView("party");
   }
-  @FXML
-  private void onMyParties()
+  @FXML private void onMyParties()
   {
     viewhandler.openView("my parties");
   }
 
-  @FXML
-  private void onDiscover()
+  @FXML private void onDiscover()
   {
     viewhandler.openView("discover");
   }
 
-  @FXML
-  private void onFriends()
+  @FXML private void onFriends()
   {
     viewhandler.openView("friends");
   }
