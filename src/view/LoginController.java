@@ -33,6 +33,18 @@ public class LoginController
     //bindings to viewmodel
     usernameField.textProperty().bindBidirectional(viewmodel.usernameProperty());
     passwordField.textProperty().bindBidirectional(viewmodel.passwordProperty());
+
+    passwordField.setOnKeyPressed(event -> {
+      if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+        onForward();
+      }
+    });
+
+    usernameField.setOnKeyPressed(event -> {
+      if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+        onForward();
+      }
+    });
   }
 
   @FXML
@@ -57,5 +69,6 @@ public class LoginController
   {
     viewhandler.openView("create account");
   }
+
 
 }
