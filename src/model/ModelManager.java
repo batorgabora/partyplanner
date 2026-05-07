@@ -57,15 +57,20 @@ public class ModelManager implements  PartyModel
   @Override public List<Item> getItems(Party party) {
     return new ItemDAO().getByParty(party.getId());
   }
-  
+
 
   @Override public String getRole(User user, Party party) {
     return new PartyUsersDAO().getRole(user.getId(), party.getId());
   }
 
+
   @Override public List<Participant> getParticipants(Party party) {
     if (party == null) return new ArrayList<>();
     return new PartyUsersDAO().getParticipantsByParty(party.getId());
+  }
+
+  @Override public List<Option> getOptions(Party party) {
+    return new OptionDAO().getByParty(party.getId());
   }
 
   @Override public Party getParty(int id)
@@ -159,40 +164,20 @@ public class ModelManager implements  PartyModel
   }
 
   @Override
-  public User createAccount(String username, String password, String confirmPassword, String mail)
-  {
-    if (username == null || username.trim().isEmpty())
-    {
-      return null;
-    }
-    if (password == null || password.isEmpty())
-    {
-      return null;
-    }
-    if (mail == null || mail.trim().isEmpty())
-    {
-      return null;
-    }
-    if (confirmPassword == null || confirmPassword.isEmpty())
-    {
-      return null;
-    }
-    if (!password.equals(confirmPassword))
-    {
-      return null;
-    }
+  public User createAccount(String username, String password, String confirmPassword, String mail) {
+    if (username == null || username.trim().isEmpty()) { System.out.println("FAIL: username"); return null; }
+    if (password == null || password.isEmpty()) { System.out.println("FAIL: password"); return null; }
+    if (mail == null || mail.trim().isEmpty()) { System.out.println("FAIL: mail"); return null; }
+    if (confirmPassword == null || confirmPassword.isEmpty()) { System.out.println("FAIL: confirmPassword"); return null; }
+    if (!password.equals(confirmPassword)) { System.out.println("FAIL: passwords don't match"); return null; }
+
     UserDAO userDAO = new UserDAO();
-    if (userDAO.getByUsername(username) != null)
-    {
-      return null;
-    }
-    String userId = userDAO.create(
-        UUID.randomUUID().toString(),
-        username,
-        mail,
-        PasswordUtil.hash(password)
-    );
-    return new User(userId, username, password, mail);
+    if (userDAO.getByUsername(username) != null) { System.out.println("FAIL: username taken"); return null; }
+
+    System.out.println("Creating user: " + username + " mail: " + mail);
+    String userId = userDAO.create(UUID.randomUUID().toString(), username, mail, PasswordUtil.hash(password));
+    System.out.println("Created with id: " + userId);
+    return new User(userId, username, PasswordUtil.hash(password), mail);
   }
 
 

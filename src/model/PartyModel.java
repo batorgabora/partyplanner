@@ -29,5 +29,6 @@ public interface PartyModel {
   public List<Item> getItems(Party party);
   public List<Participant> getParticipants(Party party);
   public String getRole(User user, Party party);
+  public List<Option> getOptions(Party party);
 
 }

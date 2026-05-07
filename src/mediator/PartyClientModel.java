@@ -122,4 +122,9 @@ public class PartyClientModel implements PartyModel
   {
     return "";
   }
+
+  @Override public List<Option> getOptions(Party party)
+  {
+    return List.of();
+  }
 }

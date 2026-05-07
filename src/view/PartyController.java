@@ -1,5 +1,6 @@
 package view;
 
+import dao.PartyUsersDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -60,12 +61,10 @@ public class PartyController
     roleLabel.setText(viewmodel.getRole());
     dateLabel.setText(selected.getDate());
     locationLabel.setText(selected.getLocation());
+    timeList.setItems(viewmodel.getOptions());
 
-
-    roleLabel.setText(
-        selected.getOrganizer().getId().equals(LocalUser.getUser().getId())
-            ? "organizer" : "participant"
-    );
+    String role = new PartyUsersDAO().getRole(LocalUser.getUser().getId(), selected.getId());
+    roleLabel.setText(role != null ? role : "participant");
   }
 
   @FXML public void onDiscover() {

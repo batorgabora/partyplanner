@@ -48,6 +48,8 @@ public class DiscoverViewModel implements PropertyChangeListener
     });
   }
 
+
+
   public ObservableList<Party> getParties() {
     return parties;
   }

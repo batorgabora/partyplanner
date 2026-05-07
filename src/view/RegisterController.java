@@ -34,8 +34,8 @@ public class RegisterController
         confirmpasswordField.getText(),
         emailField.getText());
 
-    if (created)
-    {
+    System.out.println("created: " + created);
+    if (created) {
       viewhandler.openView("login");
     }
     else

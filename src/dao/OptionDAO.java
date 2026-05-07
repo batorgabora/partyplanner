@@ -60,6 +60,6 @@ public class OptionDAO {
   }
 
   private Option mapRow(ResultSet rs) throws SQLException {
-    return null; //new Option(rs.getString("optionid"), rs.getString("proposal"), rs.getString("partyid"));
+    return new Option(rs.getString("optionid"), rs.getString("proposal"), rs.getString("partyid"));
   }
 }

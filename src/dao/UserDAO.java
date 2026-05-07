@@ -56,12 +56,11 @@ public class UserDAO {
       ps.setString(2, username);
       ps.setString(3, mail);
       ps.setString(4, hashpass);
-      ResultSet rs = ps.executeQuery();
-      if (rs.next()) return rs.getString(1);
+      ps.executeUpdate(); // not executeQuery
+      return userid;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    throw new RuntimeException("Failed to create user");
   }
 
 

@@ -35,6 +35,7 @@ public class User {
   public String getUsername() { return username; }
   public String getPassword() { return password; }
   public String getMail() { return mail; }
+  public String getHashpass() { return password; }
   public ArrayList<User> getFriendList() { return friendList; }
   public ArrayList<Party> getPartyList() { return partyList; }
   public String getId()
