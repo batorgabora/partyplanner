@@ -61,11 +61,11 @@ public class UserDAO {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    return null;
+    throw new RuntimeException("Failed to create user");
   }
 
-  public void update(String username, String mail, String hashpass) {
-    String userid = getByUsername(username).getId();
+
+  public void update(String userid, String username, String mail, String hashpass) {
     String sql = "UPDATE \"user\" SET username = ?, mail = ?, hashpass = ? WHERE userid = ?";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -117,6 +117,6 @@ public class UserDAO {
   }
 
   private User mapRow(ResultSet rs) throws SQLException {
-    return new User(rs.getString("userid"), rs.getString("username"),rs.getString("mail"), rs.getString("hashpass"));
+    return new User(rs.getString("userid"), rs.getString("username"), rs.getString("hashpass"), rs.getString("mail"));
   }
 }

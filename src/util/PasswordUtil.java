@@ -9,6 +9,7 @@ public class PasswordUtil {
   }
 
   public static boolean verify(String plainPassword, String storedHash) {
+    System.out.println(plainPassword + " --> " + storedHash);
     return BCrypt.checkpw(plainPassword, storedHash);
   }
 }

@@ -10,7 +10,7 @@ public class Party {
   private String name;
   private String description;
   private String location;
-  private Organizer organizer;
+  private User organizer;
   private ArrayList<Participant> participants;
   private ItemList itemList;
 
@@ -32,7 +32,7 @@ public class Party {
         participants, itemList);
   }
 
-  public Party(String name, String description, String location, Organizer organizer) {
+  public Party(String name, String description, String location, User organizer) {
     this.id = UUID.randomUUID().toString();
     this.name = name;
     this.description = description;
@@ -43,21 +43,21 @@ public class Party {
 
   }
 
-  // Getters
+
   public String getId() { return id; }
   public String getName() { return name; }
   public String getDescription() { return description; }
   public String getLocation() { return location; }
-  public Organizer getOrganizer() { return organizer; }
+  public User getOrganizer() { return organizer; }
   public ArrayList<Participant> getParticipants() { return participants; }
   public ItemList getItemList() { return itemList; }
 
-  // Setters
+
   public void setName(String name) { this.name = name; }
   public void setDescription(String description) { this.description = description; }
   public void setLocation(String location) { this.location = location; }
 
-  // Methods
+
   public void addParticipant(Participant participant) { participants.add(participant); }
   public void removeParticipant(Participant participant) { participants.remove(participant); }
 

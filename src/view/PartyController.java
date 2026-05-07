@@ -33,6 +33,7 @@ public class PartyController
   @FXML private ListView<Participant> memberList;
   @FXML private Button editButton;
   @FXML private Button leaveButton;
+  @FXML private Label userLabel;
 
   private Party selected;
 
@@ -56,7 +57,11 @@ public class PartyController
     dateLabel.setText("whenever");
     itemList.setItems(FXCollections.observableArrayList(selected.getItemList().getItems()));
     memberList.setItems(FXCollections.observableArrayList(selected.getParticipants()));
-    roleLabel.setText(selected.getOrganizer().equals(LocalUser.getUser()) ? "organizer" : "participant");
+    //userLabel.setText(LocalUser.getUser().getUsername());
+    roleLabel.setText(
+        selected.getOrganizer().getId().equals(LocalUser.getUser().getId())
+            ? "organizer" : "participant"
+    );
   }
 
   @FXML public void onDiscover() {

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import model.ModelManager;
 import model.PartyModel;
+import model.User;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -108,7 +109,9 @@ public class PartyClientHandler implements Runnable {
     String username = request.get("username").getAsString();
     String password = request.get("password").getAsString();
 
-    var user = model.login(username, password);
+    System.out.println("partyclienthandler " + username + " -- " + password);
+
+    User user = model.login(username, password);
     if (user != null) {
       sendResponse("login", gson.toJson(user));
     } else {

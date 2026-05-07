@@ -1,7 +1,10 @@
 package dao;
 
 import database.DataBaseConnection;
+import model.Organizer;
 import model.Party;
+import model.User;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -42,7 +45,12 @@ public class PartyDAO {
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
       ResultSet rs = ps.executeQuery();
-      while (rs.next()) parties.add(mapRow(rs));
+      while (rs.next()) {
+        Party p = mapRow(rs);
+        System.out.println("Loaded party: " + p.getName());
+        parties.add(p);
+      }
+      System.out.println("Total parties loaded for user " + userid + ": " + parties.size());
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -89,7 +97,26 @@ public class PartyDAO {
   }
 
   // TODO: update after Party model gains String partyid and LocalDate date fields
-  private Party mapRow(ResultSet rs) throws SQLException {
-    return new Party(rs.getString("name"), rs.getString("description"), null, null);
+    private Party mapRow(ResultSet rs) throws SQLException {
+      String name = rs.getString("name");
+      String description = rs.getString("description");
+      String partyId = rs.getString("partyid");
+      User organizer = getOrganizerForParty(partyId);
+      return new Party(name, description, null, organizer);
+    }
+
+  private User getOrganizerForParty(String partyId) {
+    String sql = "SELECT userid FROM partyusers WHERE partyid = ? AND role = 'organizer'";
+    try (Connection conn = DataBaseConnection.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, partyId);
+      ResultSet rs = ps.executeQuery();
+      if (rs.next()) {
+        return new UserDAO().getById(rs.getString("userid"));
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return null;
   }
 }

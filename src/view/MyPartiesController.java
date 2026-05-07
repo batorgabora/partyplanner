@@ -7,6 +7,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
+import model.LocalUser;
 import viewModel.DiscoverViewModel;
 import model.Party;
 import viewModel.MyPartiesViewModel;
@@ -18,9 +19,10 @@ public class MyPartiesController
   private MyPartiesViewModel viewmodel;
   private ViewHandler viewhandler;
 
-  private ListView partyList;
-  private Button furtherButton;
-  private Label selectedLabel;
+  @FXML private ListView partyList;
+  @FXML private Button furtherButton;
+  @FXML private Label selectedLabel;
+  @FXML private Label userLabel;
 
 
 
@@ -31,6 +33,7 @@ public class MyPartiesController
     this.viewhandler = viewhandler;
 
     //bindings to viewmodel
+    userLabel.setText(LocalUser.getUser().getUsername());
 
   }
 
@@ -50,6 +53,9 @@ public class MyPartiesController
     viewhandler.openView("party");
   }
 
+  @FXML public void onLogout() {
+    viewhandler.openView("login");
+  }
 
   public Region getRoot()
   {

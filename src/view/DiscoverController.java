@@ -23,7 +23,8 @@ public class DiscoverController
   @FXML private ListView<Party> partyList;
   @FXML private Label selectedLabel;
   @FXML private Button onFurtherButton; // joined parties
-  @FXML private ListView<Party> inviteList;   // invited parties
+  // invited parties
+  @FXML private Label userLabel;
 
 
   public void init(ViewHandler viewhandler, DiscoverViewModel viewmodel, Region root){
@@ -34,13 +35,9 @@ public class DiscoverController
     //bindings to viewmodel
     partyList.setItems(viewmodel.getParties());
     viewmodel.updateParties();
-    //what is selected can later be used --> we just forward it to the other view
-    inviteList.setItems(viewmodel.getInvites());
     partyList.getSelectionModel().selectedItemProperty().addListener(
-        (obs, oldVal, newVal) -> viewmodel.selectedPartyProperty().set(newVal)
-    );
-
-    //make selected one show up:
+        (obs, oldVal, newVal) -> viewmodel.selectedPartyProperty().set(newVal));
+    //userLabel.setText(LocalUser.getUser().getUsername());
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> {
           if (newVal != null) {
@@ -62,19 +59,9 @@ public class DiscoverController
   }
 
 
-  @FXML public void onAccept() {
-    Party selected = inviteList.getSelectionModel().getSelectedItem();
-    if (selected != null) {
-      viewmodel.acceptInvite(selected);
-    }
-  }
 
-  @FXML public void onDecline() {
-    Party selected = inviteList.getSelectionModel().getSelectedItem();
-    if (selected != null) {
-      viewmodel.declineInvite(selected);
-    }
-  }
+
+
 
 
   @FXML private void onMyParties()

@@ -50,15 +50,7 @@ public class PartyClientModel implements PartyModel
   {
 
   }
-  @Override
-  public ArrayList<Party> getInvites(User user) {
-    return new ArrayList<>(); // fill in later when connecting to server
-  }
 
-  @Override public void declineInvite(User user, Party party)
-  {
-
-  }
 
   @Override public List<Party> getParties(User user)
   {

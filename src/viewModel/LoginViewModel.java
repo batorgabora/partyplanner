@@ -7,6 +7,7 @@ import model.LocalUser;
 import model.Party;
 import model.PartyModel;
 import model.User;
+import util.PasswordUtil;
 
 public class LoginViewModel
 {
@@ -18,14 +19,11 @@ public class LoginViewModel
   public LoginViewModel(PartyModel model){
     this.model = model;
 
-    // Register as listener for all 3 event types.
-    // From this point on, whenever the model fires these events,
-    // our propertyChange() method below is called automatically.
-
 
   }
 
   public boolean login() {
+    System.out.printf(username + " " + password);
     User user = model.login(username.get(), password.get());
     if (user != null) {
       LocalUser.setUser(user);

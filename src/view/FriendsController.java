@@ -25,6 +25,7 @@ public class FriendsController
   @FXML private ListView<User> friendsList;
   @FXML private Button chatButton;
   @FXML private Button removefriendButton;
+  @FXML private Label userLabel;
 
 
   public void init(ViewHandler viewhandler, FriendsViewModel viewmodel, Region root) {
@@ -32,6 +33,7 @@ public class FriendsController
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
     friendsList.setItems(viewmodel.getFriends());
+    userLabel.setText(LocalUser.getUser().getUsername());
   }
 
   public void reset() {
@@ -52,7 +54,7 @@ public class FriendsController
     //addd friend logic
     viewhandler.openView("friends");
   }
-  
+
   public Region getRoot()
   {
     return root;
