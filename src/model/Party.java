@@ -11,6 +11,7 @@ public class Party {
   private String location;
   private Organizer organizer;
   private List<Participant> participants;
+  private ItemList itemList;
 
   public Party(String name, String description, String location, Organizer organizer) {
     this.id = UUID.randomUUID().toString();
@@ -19,6 +20,8 @@ public class Party {
     this.location = location;
     this.organizer = organizer;
     this.participants = new ArrayList<>();
+    this.itemList = new ItemList();
+
   }
 
   // Getters
@@ -28,6 +31,7 @@ public class Party {
   public String getLocation() { return location; }
   public Organizer getOrganizer() { return organizer; }
   public List<Participant> getParticipants() { return participants; }
+  public ItemList getItemList() { return itemList; }
 
   // Setters
   public void setName(String name) { this.name = name; }

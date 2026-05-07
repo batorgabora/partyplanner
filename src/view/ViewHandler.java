@@ -15,6 +15,7 @@ public class ViewHandler
   private DiscoverController discovercontroller;
   private LoginController logincontroller;
   private PartyController partycontroller;
+  private MyPartiesController mypartiescontroller;
   private ViewModelFactory viewmodelfactory;
 
   public ViewHandler(ViewModelFactory viewmodelfactory)
@@ -39,6 +40,7 @@ public class ViewHandler
         case "discover" -> loadDiscoverView();
         case "login" -> loadLoginView();
         case "party" -> loadPartyView();
+        case "my parties" -> loadMyPartiesView();
         default -> throw new IllegalArgumentException("Unknown view: " + id);
       };
 
@@ -56,7 +58,7 @@ public class ViewHandler
   {
     if (discovercontroller == null)
     {
-      var url = getClass().getResource("/view/DiscoverView.fxml");
+      var url = getClass().getResource("/view/DiscoverView2.fxml");
       System.out.println("FXML URL: " + url);
       FXMLLoader loader = new FXMLLoader(url);
       Region root = loader.load();
@@ -78,7 +80,7 @@ public class ViewHandler
     if (logincontroller == null)
     {
       // first time opening --> load the FXML and wire everything up
-      var url = getClass().getResource("/view/LoginView.fxml");
+      var url = getClass().getResource("/view/LoginView2.fxml");
       System.out.println("FXML URL: " + url); // add this
       FXMLLoader loader = new FXMLLoader(url);
       Region root = loader.load();
@@ -100,7 +102,7 @@ public class ViewHandler
     if (partycontroller == null)
     {
       // first time opening --> load the FXML and wire everything up
-      var url = getClass().getResource("/view/PartyView.fxml");
+      var url = getClass().getResource("/view/PartyView2.fxml");
       System.out.println("FXML URL: " + url); // add this
       FXMLLoader loader = new FXMLLoader(url);
       Region root = loader.load();
@@ -115,5 +117,27 @@ public class ViewHandler
     }
 
     return partycontroller.getRoot();
+  }
+
+  private Region loadMyPartiesView() throws IOException
+  {
+    if (mypartiescontroller == null)
+    {
+      // first time opening --> load the FXML and wire everything up
+      var url = getClass().getResource("/view/MyPartiesView.fxml");
+      System.out.println("FXML URL: " + url); // add this
+      FXMLLoader loader = new FXMLLoader(url);
+      Region root = loader.load();
+
+      mypartiescontroller = loader.getController();
+      mypartiescontroller.init(this, viewmodelfactory.getMyPartiesViewModel(), root);
+    }
+    else
+    {
+      // already loaded before --> just clear the fields
+      mypartiescontroller.reset();
+    }
+
+    return mypartiescontroller.getRoot();
   }
 }

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Participant extends User {
+public class Participant {
+
   private String id;
   private Party party;
 
-  public Participant(String id, String username, String password, Party party) {
-    super(username, password);
+  public Participant(Party party) {
     this.id = UUID.randomUUID().toString();
     this.party = party;
   }

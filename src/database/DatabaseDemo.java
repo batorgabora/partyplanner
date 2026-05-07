@@ -6,11 +6,9 @@ public class DatabaseDemo {
 
   public static void main(String[] args) throws SQLException {
 
-    // 1. Connect to the database
     Connection conn = DataBaseConnection.getConnection();
     System.out.println("Connected!");
 
-    // 2. INSERT a user
     PreparedStatement insert = conn.prepareStatement(
         "INSERT INTO \"user\" (username, mail, hashpass) VALUES (?, ?, ?)"
     );
@@ -20,7 +18,6 @@ public class DatabaseDemo {
     insert.executeUpdate();
     System.out.println("User inserted!");
 
-    // 3. READ all users back
     Statement select = conn.createStatement();
     ResultSet rs = select.executeQuery("SELECT * FROM \"user\"");
     System.out.println("--- Users in database ---");

@@ -6,20 +6,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import viewModel.DiscoverViewModel;
 import model.Party;
+import viewModel.MyPartiesViewModel;
 
-public class DiscoverController
+public class MyPartiesController
 {
 
   private Region root;
-  private DiscoverViewModel viewmodel;
+  private MyPartiesViewModel viewmodel;
   private ViewHandler viewhandler;
 
 
-  public void init(ViewHandler viewhandler, DiscoverViewModel viewmodel, Region root){
+  public void init(ViewHandler viewhandler, MyPartiesViewModel viewmodel, Region root){
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
@@ -27,26 +27,21 @@ public class DiscoverController
     //bindings to viewmodel
   }
 
-  @FXML public void onParty() {
-    viewhandler.openView("party");
-  }
-  @FXML
-  private void onMyParties()
-  {
+  @FXML public void onMyParties() {
     viewhandler.openView("my parties");
   }
 
-  @FXML
-  private void onDiscover()
-  {
+  @FXML public void onDiscover() {
     viewhandler.openView("discover");
   }
 
-  @FXML
-  private void onFriends()
-  {
+  @FXML public void onFriends() {
     viewhandler.openView("friends");
   }
+  @FXML public void onParty() {
+    viewhandler.openView("party");
+  }
+
 
   public Region getRoot()
   {

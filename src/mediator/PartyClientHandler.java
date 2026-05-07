@@ -53,7 +53,7 @@ public class PartyClientHandler implements Runnable {
 
   private void handleRequest(JsonObject request) {
     String action = request.get("action").getAsString();
-
+//idk if this is good tbh...
     switch (action) {
       case "getAll" -> handleGetAll();
       case "login" -> handleLogin(request);
@@ -84,53 +84,31 @@ public class PartyClientHandler implements Runnable {
   }
 
   private void handleJoinParty(JsonObject request) {
-    int userId = request.get("userId").getAsInt();
-    int partyId = request.get("partyId").getAsInt();
-    // model.joinParty(userId, partyId);
-    sendResponse("joinParty", "success");
+
   }
 
   private void handleLeaveParty(JsonObject request) {
-    int userId = request.get("userId").getAsInt();
-    int partyId = request.get("partyId").getAsInt();
-    // model.leaveParty(userId, partyId);
-    sendResponse("leaveParty", "success");
+
   }
 
   private void handleCreateParty(JsonObject request) {
-    String title = request.get("title").getAsString();
-    String description = request.get("description").getAsString();
-    String location = request.get("location").getAsString();
-    int organizerId = request.get("organizerId").getAsInt();
-    // model.createParty(title, description, location, organizerId);
-    sendResponse("createParty", "success");
+
   }
 
   private void handleDeleteParty(JsonObject request) {
-    int partyId = request.get("partyId").getAsInt();
-    // model.deleteParty(partyId);
-    sendResponse("deleteParty", "success");
+
   }
 
   private void handleAddParticipant(JsonObject request) {
-    int partyId = request.get("partyId").getAsInt();
-    int userId = request.get("userId").getAsInt();
-    // model.addParticipant(partyId, userId);
-    sendResponse("addParticipant", "success");
+
   }
 
   private void handleRemoveParticipant(JsonObject request) {
-    int partyId = request.get("partyId").getAsInt();
-    int userId = request.get("userId").getAsInt();
-    // model.removeParticipant(partyId, userId);
-    sendResponse("removeParticipant", "success");
+
   }
 
   private void handleAddFriend(JsonObject request) {
-    int userId = request.get("userId").getAsInt();
-    int friendId = request.get("friendId").getAsInt();
-    // model.addFriend(userId, friendId);
-    sendResponse("addFriend", "success");
+
   }
 
   private void sendResponse(String action, String data) {
