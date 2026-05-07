@@ -10,6 +10,7 @@ import model.Participant;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PartyClientModel implements PartyModel
@@ -46,6 +47,15 @@ public class PartyClientModel implements PartyModel
   }
 
   @Override public void removeFriend(User user, User friend)
+  {
+
+  }
+  @Override
+  public ArrayList<Party> getInvites(User user) {
+    return new ArrayList<>(); // fill in later when connecting to server
+  }
+
+  @Override public void declineInvite(User user, Party party)
   {
 
   }
@@ -103,7 +113,7 @@ public class PartyClientModel implements PartyModel
   }
 
   @Override public User createAccount(String username, String password,
-      String confirmPassword)
+      String confirmPassword, String mail)
   {
     return null;
   }

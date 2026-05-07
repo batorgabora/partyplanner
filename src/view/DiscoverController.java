@@ -1,5 +1,6 @@
 package view;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import model.LocalUser;
 import viewModel.DiscoverViewModel;
 import model.Party;
 
@@ -18,9 +20,10 @@ public class DiscoverController
   private DiscoverViewModel viewmodel;
   private ViewHandler viewhandler;
 
-  private ListView<Party> partyList;
-  private Label selectedLabel;
-  private Button onFurtherButton;
+  @FXML private ListView<Party> partyList;
+  @FXML private Label selectedLabel;
+  @FXML private Button onFurtherButton; // joined parties
+  @FXML private ListView<Party> inviteList;   // invited parties
 
 
   public void init(ViewHandler viewhandler, DiscoverViewModel viewmodel, Region root){
@@ -30,7 +33,9 @@ public class DiscoverController
 
     //bindings to viewmodel
     partyList.setItems(viewmodel.getParties());
+    viewmodel.updateParties();
     //what is selected can later be used --> we just forward it to the other view
+    inviteList.setItems(viewmodel.getInvites());
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> viewmodel.selectedPartyProperty().set(newVal)
     );
@@ -55,6 +60,23 @@ public class DiscoverController
     }
     viewhandler.openView("party");
   }
+
+
+  @FXML public void onAccept() {
+    Party selected = inviteList.getSelectionModel().getSelectedItem();
+    if (selected != null) {
+      viewmodel.acceptInvite(selected);
+    }
+  }
+
+  @FXML public void onDecline() {
+    Party selected = inviteList.getSelectionModel().getSelectedItem();
+    if (selected != null) {
+      viewmodel.declineInvite(selected);
+    }
+  }
+
+
   @FXML private void onMyParties()
   {
     viewhandler.openView("my parties");
@@ -80,6 +102,7 @@ public class DiscoverController
     return root;
   }
 
-  public void reset(){}
-
+  public void reset(){
+    viewmodel.updateParties();
+  }
 }

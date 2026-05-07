@@ -20,19 +20,22 @@ public class DiscoverViewModel implements PropertyChangeListener
   //for avoiding wiring them together --> shared selectedVinyl
   private ObjectProperty<Party> selectedParty;
   private ObservableList<Party> parties;
-  private final StringProperty errorProperty;
+  private final StringProperty errorProperty;// joined
+  private ObservableList<Party> invites;  // invited
 
 
   public DiscoverViewModel(PartyModel model, ObjectProperty<Party> selectedParty){
     //for wiring them together --> common selected
     this.selectedParty = selectedParty;
-    parties = FXCollections.observableArrayList(model.getParties(LocalUser.getUser())); //Updates automaticly since its observable arraylist
+    //Updates automaticly since its observable arraylist
     this.model = model;
     errorProperty = new SimpleStringProperty("");
     model.addListener("getAll", this);
     // Register as listener for all 3 event types.
     // From this point on, whenever the model fires these events,
     // our propertyChange() method below is called automatically.
+    parties = FXCollections.observableArrayList();  // initialize empty
+    invites = FXCollections.observableArrayList();
   }
 
 
@@ -47,6 +50,7 @@ public class DiscoverViewModel implements PropertyChangeListener
   {
     Platform.runLater(() -> {
       parties.setAll(model.getParties(LocalUser.getUser()));
+      invites.setAll(model.getInvites(LocalUser.getUser()));
     });
   }
 
@@ -56,5 +60,17 @@ public class DiscoverViewModel implements PropertyChangeListener
 
   public void updateParties() {
     parties.setAll(model.getParties(LocalUser.getUser()));
+  }
+  public void acceptInvite(Party party) {
+    model.joinParty(LocalUser.getUser(), party);
+    updateParties();
+  }
+
+  public void declineInvite(Party party) {
+    model.declineInvite(LocalUser.getUser(), party);
+    updateParties();
+  }
+  public ObservableList<Party> getInvites() {
+    return invites;
   }
 }

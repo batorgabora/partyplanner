@@ -6,6 +6,8 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import dao.*;
+import util.PasswordUtil;
 
 public class ModelManager implements  PartyModel
 {
@@ -21,15 +23,9 @@ public class ModelManager implements  PartyModel
 
   @Override public User login(String username, String password)
   {
-    for (int i = 0; i < users.size(); i++)
-    {
-      User user = users.get(i);
-      if (user.getUsername().equals(username) && user.getPassword().equals(password))
-      {
-        return user;
-      }
-    }
-    return null;
+    UserDAO userDAO = new UserDAO();
+    User user = userDAO.login(username, password);
+    return user;
   }
 
   @Override public void addFriend(User user, User friend)
@@ -65,21 +61,33 @@ public class ModelManager implements  PartyModel
 
   @Override public void joinParty(User user, Party party)
   {
-    Participant participant = new Participant(party, user);
-    party.addParticipant(participant);
-    user.joinParty(party);
-  }
-
-  @Override public void leaveParty(User user, Party party)
-  {
-    List<Participant> participants = party.getParticipants();
-    for (int i = 0; i < participants.size(); i++) {
-      if (participants.get(i).getUser().equals(user)) {
-        participants.remove(i);
+    ArrayList<Participant> participants = party.getParticipants();
+    for (int i = 0; i < participants.size(); i++)
+    {
+      if (participants.get(i).getUser().equals(user))
+      {
+        participants.get(i).accept();
+        user.joinParty(party);
+        support.firePropertyChange("parties", null, parties);
         break;
       }
     }
-    user.leaveParty(party);
+  }
+
+
+  @Override public void leaveParty(User user, Party party)
+  {
+    ArrayList<Participant> participants = party.getParticipants();
+    for (int i = 0; i < participants.size(); i++)
+    {
+      if (participants.get(i).getUser().equals(user))
+      {
+        participants.get(i).leave();
+        user.leaveParty(party);
+        support.firePropertyChange("parties", null, parties);
+        break;
+      }
+    }
   }
 
   @Override public void deleteParty(Party party)
@@ -141,7 +149,8 @@ public class ModelManager implements  PartyModel
     support.removePropertyChangeListener(propertyName, listener);
   }
 
-  @Override public User createAccount(String username, String password, String confirmPassword)
+  @Override
+  public User createAccount(String username, String password, String confirmPassword, String mail)
   {
     if (username == null || username.trim().isEmpty())
     {
@@ -149,6 +158,11 @@ public class ModelManager implements  PartyModel
     }
 
     if (password == null || password.isEmpty())
+    {
+      return null;
+    }
+
+    if (mail == null || mail.trim().isEmpty())
     {
       return null;
     }
@@ -163,20 +177,23 @@ public class ModelManager implements  PartyModel
       return null;
     }
 
-    for (int i = 0; i < users.size(); i++)
+    UserDAO userDAO = new UserDAO();
+
+    if (userDAO.getByUsername(username) != null)
     {
-      User user = users.get(i);
-      if (user.getUsername().equals(username))
-      {
-        return null;
-      }
+      return null;
     }
 
-    String id = UUID.randomUUID().toString();
-    User newUser = new User(id, username, password);
-    users.add(newUser);
-    return newUser;
+
+    String userId = userDAO.create(
+        UUID.randomUUID().toString(),
+        username,
+        mail,
+        PasswordUtil.hash(password)
+    );
+    return new User(userId, username, password, mail);
   }
+
 
   @Override public ArrayList<Party> getInvites(User user)
   {

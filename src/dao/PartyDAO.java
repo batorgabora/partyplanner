@@ -22,9 +22,9 @@ public class PartyDAO {
     return null;
   }
 
-  public List<Party> getAll() {
+  public ArrayList<Party> getAll() {
     String sql = "SELECT * FROM party";
-    List<Party> parties = new ArrayList<>();
+    ArrayList<Party> parties = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getConnection();
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery(sql)) {
@@ -35,9 +35,9 @@ public class PartyDAO {
     return parties;
   }
 
-  public List<Party> getByUser(String userid) {
+  public ArrayList<Party> getByUser(String userid) {
     String sql = "SELECT p.* FROM party p JOIN partyusers pu ON p.partyid = pu.partyid WHERE pu.userid = ?";
-    List<Party> parties = new ArrayList<>();
+    ArrayList<Party> parties = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);

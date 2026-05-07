@@ -107,6 +107,7 @@ public class PartyClientHandler implements Runnable {
   private void handleLogin(JsonObject request) {
     String username = request.get("username").getAsString();
     String password = request.get("password").getAsString();
+
     var user = model.login(username, password);
     if (user != null) {
       sendResponse("login", gson.toJson(user));

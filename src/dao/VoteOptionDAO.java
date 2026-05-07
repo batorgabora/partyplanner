@@ -58,7 +58,7 @@ public class VoteOptionDAO {
     return 0;
   }
 
-  public List<Integer> getVotersForOption(int optionid) {
+  public ArrayList<Integer> getVotersForOption(int optionid) {
     String sql = "SELECT userid FROM voteoption WHERE optionid = ?";
     List<Integer> voters = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getConnection();
@@ -69,6 +69,6 @@ public class VoteOptionDAO {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    return voters;
+    return null;//voters;
   }
 }

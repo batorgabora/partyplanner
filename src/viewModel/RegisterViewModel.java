@@ -1,8 +1,7 @@
 package viewModel;
 
-import javafx.beans.property.ObjectProperty;
-import model.Party;
 import model.PartyModel;
+import model.User;
 
 public class RegisterViewModel
 {
@@ -10,9 +9,11 @@ public class RegisterViewModel
 
   public RegisterViewModel(PartyModel model){
     this.model = model;
+  }
 
-    // Register as listener for all 3 event types.
-    // From this point on, whenever the model fires these events,
-    // our propertyChange() method below is called automatically.
+  public boolean createAccount(String username, String password, String confirmPassword, String mail)
+  {
+    User user = model.createAccount(username, password, confirmPassword, mail);
+    return user != null;
   }
 }

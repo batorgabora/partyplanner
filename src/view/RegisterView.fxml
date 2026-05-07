@@ -30,6 +30,9 @@
                 <Font size="16.0" />
             </font>
         </Button>
+
+        <Label fx:id="messageLabel" layoutX="320.0" layoutY="405.0" textFill="red" />
+
         <Label layoutX="20.0" layoutY="495.0" text="already have an account?" />
         <Button fx:id="backtologinButton" layoutX="167.0" layoutY="491.0" mnemonicParsing="false" onAction="#onLogin" text="back to login" underline="true" />
       <TextField fx:id="emailField" layoutX="279.0" layoutY="223.0" prefHeight="26.0" prefWidth="294.0" />

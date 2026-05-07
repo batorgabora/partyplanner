@@ -1,8 +1,7 @@
 package model;
 
-import viewModel.DiscoverViewModel;
-
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface PartyModel {
@@ -26,7 +25,8 @@ public interface PartyModel {
   void removeParticipant(Party party, Participant participant);
   void addListener(String propertyName, PropertyChangeListener listener);
   void removeListener(String propertyName, PropertyChangeListener listener);
-  User createAccount(String username, String password, String confirmPassword);
-
+  User createAccount(String username, String password, String confirmPassword, String mail);
+  ArrayList<Party> getInvites(User user);
+  void declineInvite(User user, Party party);
 
 }

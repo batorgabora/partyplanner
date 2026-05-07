@@ -5,14 +5,15 @@ import model.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class UserDAO {
 
-  public User getById(int userid) {
+  public User getById(String userid) {
     String sql = "SELECT * FROM \"user\" WHERE userid = ?";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setInt(1, userid);
+      ps.setString(1, userid);
       ResultSet rs = ps.executeQuery();
       if (rs.next()) return mapRow(rs);
     } catch (SQLException e) {
@@ -34,9 +35,9 @@ public class UserDAO {
     return null;
   }
 
-  public List<User> getAll() {
+  public ArrayList<User> getAll() {
     String sql = "SELECT * FROM \"user\"";
-    List<User> users = new ArrayList<>();
+    ArrayList<User> users = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getConnection();
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery(sql)) {
@@ -63,36 +64,38 @@ public class UserDAO {
     return null;
   }
 
-  public void update(int userid, String username, String mail) {
-    String sql = "UPDATE \"user\" SET username = ?, mail = ? WHERE userid = ?";
+  public void update(String username, String mail, String hashpass) {
+    String userid = getByUsername(username).getId();
+    String sql = "UPDATE \"user\" SET username = ?, mail = ?, hashpass = ? WHERE userid = ?";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, username);
       ps.setString(2, mail);
-      ps.setInt(3, userid);
+      ps.setString(3, hashpass);
+      ps.setString(4, userid);
       ps.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public void updatePassword(int userid, String hashpass) {
+  public void updatePassword(String userid, String hashpass) {
     String sql = "UPDATE \"user\" SET hashpass = ? WHERE userid = ?";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, hashpass);
-      ps.setInt(2, userid);
+      ps.setString(2, userid);
       ps.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public void delete(int userid) {
+  public void delete(String userid) {
     String sql = "DELETE FROM \"user\" WHERE userid = ?";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setInt(1, userid);
+      ps.setString(1, userid);
       ps.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -114,6 +117,6 @@ public class UserDAO {
   }
 
   private User mapRow(ResultSet rs) throws SQLException {
-    return new User(rs.getString("username"), rs.getString("hashpass"));
+    return new User(rs.getString("userid"), rs.getString("username"),rs.getString("mail"), rs.getString("hashpass"));
   }
 }

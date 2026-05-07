@@ -9,11 +9,13 @@ public class Participant {
   private String id;
   private Party party;
   private User user;
+  private ParticipantState state;
 
   public Participant(Party party, User user) {
     this.id = UUID.randomUUID().toString();
     this.party = party;
     this.user = user;
+    this.state = new InvitedState();
   }
 
   // Getters
