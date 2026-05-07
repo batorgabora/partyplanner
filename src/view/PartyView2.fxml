@@ -36,7 +36,7 @@
             <Button fx:id="logoutButton" layoutX="18.0" layoutY="494.0" mnemonicParsing="false" onAction="#onLogOut" text="log out" />
          </children>
       </Pane>
-      <Label fx:id="nameLabel" layoutX="377.0" layoutY="13.0" prefHeight="30.0" prefWidth="172.0" text="party name">
+      <Label fx:id="nameLabel" layoutX="138.0" layoutY="13.0" prefHeight="38.0" prefWidth="515.0" text="party name">
          <font>
             <Font name="System Bold" size="31.0" />
          </font>
@@ -62,8 +62,8 @@
          </font>
       </Label>
       <ListView fx:id="memberList" layoutX="459.0" layoutY="155.0" prefHeight="340.0" prefWidth="209.0" />
-      <Label fx:id="dateLabel" layoutX="665.0" layoutY="1.0" prefHeight="24.0" prefWidth="172.0" text="date:" />
-      <Label fx:id="locationLabel" layoutX="664.0" layoutY="22.0" prefHeight="17.0" prefWidth="172.0" text="location: " />
+      <Label fx:id="dateLabel" layoutX="685.0" layoutY="1.0" prefHeight="24.0" prefWidth="152.0" text="date:" />
+      <Label fx:id="locationLabel" layoutX="684.0" layoutY="22.0" prefHeight="17.0" prefWidth="152.0" text="location: " />
       <Button fx:id="acceptButton" layoutX="722.0" layoutY="409.0" mnemonicParsing="false" text="accept invitation" />
       <Button fx:id="addfriendButton" layoutX="685.0" layoutY="155.0" mnemonicParsing="false" onAction="#addFriend" text="add friend" />
    </children>

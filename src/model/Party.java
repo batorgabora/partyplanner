@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +12,7 @@ public class Party {
   private String description;
   private String location;
   private User organizer;
+  private String date;
   private ArrayList<Participant> participants;
   private ItemList itemList;
 
@@ -40,15 +42,31 @@ public class Party {
     this.organizer = organizer;
     this.participants = new ArrayList<>();
     this.itemList = new ItemList();
-
   }
 
+  public Party(String id, String name, String description, String location, User organizer) {
+    this.id = id;  // use DB id instead of generating new UUID
+    this.name = name;
+    this.description = description;
+    this.location = location;
+    this.organizer = organizer;
+  }
+
+  public Party(String id, String name, String description, String location, LocalDate date, User organizer) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.location = location;
+    this.date = date.toString();
+    this.organizer = organizer;
+  }
 
   public String getId() { return id; }
   public String getName() { return name; }
   public String getDescription() { return description; }
   public String getLocation() { return location; }
   public User getOrganizer() { return organizer; }
+  public String getDate() { return date; }
   public ArrayList<Participant> getParticipants() { return participants; }
   public ItemList getItemList() { return itemList; }
 

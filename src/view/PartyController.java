@@ -55,9 +55,13 @@ public class PartyController
     descriptionLabel.setText(selected.getDescription());
     locationLabel.setText(selected.getLocation());
     dateLabel.setText("whenever");
-    itemList.setItems(FXCollections.observableArrayList(selected.getItemList().getItems()));
-    memberList.setItems(FXCollections.observableArrayList(selected.getParticipants()));
-    //userLabel.setText(LocalUser.getUser().getUsername());
+    itemList.setItems(viewmodel.getItems());
+    memberList.setItems(viewmodel.getMembers());
+    roleLabel.setText(viewmodel.getRole());
+    dateLabel.setText(selected.getDate());
+    locationLabel.setText(selected.getLocation());
+
+
     roleLabel.setText(
         selected.getOrganizer().getId().equals(LocalUser.getUser().getId())
             ? "organizer" : "participant"
@@ -78,6 +82,7 @@ public class PartyController
     //addd friend logic
     viewhandler.openView("friends");
   }
+
 
 
 

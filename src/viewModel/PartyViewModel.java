@@ -32,6 +32,22 @@ public class PartyViewModel implements PropertyChangeListener
     model.addListener("something", this);
   }
 
+  public ObservableList<Item> getItems() {
+    return FXCollections.observableArrayList(
+        model.getItems(selectedParty.get())
+    );
+  }
+
+  public ObservableList<Participant> getMembers() {
+    return FXCollections.observableArrayList(
+        model.getParticipants(selectedParty.get())
+    );
+  }
+
+  public String getRole() {
+    return model.getRole(LocalUser.getUser(), selectedParty.get());
+  }
+
   public Party getSelectedParty() {
     return selectedParty.get();
   }

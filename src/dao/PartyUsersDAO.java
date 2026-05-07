@@ -1,6 +1,7 @@
 package dao;
 
 import database.DataBaseConnection;
+import model.Participant;
 import model.User;
 import java.sql.*;
 import java.util.ArrayList;
@@ -60,19 +61,22 @@ public class PartyUsersDAO {
     }
   }
 
-  public List<User> getUsersInParty(String partyid) {
-    String sql = "SELECT u.* FROM \"user\" u JOIN partyusers pu ON u.userid = pu.userid WHERE pu.partyid = ?";
-    List<User> users = new ArrayList<>();
+  public List<Participant> getParticipantsByParty(String partyid) {
+    String sql = "SELECT u.*, pu.role FROM \"user\" u JOIN partyusers pu ON u.userid = pu.userid WHERE pu.partyid = ?";
+    List<Participant> participants = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyid);
       ResultSet rs = ps.executeQuery();
-      // TODO: update after User model gains String userid and String mail fields
-      //while (rs.next()) users.add(new User(rs.getString("username"), rs.getString("hashpass")));
+      while (rs.next()) {
+        User user = new User(rs.getString("userid"), rs.getString("username"), rs.getString("mail"), rs.getString("hashpass"));
+        Participant p = new Participant(null, user); // party is null to avoid circular loading
+        participants.add(p);
+      }
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    return users;
+    return participants;
   }
 
   public List<String> getOrganizerIds(String partyid) {

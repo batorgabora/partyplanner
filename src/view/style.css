@@ -1,0 +1,40 @@
+.root{
+  -fx-background-color: #886E6E;
+  /*#A18282;*/
+}
+
+.titled-pane > .title {
+  -fx-background-color: #886E6E;
+  /*#A18282;*/
+  -fx-font-weight: bold;
+}
+
+.titled-pane > .content,
+.list-view,
+.list-view .list-cell {
+  -fx-background-color: #886E6E;
+}
+
+.list-view .list-cell:selected {
+  -fx-background-color: rgba(62, 84, 72, 0.4);
+}
+
+.titled-pane > .content
+{
+  -fx-border-color: transparent;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+  -fx-border-width: 0;
+}
+
+.button {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+  -fx-effect: null;
+}
+
+
+.button:hover {
+  -fx-underline: true;
+  -fx-text-fill: #503131;;
+}

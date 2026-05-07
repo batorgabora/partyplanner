@@ -26,6 +26,8 @@ public interface PartyModel {
   void addListener(String propertyName, PropertyChangeListener listener);
   void removeListener(String propertyName, PropertyChangeListener listener);
   User createAccount(String username, String password, String confirmPassword, String mail);
-
+  public List<Item> getItems(Party party);
+  public List<Participant> getParticipants(Party party);
+  public String getRole(User user, Party party);
 
 }

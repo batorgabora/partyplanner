@@ -53,6 +53,21 @@ public class ModelManager implements  PartyModel
     return partyDAO.getByUser(user.getId());
   }
 
+
+  @Override public List<Item> getItems(Party party) {
+    return new ItemDAO().getByParty(party.getId());
+  }
+  
+
+  @Override public String getRole(User user, Party party) {
+    return new PartyUsersDAO().getRole(user.getId(), party.getId());
+  }
+
+  @Override public List<Participant> getParticipants(Party party) {
+    if (party == null) return new ArrayList<>();
+    return new PartyUsersDAO().getParticipantsByParty(party.getId());
+  }
+
   @Override public Party getParty(int id)
   {
     if (id < 0 || id >= parties.size())
@@ -88,6 +103,7 @@ public class ModelManager implements  PartyModel
   {
 
   }
+
 
   @Override public void manageParty(Party party, String title,
       String description, String location)

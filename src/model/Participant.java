@@ -19,4 +19,9 @@ public class Participant {
   public Party getParty() { return party; }
   public User getUser() { return user;}
   public void setParty(Party party) { this.party = party; }
+
+  @Override
+  public String toString() {
+    return user.getUsername();
+  }
 }

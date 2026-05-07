@@ -3,10 +3,8 @@ package mediator;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import model.PartyModel;
-import model.Party;
-import model.User;
-import model.Participant;
+import model.*;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
@@ -108,5 +106,20 @@ public class PartyClientModel implements PartyModel
       String confirmPassword, String mail)
   {
     return null;
+  }
+
+  @Override public List<Item> getItems(Party party)
+  {
+    return List.of();
+  }
+
+  @Override public List<Participant> getParticipants(Party party)
+  {
+    return List.of();
+  }
+
+  @Override public String getRole(User user, Party party)
+  {
+    return "";
   }
 }

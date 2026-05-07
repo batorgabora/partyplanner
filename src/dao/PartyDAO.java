@@ -97,13 +97,15 @@ public class PartyDAO {
   }
 
   // TODO: update after Party model gains String partyid and LocalDate date fields
-    private Party mapRow(ResultSet rs) throws SQLException {
-      String name = rs.getString("name");
-      String description = rs.getString("description");
-      String partyId = rs.getString("partyid");
-      User organizer = getOrganizerForParty(partyId);
-      return new Party(name, description, null, organizer);
-    }
+  private Party mapRow(ResultSet rs) throws SQLException {
+    String partyId = rs.getString("partyid");
+    String name = rs.getString("name");
+    String description = rs.getString("description");
+    String location = rs.getString("location");
+    LocalDate date = rs.getDate("date") != null ? rs.getDate("date").toLocalDate() : null;
+    User organizer = getOrganizerForParty(partyId);
+    return new Party(partyId, name, description, location, date, organizer);
+  }
 
   private User getOrganizerForParty(String partyId) {
     String sql = "SELECT userid FROM partyusers WHERE partyid = ? AND role = 'organizer'";

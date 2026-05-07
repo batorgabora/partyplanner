@@ -15,6 +15,12 @@ public class Item
     this.claimed = false;
     this.claimedBy = null;
   }
+  public Item(String id, String name) {
+    this.id = id;
+    this.name = name;
+    this.claimed = false;
+    this.claimedBy = null;
+  }
 
   // Getters
   public String getId() { return id; }
