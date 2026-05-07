@@ -31,4 +31,9 @@ public class Item
     this.claimed = false;
     this.claimedBy = null;
   }
+
+  @Override public String toString()
+  {
+    return name;
+  }
 }

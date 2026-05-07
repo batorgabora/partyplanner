@@ -31,7 +31,8 @@ public class RegisterController
     boolean created = viewmodel.createAccount(
         usernameField.getText(),
         passwordField.getText(),
-        confirmpasswordField.getText());
+        confirmpasswordField.getText(),
+        emailField.getText());
 
     if (created)
     {

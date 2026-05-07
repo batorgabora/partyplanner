@@ -8,8 +8,8 @@ public class User {
   private String username;
   private String password;
   private String id;
-  private List<User> friendList;
-  private List<Party> partyList;
+  private ArrayList<User> friendList;
+  private ArrayList<Party> partyList;
 
   public User(String id, String username, String password) {
     this.username = username;
@@ -38,4 +38,8 @@ public class User {
   public void removeFriend(User user) { friendList.remove(user); }
   public void joinParty(Party party) { partyList.add(party); }
   public void leaveParty(Party party) { partyList.remove(party); }
+
+  public String toString(){
+    return username;
+  }
 }

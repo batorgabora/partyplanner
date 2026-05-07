@@ -47,19 +47,20 @@ public class UserDAO {
     return users;
   }
 
-  public int create(String username, String mail, String hashpass) {
-    String sql = "INSERT INTO \"user\" (username, mail, hashpass) VALUES (?, ?, ?) RETURNING userid";
+  public String create(String userid, String username, String mail, String hashpass) {
+    String sql = "INSERT INTO \"user\" (userid, username, mail, hashpass) VALUES (?, ?, ?, ?)";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, username);
-      ps.setString(2, mail);
-      ps.setString(3, hashpass);
+      ps.setString(1, userid);
+      ps.setString(2, username);
+      ps.setString(3, mail);
+      ps.setString(4, hashpass);
       ResultSet rs = ps.executeQuery();
-      if (rs.next()) return rs.getInt(1);
+      if (rs.next()) return rs.getString(1);
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    throw new RuntimeException("Failed to create user");
+    return null;
   }
 
   public void update(int userid, String username, String mail) {

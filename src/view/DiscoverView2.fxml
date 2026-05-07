@@ -27,9 +27,10 @@
                     </font>
                 </Label>
                 <Separator layoutX="123.0" layoutY="2.0" orientation="VERTICAL" prefHeight="528.0" prefWidth="0.0" />
+            <Button fx:id="logoutButton" layoutX="32.0" layoutY="488.0" mnemonicParsing="false" onAction="#onLogout" text="log out" />
             </children>
         </Pane>
-      <ListView fx:id="partyList" layoutX="146.0" layoutY="22.0" prefHeight="417.0" prefWidth="668.0" />
+      <ListView fx:id="inviteList" layoutX="146.0" layoutY="22.0" prefHeight="417.0" prefWidth="668.0" />
       <Button fx:id="onFurtherButton" layoutX="742.0" layoutY="476.0" mnemonicParsing="false" onAction="#onFurther" text="further info" />
       <Label fx:id="selectedLabel" layoutX="408.0" layoutY="481.0" text="no selected party" />
     </children>

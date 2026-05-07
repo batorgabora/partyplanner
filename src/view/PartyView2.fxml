@@ -33,6 +33,7 @@
             </Label>
             <Separator layoutX="123.0" layoutY="2.0" orientation="VERTICAL" prefHeight="528.0" prefWidth="0.0" />
             <Label fx:id="roleLabel" layoutX="34.0" layoutY="147.0" text="organizer" />
+            <Button fx:id="logoutButton" layoutX="18.0" layoutY="494.0" mnemonicParsing="false" onAction="#onLogOut" text="log out" />
          </children>
       </Pane>
       <Label fx:id="nameLabel" layoutX="377.0" layoutY="13.0" prefHeight="30.0" prefWidth="172.0" text="party name">
@@ -47,21 +48,23 @@
          </font>
       </Label>
       <ListView fx:id="itemList" layoutX="136.0" layoutY="153.0" prefHeight="202.0" prefWidth="286.0" />
-      <Button fx:id="editButton" defaultButton="true" layoutX="775.0" layoutY="435.0" mnemonicParsing="false" text="edit" />
+      <Button fx:id="editButton" defaultButton="true" layoutX="785.0" layoutY="342.0" mnemonicParsing="false" text="edit" />
       <Label layoutX="146.0" layoutY="371.0" text="time options:">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
       <ListView fx:id="timeList" layoutX="140.0" layoutY="409.0" prefHeight="86.0" prefWidth="290.0" />
-      <Button fx:id="leaveButton" layoutX="743.0" layoutY="478.0" mnemonicParsing="false" text="leave party" />
+      <Button fx:id="declineButton" layoutX="721.0" layoutY="482.0" mnemonicParsing="false" text="decline invitation" />
       <Label layoutX="455.0" layoutY="117.0" text="members:">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
       <ListView fx:id="memberList" layoutX="459.0" layoutY="155.0" prefHeight="340.0" prefWidth="209.0" />
-      <Label fx:id="dateLabel" layoutX="665.0" layoutY="1.0" prefHeight="24.0" prefWidth="41.0" text="date:" />
-      <Label fx:id="locationLabel" layoutX="664.0" layoutY="22.0" text="location: " />
+      <Label fx:id="dateLabel" layoutX="665.0" layoutY="1.0" prefHeight="24.0" prefWidth="172.0" text="date:" />
+      <Label fx:id="locationLabel" layoutX="664.0" layoutY="22.0" prefHeight="17.0" prefWidth="172.0" text="location: " />
+      <Button fx:id="acceptButton" layoutX="722.0" layoutY="409.0" mnemonicParsing="false" text="accept invitation" />
+      <Button fx:id="addfriendButton" layoutX="685.0" layoutY="155.0" mnemonicParsing="false" onAction="#addFriend" text="add friend" />
    </children>
 </Pane>

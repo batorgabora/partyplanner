@@ -27,4 +27,14 @@ public class Participant {
 
   // setters
   public void setParty(Party party) { this.party = party; }
+
+  public void setState(ParticipantState state) {
+    this.state = state;
+  }
+  public void accept() { state.accept(this); }
+  public void decline() { state.decline(this); }
+  public void leave() { state.leave(this); }
+  public String getState() { return state.getState(); }
+
+
 }

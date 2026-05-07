@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
 import model.Item;
+import model.LocalUser;
 import model.Participant;
 import model.Party;
 import viewModel.PartyViewModel;
@@ -51,8 +52,11 @@ public class PartyController
     selected = viewmodel.getSelectedParty();
     nameLabel.setText(selected.getName());
     descriptionLabel.setText(selected.getDescription());
+    locationLabel.setText(selected.getLocation());
+    dateLabel.setText("whenever");
     itemList.setItems(FXCollections.observableArrayList(selected.getItemList().getItems()));
     memberList.setItems(FXCollections.observableArrayList(selected.getParticipants()));
+    roleLabel.setText(selected.getOrganizer().equals(LocalUser.getUser()) ? "organizer" : "participant");
   }
 
   @FXML public void onDiscover() {
@@ -64,6 +68,11 @@ public class PartyController
   @FXML public void onMyParties() {
     viewhandler.openView("my parties");
   }
+  @FXML public void onLogOut() {viewhandler.openView("login");}
+  @FXML public void addFriend() {
+    //addd friend logic
+    viewhandler.openView("friends");
+  }
 
 
 
@@ -72,6 +81,8 @@ public class PartyController
     return root;
   }
 
-  public void reset(){}
+  public void reset(){
+    partyload();
+  }
 
 }

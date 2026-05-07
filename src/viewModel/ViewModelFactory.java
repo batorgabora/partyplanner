@@ -11,6 +11,7 @@ public class ViewModelFactory {
   private PartyViewModel partyviewmodel;
   private MyPartiesViewModel mypartiesviewmodel;
   private RegisterViewModel registerviewmodel;
+  private FriendsViewModel friendsviewmodel;
   private ObjectProperty<Party> selectedParty;
 
 
@@ -21,7 +22,7 @@ public class ViewModelFactory {
     partyviewmodel = new PartyViewModel(model, selectedParty);
     mypartiesviewmodel = new MyPartiesViewModel(model, selectedParty);
     registerviewmodel = new RegisterViewModel(model);
-
+    friendsviewmodel = new FriendsViewModel(model);
   }
 
   public DiscoverViewModel getDiscoverViewModel() { return discoverviewmodel; }
@@ -29,5 +30,6 @@ public class ViewModelFactory {
   public PartyViewModel getPartyViewModel() { return partyviewmodel; }
   public MyPartiesViewModel getMyPartiesViewModel() {return mypartiesviewmodel;}
   public RegisterViewModel getRegisterViewModel() {return registerviewmodel;}
+  public FriendsViewModel getFriendsViewModel(){return friendsviewmodel;}
 
 }

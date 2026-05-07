@@ -70,6 +70,11 @@ public class DiscoverController
     viewhandler.openView("friends");
   }
 
+  @FXML private void onLogout()
+  {
+    viewhandler.openView("login");
+  }
+
   public Region getRoot()
   {
     return root;
