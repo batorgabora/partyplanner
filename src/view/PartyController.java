@@ -1,14 +1,10 @@
 package view;
 
 import dao.PartyUsersDAO;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
 import model.Item;
@@ -47,10 +43,10 @@ public class PartyController
 
 
     //bindings to viewmodel
-    partyload();
+    loadParty();
   }
 
-  public void partyload() {
+  public void loadParty() {
     selected = viewmodel.getSelectedParty();
     nameLabel.setText(selected.getName());
     descriptionLabel.setText(selected.getDescription());
@@ -63,7 +59,7 @@ public class PartyController
     locationLabel.setText(selected.getLocation());
     timeList.setItems(viewmodel.getOptions());
 
-    String role = new PartyUsersDAO().getRole(LocalUser.getUser().getId(), selected.getId());
+    String role = viewmodel.getRoleForCurrentUser(viewmodel.getSelectedParty().getId());
     roleLabel.setText(role != null ? role : "participant");
   }
 
@@ -91,7 +87,7 @@ public class PartyController
   }
 
   public void reset(){
-    partyload();
+    loadParty();
   }
 
 }

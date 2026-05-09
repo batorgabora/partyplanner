@@ -1,5 +1,6 @@
 package viewModel;
 
+import dao.PartyUsersDAO;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -54,6 +55,10 @@ public class PartyViewModel implements PropertyChangeListener
 
   public Party getSelectedParty() {
     return selectedParty.get();
+  }
+
+  public String getRoleForCurrentUser(String partyId) {
+    return new PartyUsersDAO().getRole(LocalUser.getUser().getId(), partyId);
   }
 
   @Override public void propertyChange(PropertyChangeEvent evt)
