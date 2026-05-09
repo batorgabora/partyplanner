@@ -58,17 +58,17 @@ public class VoteOptionDAO {
     return 0;
   }
 
-  public ArrayList<Integer> getVotersForOption(int optionid) {
+  public ArrayList<Integer> getVotersForOption(String optionId) {
     String sql = "SELECT userid FROM voteoption WHERE optionid = ?";
     List<Integer> voters = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setInt(1, optionid);
+      ps.setString(1, optionId);
       ResultSet rs = ps.executeQuery();
       while (rs.next()) voters.add(rs.getInt("userid"));
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    return null;//voters;
+    return new ArrayList<>();
   }
 }

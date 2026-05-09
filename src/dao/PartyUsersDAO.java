@@ -69,7 +69,12 @@ public class PartyUsersDAO {
       ps.setString(1, partyid);
       ResultSet rs = ps.executeQuery();
       while (rs.next()) {
-        User user = new User(rs.getString("userid"), rs.getString("username"), rs.getString("mail"), rs.getString("hashpass"));
+        User user = new User(
+            rs.getString("userid"),
+            rs.getString("username"),
+            rs.getString("hashpass"),
+            rs.getString("mail")
+        );
         Participant p = new Participant(null, user); // party is null to avoid circular loading
         participants.add(p);
       }

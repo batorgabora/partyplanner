@@ -24,7 +24,6 @@ public class ModelManager implements  PartyModel
     UserDAO userDAO = new UserDAO();
     User user = userDAO.getByUsername(username);
     if (user == null) return null;
-    System.out.println(user.getPassword() + " mail:" + user.getMail());
     if (PasswordUtil.verify(password, user.getPassword())) {
       return user;
     }
@@ -179,42 +178,5 @@ public class ModelManager implements  PartyModel
     System.out.println("Created with id: " + userId);
     return new User(userId, username, PasswordUtil.hash(password), mail);
   }
-
-
-
-  //  public void addDemoData()
-//  {
-//    User user1 = new User("abcc","anna", "1234","stfu@gmail.com");
-//    User user2 = new User("abcd", "mikkel", "1234","stfu@gmail.com");
-//    User user3 = new User("abce", "sara", "1234","stfu@gmail.com");
-//
-//    users.add(user1);
-//    users.add(user2);
-//    users.add(user3);
-//
-//    addFriend(user1, user2);
-//
-//    Organizer organizer1 = new Organizer("", null);
-//    Party party1 = new Party("Beach Party", "Bring snacks and towels.", "Amager Beach", organizer1);
-//    organizer1.setParty(party1);
-//    party1.getItemList().addItem(new Item("Chips"));
-//    party1.getItemList().addItem(new Item("Soda"));
-//    party1.getItemList().addItem(new Item("Blankets"));
-//
-//    Organizer organizer2 = new Organizer("", null);
-//    Party party2 = new Party("Game Night", "Board games and pizza.", "Campus Lounge", organizer2);
-//    organizer2.setParty(party2);
-//    party2.getItemList().addItem(new Item("Pizza"));
-//    party2.getItemList().addItem(new Item("Cards"));
-//    party2.getItemList().addItem(new Item("Soft drinks"));
-//
-//    parties.add(party1);
-//    parties.add(party2);
-//
-//    joinParty(user1, party1);
-//    joinParty(user2, party1);
-//    joinParty(user3, party2);
-//  }
-
 
 }
