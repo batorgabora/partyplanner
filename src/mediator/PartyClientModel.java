@@ -5,10 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import model.*;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PartyClientModel implements PartyModel
@@ -70,6 +68,11 @@ public class PartyClientModel implements PartyModel
 
   }
 
+  @Override public List<User> getAllUsers()
+  {
+    return List.of();
+  }
+
   @Override public void deleteParty(Party party)
   {
 
@@ -87,6 +90,31 @@ public class PartyClientModel implements PartyModel
   }
 
   @Override public void removeParticipant(Party party, Participant participant)
+  {
+
+  }
+
+  @Override public void updatePartyDate(Party party, String date)
+  {
+
+  }
+
+  @Override public void addItem(Party party, String name)
+  {
+
+  }
+
+  @Override public void removeItem(Item item)
+  {
+
+  }
+
+  @Override public void addOption(Party party, String proposal)
+  {
+
+  }
+
+  @Override public void removeOption(Option option)
   {
 
   }
@@ -126,5 +154,20 @@ public class PartyClientModel implements PartyModel
   @Override public List<Option> getOptions(Party party)
   {
     return List.of();
+  }
+
+  @Override public Party createParty(String name, String description,
+      String location, String organizerId)
+  {
+    client.requestCreateParty(name, description, location, organizerId);
+    String response = client.receive();
+    JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+    return gson.fromJson(json.get("data"), Party.class);
+  }
+
+  @Override public void updateParty(Party party, String name,
+      String description, String location)
+  {
+
   }
 }

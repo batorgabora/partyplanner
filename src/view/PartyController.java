@@ -1,6 +1,5 @@
 package view;
 
-import dao.PartyUsersDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -48,10 +47,12 @@ public class PartyController
 
   public void loadParty() {
     selected = viewmodel.getSelectedParty();
+    if (selected == null) return;
+
     nameLabel.setText(selected.getName());
     descriptionLabel.setText(selected.getDescription());
     locationLabel.setText(selected.getLocation());
-    dateLabel.setText("whenever");
+    dateLabel.setText(selected.getDate());
     itemList.setItems(viewmodel.getItems());
     memberList.setItems(viewmodel.getMembers());
     roleLabel.setText(viewmodel.getRole());
@@ -59,8 +60,9 @@ public class PartyController
     locationLabel.setText(selected.getLocation());
     timeList.setItems(viewmodel.getOptions());
 
-    String role = viewmodel.getRoleForCurrentUser(viewmodel.getSelectedParty().getId());
+    String role = viewmodel.getRoleForCurrentUser(selected.getId());
     roleLabel.setText(role != null ? role : "participant");
+    userLabel.setText(LocalUser.getUser().getUsername());
   }
 
   @FXML public void onDiscover() {
@@ -73,9 +75,13 @@ public class PartyController
     viewhandler.openView("my parties");
   }
   @FXML public void onLogOut() {viewhandler.openView("login");}
-  @FXML public void addFriend() {
+  @FXML public void addFriend()
+  {
     //addd friend logic
     viewhandler.openView("friends");
+  }
+  @FXML public void onEditParty() {
+    viewhandler.openView("edit party");
   }
 
 

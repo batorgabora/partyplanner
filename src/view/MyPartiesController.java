@@ -53,6 +53,10 @@ public class MyPartiesController
     viewhandler.openView("party");
   }
 
+  @FXML public void onCreateParty() {
+    viewhandler.openView("create party");
+  }
+
   @FXML public void onLogout() {
     viewhandler.openView("login");
   }

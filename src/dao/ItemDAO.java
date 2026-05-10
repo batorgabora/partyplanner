@@ -69,11 +69,15 @@ public class ItemDAO {
   }
 
   public void delete(String itemid) {
-    String sql = "DELETE FROM item WHERE itemid = ?";
+    String deleteClaims = "DELETE FROM claimitem WHERE itemid = ?";
+    String deleteItem = "DELETE FROM item WHERE itemid = ?";
     try (Connection conn = DataBaseConnection.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, itemid);
-      ps.executeUpdate();
+        PreparedStatement ps1 = conn.prepareStatement(deleteClaims);
+        PreparedStatement ps2 = conn.prepareStatement(deleteItem)) {
+      ps1.setString(1, itemid);
+      ps1.executeUpdate();
+      ps2.setString(1, itemid);
+      ps2.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

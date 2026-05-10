@@ -1,8 +1,8 @@
 package model;
 
-import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +30,7 @@ public class ModelManager implements  PartyModel
     return null;
   }
 
-  @Override public void addFriend(User user, User friend)
+  @Override public synchronized void addFriend(User user, User friend)
   {
     if (!user.getFriendList().contains(friend))
     {
@@ -39,13 +39,13 @@ public class ModelManager implements  PartyModel
     }
   }
 
-  @Override public void removeFriend(User user, User friend)
+  @Override public synchronized void removeFriend(User user, User friend)
   {
     user.removeFriend(friend);
     friend.removeFriend(user);
   }
 
-  @Override public ArrayList<Party> getParties(User user)
+  @Override public synchronized ArrayList<Party> getParties(User user)
   {
     if (user == null) return new ArrayList<>();
     PartyDAO partyDAO = new PartyDAO();
@@ -53,26 +53,35 @@ public class ModelManager implements  PartyModel
   }
 
 
-  @Override public List<Item> getItems(Party party) {
+  @Override public synchronized List<Item> getItems(Party party) {
     return new ItemDAO().getByParty(party.getId());
   }
 
 
-  @Override public String getRole(User user, Party party) {
+  @Override public synchronized String getRole(User user, Party party) {
     return new PartyUsersDAO().getRole(user.getId(), party.getId());
   }
 
 
-  @Override public List<Participant> getParticipants(Party party) {
+  @Override public synchronized List<Participant> getParticipants(Party party) {
     if (party == null) return new ArrayList<>();
     return new PartyUsersDAO().getParticipantsByParty(party.getId());
   }
 
-  @Override public List<Option> getOptions(Party party) {
+  @Override public synchronized List<Option> getOptions(Party party) {
     return new OptionDAO().getByParty(party.getId());
   }
 
-  @Override public Party getParty(int id)
+  @Override public synchronized Party createParty(String name, String description,
+      String location, String organizerId)
+  {
+    String partyId = UUID.randomUUID().toString();
+    PartyDAO partyDAO = new PartyDAO();
+    partyDAO.create(partyId, name, description, location, LocalDate.now());
+    return partyDAO.getById(partyId);
+  }
+
+  @Override public synchronized Party getParty(int id)
   {
     if (id < 0 || id >= parties.size())
     {
@@ -81,7 +90,7 @@ public class ModelManager implements  PartyModel
     return parties.get(id);
   }
 
-  @Override public void joinParty(User user, Party party)
+  @Override public synchronized void joinParty(User user, Party party)
   {
     Participant participant = new Participant(party, user);
     party.addParticipant(participant);
@@ -89,7 +98,7 @@ public class ModelManager implements  PartyModel
   }
 
 
-  @Override public void leaveParty(User user, Party party)
+  @Override public synchronized void leaveParty(User user, Party party)
   {
       ArrayList<Participant> participants = party.getParticipants();
       for (int i = 0; i < participants.size(); i++)
@@ -103,13 +112,13 @@ public class ModelManager implements  PartyModel
       }
   }
 
-  @Override public void deleteParty(Party party)
+  @Override public synchronized void deleteParty(Party party)
   {
 
   }
 
 
-  @Override public void manageParty(Party party, String title,
+  @Override public synchronized void manageParty(Party party, String title,
       String description, String location)
   {
     if (party == null)
@@ -121,34 +130,76 @@ public class ModelManager implements  PartyModel
     party.setLocation(location);
   }
 
-  @Override public void addParticipant(Party party, Participant participant)
+  @Override public synchronized void addParticipant(Party party, Participant participant)
   {
     if (party == null || participant == null)
     {
       return;
     }
 
-    if (!party.getParticipants().contains(participant))
+    PartyUsersDAO partyUsersDAO = new PartyUsersDAO();
+    String userId = participant.getUser().getId();
+    String partyId = party.getId();
+
+    if (!partyUsersDAO.isMember(userId, partyId))
     {
-      party.addParticipant(participant);
-      participant.setParty(party);
+      partyUsersDAO.add(userId, partyId, "participant");
     }
   }
 
-  @Override public void removeParticipant(Party party, Participant participant)
+  @Override public synchronized void removeParticipant(Party party, Participant participant)
   {
     if (party == null || participant == null)
     {
       return;
     }
 
-    party.removeParticipant(participant);
+    if (party.getOrganizer() != null &&
+        party.getOrganizer().getId().equals(participant.getUser().getId()))
+    {
+      return;
+    }
+
+    new PartyUsersDAO().remove(participant.getUser().getId(), party.getId());
 
     if (participant.getParty() == party)
     {
       participant.setParty(null);
     }
   }
+
+
+  // ModelManager
+  @Override public void updateParty(Party party, String name, String description, String location) {
+    party.setName(name);
+    party.setDescription(description);
+    party.setLocation(location);
+    new PartyDAO().update(party.getId(), name, description, location);
+  }
+
+  @Override public void updatePartyDate(Party party, String date) {
+    new PartyDAO().updateDate(party.getId(), date);
+  }
+
+  @Override public void addItem(Party party, String name) {
+    String id = "item-" + UUID.randomUUID().toString().substring(0, 8);
+    new ItemDAO().create(id, name, 1, party.getId());
+  }
+
+  @Override public void removeItem(Item item) {
+    new ItemDAO().delete(item.getId());
+  }
+
+  @Override public void addOption(Party party, String proposal) {
+    String id = "opt-" + UUID.randomUUID().toString().substring(0, 8);
+    new OptionDAO().create(id, proposal, party.getId());
+  }
+
+  @Override public void removeOption(Option option) {
+    new OptionDAO().delete(option.getOptionid());
+  }
+
+
 
 
   @Override public void addListener(String propertyName, PropertyChangeListener listener)
@@ -163,7 +214,7 @@ public class ModelManager implements  PartyModel
   }
 
   @Override
-  public User createAccount(String username, String password, String confirmPassword, String mail) {
+  public synchronized User createAccount(String username, String password, String confirmPassword, String mail) {
     if (username == null || username.trim().isEmpty()) { System.out.println("FAIL: username"); return null; }
     if (password == null || password.isEmpty()) { System.out.println("FAIL: password"); return null; }
     if (mail == null || mail.trim().isEmpty()) { System.out.println("FAIL: mail"); return null; }
@@ -178,5 +229,11 @@ public class ModelManager implements  PartyModel
     System.out.println("Created with id: " + userId);
     return new User(userId, username, PasswordUtil.hash(password), mail);
   }
+  @Override public List<User> getAllUsers()
+  {
+    return new UserDAO().getAll();
+  }
+
+
 
 }
