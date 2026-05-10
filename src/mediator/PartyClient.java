@@ -92,7 +92,7 @@ public class PartyClient
   }
 
   // Organizer operations
-  public void requestCreateParty(String title, String description, String location, int organizerId) {
+  public void requestCreateParty(String title, String description, String location, String organizerId) {
 
   }
 

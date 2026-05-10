@@ -57,14 +57,15 @@ public class PartyDAO {
     return parties;
   }
 
-  public void create(String partyid, String name, String description, LocalDate date) {
-    String sql = "INSERT INTO party (partyid, name, description, date) VALUES (?, ?, ?, ?)";
+  public void create(String partyid, String name, String description, String location, LocalDate date) {
+    String sql = "INSERT INTO party (partyid, name, description, location, date) VALUES (?, ?, ?, ?, ?)";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyid);
       ps.setString(2, name);
       ps.setString(3, description);
-      ps.setDate(4, Date.valueOf(date));
+      ps.setString(4, location);
+      ps.setDate(5, Date.valueOf(date));
       ps.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);

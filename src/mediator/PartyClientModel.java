@@ -5,10 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import model.*;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PartyClientModel implements PartyModel
@@ -156,6 +154,15 @@ public class PartyClientModel implements PartyModel
   @Override public List<Option> getOptions(Party party)
   {
     return List.of();
+  }
+
+  @Override public Party createParty(String name, String description,
+      String location, String organizerId)
+  {
+    client.requestCreateParty(name, description, location, organizerId);
+    String response = client.receive();
+    JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+    return gson.fromJson(json.get("data"), Party.class);
   }
 
   @Override public void updateParty(Party party, String name,

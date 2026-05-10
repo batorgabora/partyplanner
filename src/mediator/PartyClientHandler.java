@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import model.ModelManager;
+import model.Party;
 import model.PartyModel;
 import model.User;
 
@@ -98,6 +99,7 @@ public class PartyClientHandler implements Runnable {
         sendError("Unknown action: " + action);
         support.firePropertyChange("parties", null, null);
       }
+
     }
   }
 
@@ -128,7 +130,22 @@ public class PartyClientHandler implements Runnable {
   }
 
   private void handleCreateParty(JsonObject request) {
+    String name = request.get("name").getAsString();
+    String description = request.get("description").getAsString();
+    String location = request.get("location").getAsString();
+    String organizerId = request.get("organizerId").getAsString();
 
+    if (name == null || name.trim().isEmpty()) {
+      sendError("Party name is required.");
+      return;
+    }
+    if (organizerId == null || organizerId.trim().isEmpty()) {
+      sendError("Organizer ID is required.");
+      return;
+    }
+
+    Party party = model.createParty(name, description, location, organizerId);
+    sendResponse("createParty", gson.toJson(party));
   }
 
   private void handleDeleteParty(JsonObject request) {

@@ -50,6 +50,8 @@ public class Party {
     this.description = description;
     this.location = location;
     this.organizer = organizer;
+    this.participants = new ArrayList<>();
+    this.itemList = new ItemList();
   }
 
   public Party(String id, String name, String description, String location, LocalDate date, User organizer) {
@@ -57,8 +59,10 @@ public class Party {
     this.name = name;
     this.description = description;
     this.location = location;
-    this.date = date.toString();
+    this.date = date != null ? date.toString() : null;
     this.organizer = organizer;
+    this.participants = new ArrayList<>();
+    this.itemList = new ItemList();
   }
 
   public String getId() { return id; }

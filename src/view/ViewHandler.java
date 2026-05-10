@@ -18,6 +18,7 @@ public class ViewHandler
   private MyPartiesController mypartiescontroller;
   private RegisterController registercontroller;
   private FriendsController friendscontroller;
+  private CreatePartyController createpartycontroller;
   private EditPartyController editpartycontroller;
   private ViewModelFactory viewmodelfactory;
 
@@ -46,6 +47,7 @@ public class ViewHandler
         case "my parties" -> loadMyPartiesView();
         case "register" -> loadRegisterView();
         case "friends" -> loadFriendsView();
+        case "create party" -> loadCreatePartyView();
         case "edit party" -> loadEditPartyView();
         default -> throw new IllegalArgumentException("Unknown view: " + id);
       };
@@ -120,6 +122,25 @@ public class ViewHandler
     }
 
     return partycontroller.getRoot();
+  }
+
+  private Region loadCreatePartyView() throws IOException
+  {
+    if (createpartycontroller == null)
+    {
+      var url = getClass().getResource("/view/CreatePartyView.fxml");
+      FXMLLoader loader = new FXMLLoader(url);
+      Region root = loader.load();
+
+      createpartycontroller = loader.getController();
+      createpartycontroller.init(this, viewmodelfactory.getCreatePartyViewModel(), root);
+    }
+    else
+    {
+      createpartycontroller.reset();
+    }
+
+    return createpartycontroller.getRoot();
   }
 
   private Region loadMyPartiesView() throws IOException

@@ -2,6 +2,7 @@ package model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -44,7 +45,7 @@ public class ModelManager implements  PartyModel
     friend.removeFriend(user);
   }
 
-  @Override public ArrayList<Party> getParties(User user)
+  @Override public synchronized ArrayList<Party> getParties(User user)
   {
     if (user == null) return new ArrayList<>();
     PartyDAO partyDAO = new PartyDAO();
@@ -52,27 +53,35 @@ public class ModelManager implements  PartyModel
   }
 
 
-  @Override public List<Item> getItems(Party party) {
+  @Override public synchronized List<Item> getItems(Party party) {
     return new ItemDAO().getByParty(party.getId());
   }
 
 
-  @Override public String getRole(User user, Party party) {
+  @Override public synchronized String getRole(User user, Party party) {
     return new PartyUsersDAO().getRole(user.getId(), party.getId());
   }
 
 
-  @Override public List<Participant> getParticipants(Party party) {
+  @Override public synchronized List<Participant> getParticipants(Party party) {
     if (party == null) return new ArrayList<>();
     return new PartyUsersDAO().getParticipantsByParty(party.getId());
   }
 
-  @Override public List<Option> getOptions(Party party) {
+  @Override public synchronized List<Option> getOptions(Party party) {
     return new OptionDAO().getByParty(party.getId());
   }
 
+  @Override public synchronized Party createParty(String name, String description,
+      String location, String organizerId)
+  {
+    String partyId = UUID.randomUUID().toString();
+    PartyDAO partyDAO = new PartyDAO();
+    partyDAO.create(partyId, name, description, location, LocalDate.now());
+    return partyDAO.getById(partyId);
+  }
 
-  @Override public Party getParty(int id)
+  @Override public synchronized Party getParty(int id)
   {
     if (id < 0 || id >= parties.size())
     {
