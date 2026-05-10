@@ -16,12 +16,19 @@ public interface PartyModel {
   Party getParty(int id);
   void joinParty(User user, Party party);
   void leaveParty(User user, Party party);
+  List<User> getAllUsers();
 
 
+ //sub till organizer class is done Party createParty(String title, String description, String location, Organizer organizer);
   void deleteParty(Party party);
   void manageParty(Party party, String title, String description, String location);
   void addParticipant(Party party, Participant participant);
   void removeParticipant(Party party, Participant participant);
+  void updatePartyDate(Party party, String date);
+  void addItem(Party party, String name);
+  void removeItem(Item item);
+  void addOption(Party party, String proposal);
+  void removeOption(Option option);
   void addListener(String propertyName, PropertyChangeListener listener);
   void removeListener(String propertyName, PropertyChangeListener listener);
   User createAccount(String username, String password, String confirmPassword, String mail);
@@ -32,4 +39,5 @@ public interface PartyModel {
 
   Party createParty(String name, String description, String location, String organizerId);
 
+  void updateParty(Party party, String name, String description, String location);
 }

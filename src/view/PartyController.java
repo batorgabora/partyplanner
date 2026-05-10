@@ -61,6 +61,7 @@ public class PartyController
 
     String role = viewmodel.getRoleForCurrentUser(viewmodel.getSelectedParty().getId());
     roleLabel.setText(role != null ? role : "participant");
+    userLabel.setText(LocalUser.getUser().getUsername());
   }
 
   @FXML public void onDiscover() {
@@ -73,9 +74,13 @@ public class PartyController
     viewhandler.openView("my parties");
   }
   @FXML public void onLogOut() {viewhandler.openView("login");}
-  @FXML public void addFriend() {
+  @FXML public void addFriend()
+  {
     //addd friend logic
     viewhandler.openView("friends");
+  }
+  @FXML public void onEditParty() {
+    viewhandler.openView("edit party");
   }
 
 

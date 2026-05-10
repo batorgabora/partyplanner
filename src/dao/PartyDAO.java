@@ -72,14 +72,31 @@ public class PartyDAO {
     }
   }
 
-  public void update(String partyid, String name, String description, LocalDate date) {
-    String sql = "UPDATE party SET name = ?, description = ?, date = ? WHERE partyid = ?";
+  public void update(String partyid, String name, String description, String location) {
+    String sql = "UPDATE party SET name = ?, description = ?, location = ? WHERE partyid = ?";
     try (Connection conn = DataBaseConnection.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, name);
       ps.setString(2, description);
-      ps.setDate(3, Date.valueOf(date));
+      ps.setString(3, location);
       ps.setString(4, partyid);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void updateDate(String partyid, String date) {
+    String sql = "UPDATE party SET date = ? WHERE partyid = ?";
+    try (Connection conn = DataBaseConnection.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+      try {
+        ps.setDate(1, Date.valueOf(LocalDate.parse(date)));
+      } catch (Exception e) {
+        System.out.println("wrong time format");
+        return; // invalid date format, skip update
+      }
+      ps.setString(2, partyid);
       ps.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);

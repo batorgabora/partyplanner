@@ -37,7 +37,7 @@ public class DiscoverController
     viewmodel.updateParties();
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> viewmodel.selectedPartyProperty().set(newVal));
-    //userLabel.setText(LocalUser.getUser().getUsername());
+    userLabel.setText(LocalUser.getUser().getUsername());
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> {
           if (newVal != null) {
@@ -52,7 +52,7 @@ public class DiscoverController
 
   @FXML public void onFurther() {
     if (viewmodel.getSelectedParty() == null) {
-      selectedLabel.setText("please select a vinyl first");
+      selectedLabel.setText("please select a party first");
       return;
     }
     viewhandler.openView("party");
