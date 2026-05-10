@@ -78,7 +78,7 @@ public class ModelManager implements  PartyModel
   {
     String partyId = UUID.randomUUID().toString();
     PartyDAO partyDAO = new PartyDAO();
-    partyDAO.create(partyId, name, description, LocalDate.now());
+    partyDAO.create(partyId, name, description, location, LocalDate.now());
     return partyDAO.getById(partyId);
   }
 
