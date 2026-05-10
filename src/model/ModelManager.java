@@ -31,7 +31,7 @@ public class ModelManager implements  PartyModel
     return null;
   }
 
-  @Override public synchronized void addFriend(User user, User friend)
+  @Override public synchronized  void addFriend(User user, User friend)
   {
     if (!user.getFriendList().contains(friend))
     {
