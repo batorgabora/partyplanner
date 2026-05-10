@@ -66,7 +66,7 @@ public class ViewHandler
   {
     if (discovercontroller == null)
     {
-      var url = getClass().getResource("/client/view/DiscoverView2.fxml");
+      var url = getClass().getResource("/client/view/fxml/DiscoverView2.fxml");
       FXMLLoader loader = new FXMLLoader(url);
       Region root = loader.load();
 
@@ -87,7 +87,7 @@ public class ViewHandler
     if (logincontroller == null)
     {
       // first time opening --> load the FXML and wire everything up
-      var url = getClass().getResource("/client/view/LoginView2.fxml");
+      var url = getClass().getResource("/client/view/fxml/LoginView2.fxml");
       FXMLLoader loader = new FXMLLoader(url);
       Region root = loader.load();
 
@@ -108,7 +108,7 @@ public class ViewHandler
     if (partycontroller == null)
     {
       // first time opening --> load the FXML and wire everything up
-      var url = getClass().getResource("/client/view/PartyView2.fxml");
+      var url = getClass().getResource("/client/view/fxml/PartyView2.fxml");
       FXMLLoader loader = new FXMLLoader(url);
       Region root = loader.load();
 
@@ -128,7 +128,7 @@ public class ViewHandler
   {
     if (createpartycontroller == null)
     {
-      var url = getClass().getResource("/client/view/CreatePartyView.fxml");
+      var url = getClass().getResource("/client/view/fxml/CreatePartyView.fxml");
       FXMLLoader loader = new FXMLLoader(url);
       Region root = loader.load();
 
@@ -148,7 +148,7 @@ public class ViewHandler
     if (mypartiescontroller == null)
     {
       // first time opening --> load the FXML and wire everything up
-      var url = getClass().getResource("/client/view/MyPartiesView.fxml");
+      var url = getClass().getResource("/client/view/fxml/MyPartiesView.fxml");
       FXMLLoader loader = new FXMLLoader(url);
       Region root = loader.load();
 
@@ -169,7 +169,7 @@ public class ViewHandler
     if (registercontroller == null)
     {
       // first time opening --> load the FXML and wire everything up
-      var url = getClass().getResource("/client/view/RegisterView.fxml");
+      var url = getClass().getResource("/client/view/fxml/RegisterView.fxml");
       System.out.println("FXML URL: " + url); // add this
       FXMLLoader loader = new FXMLLoader(url);
       Region root = loader.load();
@@ -191,7 +191,7 @@ public class ViewHandler
     if (friendscontroller == null)
     {
       // first time opening --> load the FXML and wire everything up
-      var url = getClass().getResource("/client/view/FriendsView.fxml");
+      var url = getClass().getResource("/client/view/fxml/FriendsView.fxml");
       System.out.println("FXML URL: " + url); // add this
       FXMLLoader loader = new FXMLLoader(url);
       Region root = loader.load();
@@ -213,7 +213,7 @@ public class ViewHandler
     if (editpartycontroller == null)
     {
       // first time opening --> load the FXML and wire everything up
-      var url = getClass().getResource("/client/view/EditPartyView.fxml");
+      var url = getClass().getResource("/client/view/fxml/EditPartyView.fxml");
       System.out.println("FXML URL: " + url); // add this
       FXMLLoader loader = new FXMLLoader(url);
       Region root = loader.load();
