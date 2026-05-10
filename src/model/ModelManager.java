@@ -3,6 +3,7 @@ package model;
 import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -70,6 +71,15 @@ public class ModelManager implements  PartyModel
 
   @Override public List<Option> getOptions(Party party) {
     return new OptionDAO().getByParty(party.getId());
+  }
+
+  @Override public Party createParty(String name, String description,
+      String location, String organizerId)
+  {
+    String partyId = UUID.randomUUID().toString();
+    PartyDAO partyDAO = new PartyDAO();
+    partyDAO.create(partyId, name, description, location, LocalDate.now());
+    return partyDAO.getById(partyId);
   }
 
   @Override public Party getParty(int id)

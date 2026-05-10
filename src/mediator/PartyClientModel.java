@@ -11,6 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class PartyClientModel implements PartyModel
 {
   private final PartyClient client;
@@ -105,6 +106,7 @@ public class PartyClientModel implements PartyModel
   @Override public User createAccount(String username, String password,
       String confirmPassword, String mail)
   {
+
     return null;
   }
 
@@ -126,5 +128,14 @@ public class PartyClientModel implements PartyModel
   @Override public List<Option> getOptions(Party party)
   {
     return List.of();
+  }
+
+  @Override public Party createParty(String name, String description,
+      String location, String organizerId)
+  {
+    client.requestCreateParty(name, description, location, organizerId);
+    String response = client.receive();
+    JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+    return gson.fromJson(json.get("data"), Party.class);
   }
 }
