@@ -46,15 +46,11 @@ public class CreatePartyController
     }
   }
 
-  @FXML public void onBack()
-  {
-    viewhandler.openView("my parties");
-  }
-
-  @FXML public void onMyParties() { viewhandler.openView("my parties"); }
-  @FXML public void onDiscover()  { viewhandler.openView("discover"); }
-  @FXML public void onFriends()   { viewhandler.openView("friends"); }
-  @FXML public void onLogout()    { viewhandler.openView("login"); }
+  @FXML public void onBack()      { reset(); viewhandler.openView("my parties"); }
+  @FXML public void onMyParties() { reset(); viewhandler.openView("my parties"); }
+  @FXML public void onDiscover()  { reset(); viewhandler.openView("discover"); }
+  @FXML public void onFriends()   { reset(); viewhandler.openView("friends"); }
+  @FXML public void onLogout()    { reset(); viewhandler.openView("login"); }
 
   public Region getRoot() { return root; }
 
@@ -64,5 +60,6 @@ public class CreatePartyController
     descriptionField.clear();
     locationField.clear();
     datePicker.setValue(null);
+    viewmodel.clearError();
   }
 }

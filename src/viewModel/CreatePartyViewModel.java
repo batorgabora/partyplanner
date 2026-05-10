@@ -24,12 +24,17 @@ public class CreatePartyViewModel
 
   public boolean createParty()
   {
-    if (name.get() == null || name.get().trim().isEmpty()) { error.set("Name is required."); return false; }
+    if (name.get() == null || name.get().trim().isEmpty())               { error.set("Name is required.");        return false; }
     if (description.get() == null || description.get().trim().isEmpty()) { error.set("Description is required."); return false; }
-    if (location.get() == null || location.get().trim().isEmpty()) { error.set("Location is required."); return false; }
-    if (date.get() == null)
+    if (location.get() == null || location.get().trim().isEmpty())       { error.set("Location is required.");    return false; }
+    if (date.get() == null)                                              { error.set("Date is required.");        return false; }
     error.set("");
-    return false;
+    return false; // TODO: server call
+  }
+
+  public void clearError()
+  {
+    error.set("");
   }
 
   public StringProperty nameProperty() { return name; }
