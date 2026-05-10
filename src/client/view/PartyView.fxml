@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: #17223c;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.PartyController">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: #111124; -fx-border-color: #354572; -fx-border-width: 0 0 1 0;">
+            <padding>
+                <Insets bottom="18.0" left="24.0" right="24.0" top="18.0" />
+            </padding>
+            <children>
+                <Label text="Back" textFill="#8580a6" />
+                <Label text="Lemon party" textFill="#cbc4ff">
+                    <font><Font name="System Bold" size="26.0" /></font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label style="-fx-background-color: #3b2b73; -fx-background-radius: 14; -fx-padding: 6 12 6 12;" text="You're hosting" textFill="#cbc4ff" />
+                <Label style="-fx-background-color: #5b3fc6; -fx-background-radius: 22; -fx-padding: 10 12 10 12;" text="HJ" textFill="#e6e1ff" />
+            </children>
+        </HBox>
+    </top>
+
+    <left>
+        <VBox prefHeight="626.0" prefWidth="196.0" spacing="16.0" style="-fx-background-color: #123e6b; -fx-border-color: #354572; -fx-border-width: 0 1 0 0;">
+            <padding>
+                <Insets bottom="24.0" left="24.0" right="24.0" top="26.0" />
+            </padding>
+            <children>
+                <Label text="PartyPlanner" textFill="#b4a9ff">
+                    <font><Font name="System Bold" size="26.0" /></font>
+                </Label>
+                <Label text="call it pp tho" textFill="#8580a6" />
+                <Label style="-fx-padding: 24 0 0 0;" text="MAIN" textFill="#8580a6" />
+                <Label text="My Parties" textFill="#d8d8df" />
+                <Label onMouseClicked="#onDiscover" text="Discover" textFill="#d8d8df" />
+                <Label onMouseClicked="#onDiscover" prefHeight="25.0" prefWidth="104.0" text="Party Detail" textFill="#d8d8df">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+                <Label text="Friends" textFill="#d8d8df" />
+                <Region VBox.vgrow="ALWAYS" />
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <ScrollPane fitToWidth="true" prefHeight="575.0" prefWidth="673.0" style="-fx-background: #17223c; -fx-background-color: #17223c;">
+            <content>
+                <VBox spacing="18.0" style="-fx-background-color: #17223c;">
+                    <padding>
+                        <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+                    </padding>
+                    <children>
+                        <VBox spacing="8.0" style="-fx-background-color: #202b49; -fx-background-radius: 8; -fx-border-color: #354572; -fx-border-radius: 8; -fx-padding: 18;">
+                            <children>
+                                <Label text="Don't look it up" textFill="#ecebf6" wrapText="true">
+                                    <font><Font name="System Bold" size="20.0" /></font>
+                                </Label>
+                                <Label text="12 going     3 maybe     2 invited" textFill="#cbc4ff" />
+                            </children>
+                        </VBox>
+
+                        <HBox alignment="CENTER_LEFT">
+                            <children>
+                                <Label text="BRING LIST" textFill="#8580a6">
+                                    <font><Font size="18.0" /></font>
+                                </Label>
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Button style="-fx-background-color: transparent; -fx-border-color: #66718c; -fx-text-fill: white; -fx-padding: 10 22 10 22;" text="+ Add" />
+                            </children>
+                        </HBox>
+
+                        <VBox spacing="12.0" style="-fx-background-color: #202b49; -fx-background-radius: 8; -fx-border-color: #354572; -fx-border-radius: 8; -fx-padding: 16;">
+                            <children>
+                                <HBox>
+                                    <children>
+                                        <Label textFill="#ecebf6" />
+                                        <CheckBox mnemonicParsing="false" text="Lemons" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label text="Gandolf" textFill="#62e0b7" />
+                                    </children>
+                                </HBox>
+                                <HBox>
+                                    <children>
+                                        <Label textFill="#ecebf6" />
+                                        <CheckBox mnemonicParsing="false" text="Discombobulators" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label text="You" textFill="#62e0b7" />
+                                    </children>
+                                </HBox>
+                                <HBox>
+                                    <children>
+                                        <Label textFill="#8580a6" />
+                                        <CheckBox mnemonicParsing="false" text="Bazookas" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label text="Unclaimed" textFill="#8580a6" />
+                                    </children>
+                                </HBox>
+                                <HBox>
+                                    <children>
+                                        <Label textFill="#8580a6" />
+                                        <CheckBox mnemonicParsing="false" text="nickel and zinc" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label text="Unclaimed" textFill="#8580a6" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <Label text="VOTE ON TIME" textFill="#8580a6">
+                            <font><Font size="18.0" /></font>
+                        </Label>
+                        <VBox spacing="12.0" style="-fx-background-color: #202b49; -fx-background-radius: 8; -fx-border-color: #354572; -fx-border-radius: 8; -fx-padding: 16;">
+                            <children>
+                                <HBox>
+                                    <children>
+                                        <Label text="April 15 1989 15:00" textFill="#ecebf6" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label text="2 votes" textFill="#cbc4ff" />
+                                    </children>
+                                </HBox>
+                                <ProgressBar prefWidth="200.0" progress="0.5" style="-fx-background-color: #123e6b;" />
+                                <HBox>
+                                    <children>
+                                        <Label text="April 15 1989 16:00" textFill="#ecebf6" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label text="2 votes" textFill="#cbc4ff" />
+                                    </children>
+                                </HBox>
+                                <ProgressBar prefWidth="200.0" progress="0.5" />
+                            </children>
+                        </VBox>
+
+                        <Button style="-fx-background-color: transparent; -fx-border-color: #66718c; -fx-text-fill: white; -fx-padding: 12 28 12 28;" text="+ Add date option" />
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>
