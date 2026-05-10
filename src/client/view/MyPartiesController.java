@@ -23,6 +23,7 @@ public class MyPartiesController
   @FXML private Button furtherButton;
   @FXML private Label selectedLabel;
   @FXML private Label userLabel;
+  @FXML private Label errorLabel;
 
 
 
@@ -34,6 +35,7 @@ public class MyPartiesController
 
     //bindings to viewmodel
     userLabel.setText(LocalUser.getUser().getUsername());
+    errorLabel.textProperty().bind(viewmodel.errorProperty());
 
   }
 

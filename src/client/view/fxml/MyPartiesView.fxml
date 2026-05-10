@@ -35,5 +35,6 @@
         <Button fx:id="furtherButton" layoutX="742.0" layoutY="476.0" mnemonicParsing="false" onAction="#onFurther" text="further info" />
       <Label fx:id="selectedLabel" layoutX="465.0" layoutY="481.0" text="no selected party" />
       <Button fx:id="furtherButton1" layoutX="655.0" layoutY="477.0" mnemonicParsing="false" onAction="#onCreateParty" text="create party" />
+      <Label fx:id="errorLabel" layoutX="146.0" layoutY="505.0" prefWidth="668.0" textFill="#cc0000" wrapText="true" />
     </children>
 </Pane>

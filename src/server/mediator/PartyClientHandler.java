@@ -7,6 +7,7 @@ import server.model.ModelManager;
 import shared.model.Party;
 import shared.model.PartyModel;
 import shared.model.User;
+import shared.util.Action;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -60,46 +61,47 @@ public class PartyClientHandler implements Runnable {
   }
 
   private void handleRequest(JsonObject request) {
-    String action = request.get("action").getAsString();
+    Action action;
+    try {
+      action = Action.fromValue(request.get("action").getAsString());
+    } catch (IllegalArgumentException e) {
+      sendError(e.getMessage());
+      return;
+    }
     switch (action) {
-      case "getAll" -> {
+      case GET_ALL -> {
         handleGetAll();
         support.firePropertyChange("parties", null, null);
       }
-      case "joinParty" -> {
+      case JOIN_PARTY -> {
         handleJoinParty(request);
         support.firePropertyChange("parties", null, null);
       }
-      case "leaveParty" -> {
+      case LEAVE_PARTY -> {
         handleLeaveParty(request);
         support.firePropertyChange("parties", null, null);
       }
-      case "createParty" ->{
+      case CREATE_PARTY -> {
         handleCreateParty(request);
         support.firePropertyChange("parties", null, null);
       }
-      case "deleteParty" -> {
+      case DELETE_PARTY -> {
         handleDeleteParty(request);
         support.firePropertyChange("parties", null, null);
       }
-      case "addParticipant" -> {
+      case ADD_PARTICIPANT -> {
         handleAddParticipant(request);
         support.firePropertyChange("parties", null, null);
       }
-
-      case "removeParticipant" -> {
+      case REMOVE_PARTICIPANT -> {
         handleRemoveParticipant(request);
         support.firePropertyChange("parties", null, null);
       }
-      case "addFriend" -> {
+      case ADD_FRIEND -> {
         handleAddFriend(request);
         support.firePropertyChange("parties", null, null);
       }
-      default -> {
-        sendError("Unknown action: " + action);
-        support.firePropertyChange("parties", null, null);
-      }
-
+      case LOGIN -> handleLogin(request);
     }
   }
 
