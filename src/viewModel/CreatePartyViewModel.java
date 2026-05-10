@@ -27,7 +27,6 @@ public class CreatePartyViewModel
     if (name.get() == null || name.get().trim().isEmpty())               { error.set("Name is required.");        return false; }
     if (description.get() == null || description.get().trim().isEmpty()) { error.set("Description is required."); return false; }
     if (location.get() == null || location.get().trim().isEmpty())       { error.set("Location is required.");    return false; }
-    if (date.get() == null)                                              { error.set("Date is required.");        return false; }
     error.set("");
     return false; // TODO: server call
   }
