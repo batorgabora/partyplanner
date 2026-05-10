@@ -1,6 +1,5 @@
 package viewModel;
 
-import dao.PartyUsersDAO;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -34,9 +33,8 @@ public class EditPartyViewModel implements PropertyChangeListener
 
 
   public ObservableList<Item> getItems() {
-    return FXCollections.observableArrayList(
-        model.getItems(selectedParty.get())
-    );
+    if (selectedParty.get() == null) return FXCollections.emptyObservableList();
+    return FXCollections.observableArrayList(model.getItems(selectedParty.get()));
   }
 
   public ObservableList<Participant> getMembers() {
@@ -50,6 +48,7 @@ public class EditPartyViewModel implements PropertyChangeListener
   }
 
   public ObservableList<Option> getOptions() {
+    if (selectedParty.get() == null) return FXCollections.emptyObservableList();
     return FXCollections.observableArrayList(model.getOptions(selectedParty.get()));
   }
 
@@ -58,7 +57,8 @@ public class EditPartyViewModel implements PropertyChangeListener
   }
 
   public String getRoleForCurrentUser(String partyId) {
-    return new PartyUsersDAO().getRole(LocalUser.getUser().getId(), partyId);
+    if (selectedParty.get() == null) return null;
+    return model.getRole(LocalUser.getUser(), selectedParty.get());
   }
   public ObservableList<User> getAllUsers()
   {

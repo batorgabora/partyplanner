@@ -23,7 +23,6 @@ public class LoginViewModel
   }
 
   public boolean login() {
-    System.out.printf(username + " " + password);
     User user = model.login(username.get(), password.get());
     if (user != null) {
       LocalUser.setUser(user);

@@ -101,20 +101,6 @@ public class UserDAO {
     }
   }
 
-  public User login(String username, String hashpass) {
-    String sql = "SELECT * FROM \"user\" WHERE username = ? AND hashpass = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, username);
-      ps.setString(2, hashpass);
-      ResultSet rs = ps.executeQuery();
-      if (rs.next()) return mapRow(rs);
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-    return null;
-  }
-
   private User mapRow(ResultSet rs) throws SQLException {
     return new User(rs.getString("userid"), rs.getString("username"), rs.getString("hashpass"), rs.getString("mail"));
   }

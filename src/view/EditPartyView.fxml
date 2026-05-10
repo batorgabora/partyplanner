@@ -83,6 +83,6 @@
       <TextField fx:id="dateField" layoutX="667.0" layoutY="5.0" text="date" />
       <TextField fx:id="locationField" layoutX="668.0" layoutY="34.0" text="location" />
       <Label fx:id="statusLabel" layoutX="426.0" layoutY="500.0" prefHeight="17.0" prefWidth="209.0" text="status" />
-      <Button layoutX="761.0" layoutY="420.0" mnemonicParsing="false" onAction="#onBack" text="go back" />
+      <Button layoutX="761.0" layoutY="420.0" mnemonicParsing="false" onAction="#onBack" text="Save" />
     </children>
 </Pane>

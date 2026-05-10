@@ -1,6 +1,5 @@
 package view;
 
-import dao.PartyUsersDAO;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -43,12 +42,13 @@ public class EditPartyController
     this.viewhandler = viewhandler;
 
     selected = viewmodel.getSelectedParty();
+    if (selected == null) return;
 
-    //bindings to viewmodel
     loadParty();
   }
 
   public void loadParty() {
+    if (selected == null) return;
     nameField.setText(selected.getName());
     descriptionField.setText(selected.getDescription());
     itemList.setItems(viewmodel.getItems());
