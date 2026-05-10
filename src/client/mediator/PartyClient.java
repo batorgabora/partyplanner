@@ -2,6 +2,7 @@ package client.mediator;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import shared.util.Action;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,7 +38,7 @@ public class PartyClient
 
   public void requestGetAll()
   {
-    JsonObject request = createRequest("getAll");
+    JsonObject request = createRequest(Action.GET_ALL);
     sendRequest(request);
   }
 
@@ -55,24 +56,24 @@ public class PartyClient
   }
 
 
-  private JsonObject createRequest(String action)
+  private JsonObject createRequest(Action action)
   {
     JsonObject request = new JsonObject();
     request.addProperty("type", "request");
-    request.addProperty("action", action);
+    request.addProperty("action", action.getValue());
     return request;
   }
 
   // User operations
   public void requestLogin(String username, String password) {
-    JsonObject request = createRequest("login");
+    JsonObject request = createRequest(Action.LOGIN);
     request.addProperty("username", username);
     request.addProperty("password", password);
     sendRequest(request);
   }
 
   public void requestAddFriend(int userId, int friendId) {
-    JsonObject request = createRequest("addFriend");
+    JsonObject request = createRequest(Action.ADD_FRIEND);
     request.addProperty("userId", userId);
     request.addProperty("friendId", friendId);
     sendRequest(request);
@@ -80,14 +81,14 @@ public class PartyClient
 
   // Party operations
   public void requestJoinParty(int userId, int partyId) {
-    JsonObject request = createRequest("joinParty");
+    JsonObject request = createRequest(Action.JOIN_PARTY);
     request.addProperty("userId", userId);
     request.addProperty("partyId", partyId);
     sendRequest(request);
   }
 
   public void requestLeaveParty(int userId, int partyId) {
-    JsonObject request = createRequest("leaveParty");
+    JsonObject request = createRequest(Action.LEAVE_PARTY);
     request.addProperty("userId", userId);
     request.addProperty("partyId", partyId);
     sendRequest(request);
