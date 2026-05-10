@@ -59,7 +59,7 @@ public class Party {
     this.name = name;
     this.description = description;
     this.location = location;
-    this.date = date.toString();
+    this.date = date != null ? date.toString() : null;
     this.organizer = organizer;
     this.participants = new ArrayList<>();
     this.itemList = new ItemList();

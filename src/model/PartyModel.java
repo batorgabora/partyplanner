@@ -18,7 +18,6 @@ public interface PartyModel {
   void leaveParty(User user, Party party);
 
 
- //sub till organizer class is done Party createParty(String title, String description, String location, Organizer organizer);
   void deleteParty(Party party);
   void manageParty(Party party, String title, String description, String location);
   void addParticipant(Party party, Participant participant);
