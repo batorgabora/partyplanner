@@ -31,4 +31,6 @@ public interface PartyModel {
   public String getRole(User user, Party party);
   public List<Option> getOptions(Party party);
 
+  Party createParty(String name, String description, String location, String organizerId);
+
 }
