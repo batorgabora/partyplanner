@@ -29,7 +29,7 @@
                         <Font size="14.0" />
                     </font>
                 </Label>
-                <Label layoutX="12.0" layoutY="114.0" text="details" underline="true">
+                <Label layoutX="12.0" layoutY="114.0" onDragDetected="#onBack" text="details" underline="true">
                     <font>
                         <Font size="24.0" />
                     </font>
@@ -42,6 +42,7 @@
                   <Font size="24.0" />
                </font>
             </Label>
+            <Label fx:id="userLabel" layoutX="19.0" layoutY="468.0" text="username" />
             </children>
         </Pane>
         <Label layoutX="141.0" layoutY="118.0" prefHeight="26.0" prefWidth="184.0" text="list of items to bring:">
@@ -63,19 +64,16 @@
             </font>
         </Label>
         <ListView fx:id="memberList" layoutX="426.0" layoutY="155.0" prefHeight="332.0" prefWidth="209.0" />
-      <Button fx:id="itemMinus" layoutX="147.0" layoutY="321.0" mnemonicParsing="false" text="-" />
-      <Button fx:id="itemPlus" layoutX="183.0" layoutY="321.0" mnemonicParsing="false" text="+" />
-      <Button fx:id="minusOption" layoutX="147.0" layoutY="482.0" mnemonicParsing="false" text="-" />
-      <Button fx:id="plusOption" layoutX="183.0" layoutY="482.0" mnemonicParsing="false" text="+" />
-        <Button layoutX="576.0" layoutY="118.0" mnemonicParsing="false"
-                onAction="#onRemoveParticipant" text="-" />
-        <Button layoutX="610.0" layoutY="118.0" mnemonicParsing="false"
-                onAction="#onAddParticipant" text="+" />
+      <Button fx:id="itemMinus" layoutX="147.0" layoutY="321.0" mnemonicParsing="false" onAction="#onRemoveItem" text="-" />
+      <Button fx:id="itemPlus" layoutX="183.0" layoutY="321.0" mnemonicParsing="false" onAction="#onAddItem" text="+" />
+      <Button fx:id="minusOption" layoutX="147.0" layoutY="482.0" mnemonicParsing="false" onAction="#onRemoveOption" text="-" />
+      <Button fx:id="plusOption" layoutX="183.0" layoutY="482.0" mnemonicParsing="false" onAction="#onAddOption" text="+" />
+        <Button layoutX="576.0" layoutY="118.0" mnemonicParsing="false" onAction="#onRemoveParticipant" text="-" />
+        <Button layoutX="610.0" layoutY="118.0" mnemonicParsing="false" onAction="#onAddParticipant" text="+" />
 
         <TextField fx:id="itemField" layoutX="222.0" layoutY="321.0" prefHeight="26.0" prefWidth="141.0" text="new item" />
-      <TextField fx:id="optinField" layoutX="224.0" layoutY="482.0" prefHeight="26.0" prefWidth="141.0" text="new option" />
+      <TextField fx:id="optionField" layoutX="224.0" layoutY="482.0" prefHeight="26.0" prefWidth="141.0" text="new option" />
       <ComboBox fx:id="userDropdown" layoutX="651.0" layoutY="118.0" prefHeight="26.0" prefWidth="175.0" />
-      <Button layoutX="780.0" layoutY="433.0" mnemonicParsing="false" text="save" />
       <TextField fx:id="nameField" layoutX="141.0" layoutY="1.0" prefHeight="59.0" prefWidth="362.0" promptText="party name">
          <font>
             <Font name="System Bold" size="31.0" />
@@ -85,5 +83,6 @@
       <TextField fx:id="dateField" layoutX="667.0" layoutY="5.0" text="date" />
       <TextField fx:id="locationField" layoutX="668.0" layoutY="34.0" text="location" />
       <Label fx:id="statusLabel" layoutX="426.0" layoutY="500.0" prefHeight="17.0" prefWidth="209.0" text="status" />
+      <Button layoutX="761.0" layoutY="420.0" mnemonicParsing="false" onAction="#onBack" text="go back" />
     </children>
 </Pane>

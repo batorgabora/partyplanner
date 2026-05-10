@@ -1,6 +1,5 @@
 package model;
 
-import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
@@ -72,6 +71,7 @@ public class ModelManager implements  PartyModel
     return new OptionDAO().getByParty(party.getId());
   }
 
+
   @Override public Party getParty(int id)
   {
     if (id < 0 || id >= parties.size())
@@ -136,8 +136,6 @@ public class ModelManager implements  PartyModel
     {
       partyUsersDAO.add(userId, partyId, "participant");
     }
-
-    participant.setParty(party);
   }
 
   @Override public synchronized void removeParticipant(Party party, Participant participant)
@@ -160,6 +158,39 @@ public class ModelManager implements  PartyModel
       participant.setParty(null);
     }
   }
+
+
+  // ModelManager
+  @Override public void updateParty(Party party, String name, String description, String location) {
+    party.setName(name);
+    party.setDescription(description);
+    party.setLocation(location);
+    new PartyDAO().update(party.getId(), name, description, location);
+  }
+
+  @Override public void updatePartyDate(Party party, String date) {
+    new PartyDAO().updateDate(party.getId(), date);
+  }
+
+  @Override public void addItem(Party party, String name) {
+    String id = "item-" + UUID.randomUUID().toString().substring(0, 8);
+    new ItemDAO().create(id, name, 1, party.getId());
+  }
+
+  @Override public void removeItem(Item item) {
+    new ItemDAO().delete(item.getId());
+  }
+
+  @Override public void addOption(Party party, String proposal) {
+    String id = "opt-" + UUID.randomUUID().toString().substring(0, 8);
+    new OptionDAO().create(id, proposal, party.getId());
+  }
+
+  @Override public void removeOption(Option option) {
+    new OptionDAO().delete(option.getOptionid());
+  }
+
+
 
 
   @Override public void addListener(String propertyName, PropertyChangeListener listener)

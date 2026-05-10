@@ -29,6 +29,9 @@ public class EditPartyController
   @FXML private ListView<Participant> memberList;
   @FXML private ComboBox<User> userDropdown;
   @FXML private Label statusLabel;
+  @FXML private TextField itemField;
+  @FXML private TextField optionField;
+  @FXML private Label userLabel;
 
   private Party selected;
 
@@ -46,21 +49,55 @@ public class EditPartyController
   }
 
   public void loadParty() {
-
-
     nameField.setText(selected.getName());
     descriptionField.setText(selected.getDescription());
     itemList.setItems(viewmodel.getItems());
     memberList.setItems(viewmodel.getMembers());
     roleLabel.setText(viewmodel.getRoleForCurrentUser(viewmodel.getSelectedParty().getId()));
     dateField.setText(selected.getDate());
-    locationField.setText(selected.getDate());
+    locationField.setText(selected.getLocation());
     timeList.setItems(viewmodel.getOptions());
+
+    userLabel.setText(LocalUser.getUser().getUsername());
 
     userDropdown.setItems(viewmodel.getAllUsers());
     statusLabel.setText("");
+
+    nameField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      if (!isNowFocused) {
+        // lost focus - save it
+        viewmodel.updateName(nameField.getText());
+      }
+    });
+
+    descriptionField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      if (!isNowFocused) {
+        // lost focus - save it
+        viewmodel.updateDescription(descriptionField.getText());
+      }
+    });
+
+    locationField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      if (!isNowFocused) {
+        // lost focus - save it
+        viewmodel.updateLocation(locationField.getText());
+      }
+    });
+
+    dateField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      if (!isNowFocused) {
+        // lost focus - save it
+        viewmodel.updateDate(dateField.getText());
+      }
+    });
   }
 
+  @FXML public void onBack() {
+    if (viewmodel.getSelectedParty() == null) {
+      return;
+    }
+    viewhandler.openView("party");
+  }
   @FXML public void onDiscover() {
     viewhandler.openView("discover");
   }
@@ -72,6 +109,37 @@ public class EditPartyController
   }
   @FXML public void onLogOut() {viewhandler.openView("login");}
   @FXML public void addFriend() {viewhandler.openView("friends");}
+
+  @FXML public void onAddItem() {
+    String name = itemField.getText().trim();
+    if (name.isEmpty()) return;
+    viewmodel.addItem(name);
+    itemList.setItems(viewmodel.getItems());
+    itemField.clear();
+  }
+
+  @FXML public void onRemoveItem() {
+    Item selected = itemList.getSelectionModel().getSelectedItem();
+    if (selected == null) { statusLabel.setText("Select an item first"); return; }
+    viewmodel.removeItem(selected);
+    itemList.setItems(viewmodel.getItems());
+  }
+
+  @FXML public void onAddOption() {
+    String proposal = optionField.getText().trim();
+    if (proposal.isEmpty()) return;
+    viewmodel.addOption(proposal);
+    timeList.setItems(viewmodel.getOptions());
+    optionField.clear();
+  }
+
+  @FXML public void onRemoveOption() {
+    Option selected = (Option) timeList.getSelectionModel().getSelectedItem();
+    if (selected == null) { statusLabel.setText("Select an option first"); return; }
+    viewmodel.removeOption(selected);
+    timeList.setItems(viewmodel.getOptions());
+  }
+
   @FXML public void onAddParticipant()
   {
     User selectedUser = userDropdown.getSelectionModel().getSelectedItem();
@@ -114,9 +182,6 @@ public class EditPartyController
     memberList.setItems(viewmodel.getMembers());
     statusLabel.setText(selectedParticipant.getUser().getUsername() + " removed from the party");
   }
-
-
-
 
 
   public Region getRoot()

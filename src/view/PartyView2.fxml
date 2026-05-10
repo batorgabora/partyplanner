@@ -34,6 +34,7 @@
             <Separator layoutX="123.0" layoutY="2.0" orientation="VERTICAL" prefHeight="528.0" prefWidth="0.0" />
             <Label fx:id="roleLabel" layoutX="34.0" layoutY="147.0" text="organizer" />
             <Button fx:id="logoutButton" layoutX="18.0" layoutY="494.0" mnemonicParsing="false" onAction="#onLogOut" text="log out" />
+            <Label fx:id="userLabel" layoutX="19.0" layoutY="465.0" text="username" />
          </children>
       </Pane>
       <Label fx:id="nameLabel" layoutX="138.0" layoutY="13.0" prefHeight="38.0" prefWidth="515.0" text="party name">

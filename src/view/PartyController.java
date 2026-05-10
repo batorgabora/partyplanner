@@ -61,6 +61,7 @@ public class PartyController
 
     String role = viewmodel.getRoleForCurrentUser(viewmodel.getSelectedParty().getId());
     roleLabel.setText(role != null ? role : "participant");
+    userLabel.setText(LocalUser.getUser().getUsername());
   }
 
   @FXML public void onDiscover() {

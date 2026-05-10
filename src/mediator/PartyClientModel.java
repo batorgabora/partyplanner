@@ -96,6 +96,31 @@ public class PartyClientModel implements PartyModel
 
   }
 
+  @Override public void updatePartyDate(Party party, String date)
+  {
+
+  }
+
+  @Override public void addItem(Party party, String name)
+  {
+
+  }
+
+  @Override public void removeItem(Item item)
+  {
+
+  }
+
+  @Override public void addOption(Party party, String proposal)
+  {
+
+  }
+
+  @Override public void removeOption(Option option)
+  {
+
+  }
+
   @Override public void addListener(String propertyName, PropertyChangeListener listener)
   {
     support.addPropertyChangeListener(propertyName, listener);
@@ -131,5 +156,11 @@ public class PartyClientModel implements PartyModel
   @Override public List<Option> getOptions(Party party)
   {
     return List.of();
+  }
+
+  @Override public void updateParty(Party party, String name,
+      String description, String location)
+  {
+
   }
 }

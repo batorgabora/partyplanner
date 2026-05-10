@@ -49,11 +49,15 @@ public class OptionDAO {
   }
 
   public void delete(String optionid) {
-    String sql = "DELETE FROM \"option\" WHERE optionid = ?";
+    String deleteVotes = "DELETE FROM voteoption WHERE optionid = ?";
+    String deleteOption = "DELETE FROM \"option\" WHERE optionid = ?";
     try (Connection conn = DataBaseConnection.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, optionid);
-      ps.executeUpdate();
+        PreparedStatement ps1 = conn.prepareStatement(deleteVotes);
+        PreparedStatement ps2 = conn.prepareStatement(deleteOption)) {
+      ps1.setString(1, optionid);
+      ps1.executeUpdate();
+      ps2.setString(1, optionid);
+      ps2.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
