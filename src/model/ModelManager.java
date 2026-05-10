@@ -30,7 +30,7 @@ public class ModelManager implements  PartyModel
     return null;
   }
 
-  @Override public void addFriend(User user, User friend)
+  @Override public synchronized void addFriend(User user, User friend)
   {
     if (!user.getFriendList().contains(friend))
     {
@@ -39,7 +39,7 @@ public class ModelManager implements  PartyModel
     }
   }
 
-  @Override public void removeFriend(User user, User friend)
+  @Override public synchronized void removeFriend(User user, User friend)
   {
     user.removeFriend(friend);
     friend.removeFriend(user);
@@ -81,7 +81,7 @@ public class ModelManager implements  PartyModel
     return parties.get(id);
   }
 
-  @Override public void joinParty(User user, Party party)
+  @Override public synchronized void joinParty(User user, Party party)
   {
     Participant participant = new Participant(party, user);
     party.addParticipant(participant);
@@ -89,7 +89,7 @@ public class ModelManager implements  PartyModel
   }
 
 
-  @Override public void leaveParty(User user, Party party)
+  @Override public synchronized void leaveParty(User user, Party party)
   {
       ArrayList<Participant> participants = party.getParticipants();
       for (int i = 0; i < participants.size(); i++)
@@ -103,13 +103,13 @@ public class ModelManager implements  PartyModel
       }
   }
 
-  @Override public void deleteParty(Party party)
+  @Override public synchronized void deleteParty(Party party)
   {
 
   }
 
 
-  @Override public void manageParty(Party party, String title,
+  @Override public synchronized void manageParty(Party party, String title,
       String description, String location)
   {
     if (party == null)
@@ -121,28 +121,39 @@ public class ModelManager implements  PartyModel
     party.setLocation(location);
   }
 
-  @Override public void addParticipant(Party party, Participant participant)
+  @Override public synchronized void addParticipant(Party party, Participant participant)
   {
     if (party == null || participant == null)
     {
       return;
     }
 
-    if (!party.getParticipants().contains(participant))
+    PartyUsersDAO partyUsersDAO = new PartyUsersDAO();
+    String userId = participant.getUser().getId();
+    String partyId = party.getId();
+
+    if (!partyUsersDAO.isMember(userId, partyId))
     {
-      party.addParticipant(participant);
-      participant.setParty(party);
+      partyUsersDAO.add(userId, partyId, "participant");
     }
+
+    participant.setParty(party);
   }
 
-  @Override public void removeParticipant(Party party, Participant participant)
+  @Override public synchronized void removeParticipant(Party party, Participant participant)
   {
     if (party == null || participant == null)
     {
       return;
     }
 
-    party.removeParticipant(participant);
+    if (party.getOrganizer() != null &&
+        party.getOrganizer().getId().equals(participant.getUser().getId()))
+    {
+      return;
+    }
+
+    new PartyUsersDAO().remove(participant.getUser().getId(), party.getId());
 
     if (participant.getParty() == party)
     {
@@ -163,7 +174,7 @@ public class ModelManager implements  PartyModel
   }
 
   @Override
-  public User createAccount(String username, String password, String confirmPassword, String mail) {
+  public synchronized User createAccount(String username, String password, String confirmPassword, String mail) {
     if (username == null || username.trim().isEmpty()) { System.out.println("FAIL: username"); return null; }
     if (password == null || password.isEmpty()) { System.out.println("FAIL: password"); return null; }
     if (mail == null || mail.trim().isEmpty()) { System.out.println("FAIL: mail"); return null; }
@@ -178,5 +189,11 @@ public class ModelManager implements  PartyModel
     System.out.println("Created with id: " + userId);
     return new User(userId, username, PasswordUtil.hash(password), mail);
   }
+  @Override public List<User> getAllUsers()
+  {
+    return new UserDAO().getAll();
+  }
+
+
 
 }

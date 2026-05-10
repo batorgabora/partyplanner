@@ -18,6 +18,7 @@ public class ViewHandler
   private MyPartiesController mypartiescontroller;
   private RegisterController registercontroller;
   private FriendsController friendscontroller;
+  private EditPartyController editpartycontroller;
   private ViewModelFactory viewmodelfactory;
 
   public ViewHandler(ViewModelFactory viewmodelfactory)
@@ -45,6 +46,7 @@ public class ViewHandler
         case "my parties" -> loadMyPartiesView();
         case "register" -> loadRegisterView();
         case "friends" -> loadFriendsView();
+        case "edit party" -> loadEditPartyView();
         default -> throw new IllegalArgumentException("Unknown view: " + id);
       };
 
@@ -183,6 +185,28 @@ public class ViewHandler
     }
 
     return friendscontroller.getRoot();
+  }
+
+  private Region loadEditPartyView() throws IOException
+  {
+    if (editpartycontroller == null)
+    {
+      // first time opening --> load the FXML and wire everything up
+      var url = getClass().getResource("/view/EditPartyView.fxml");
+      System.out.println("FXML URL: " + url); // add this
+      FXMLLoader loader = new FXMLLoader(url);
+      Region root = loader.load();
+
+      editpartycontroller = loader.getController();
+      editpartycontroller.init(this, viewmodelfactory.getEditPartyViewModel(), root);
+    }
+    else
+    {
+      // already loaded before --> just clear the fields
+      editpartycontroller.reset();
+    }
+
+    return editpartycontroller.getRoot();
   }
 
 }

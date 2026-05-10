@@ -73,9 +73,13 @@ public class PartyController
     viewhandler.openView("my parties");
   }
   @FXML public void onLogOut() {viewhandler.openView("login");}
-  @FXML public void addFriend() {
+  @FXML public void addFriend()
+  {
     //addd friend logic
     viewhandler.openView("friends");
+  }
+  @FXML public void onEditParty() {
+    viewhandler.openView("edit party");
   }
 
 

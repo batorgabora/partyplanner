@@ -70,6 +70,11 @@ public class PartyClientModel implements PartyModel
 
   }
 
+  @Override public List<User> getAllUsers()
+  {
+    return List.of();
+  }
+
   @Override public void deleteParty(Party party)
   {
 

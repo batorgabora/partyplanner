@@ -16,6 +16,7 @@ public interface PartyModel {
   Party getParty(int id);
   void joinParty(User user, Party party);
   void leaveParty(User user, Party party);
+  List<User> getAllUsers();
 
 
  //sub till organizer class is done Party createParty(String title, String description, String location, Organizer organizer);
