@@ -1,6 +1,8 @@
 package client.viewModel;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import shared.model.Party;
 import shared.model.PartyModel;
 
@@ -8,6 +10,7 @@ public class MyPartiesViewModel
 {
   private PartyModel model;
   private ObjectProperty<Party> selectedParty;
+  private final StringProperty error = new SimpleStringProperty("");
 
 
 
@@ -20,4 +23,6 @@ public class MyPartiesViewModel
     // From this point on, whenever the model fires these events,
     // our propertyChange() method below is called automatically.
   }
+
+  public StringProperty errorProperty() { return error; }
 }

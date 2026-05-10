@@ -95,6 +95,9 @@ public class PartyClientHandler implements Runnable {
         handleAddFriend(request);
         support.firePropertyChange("parties", null, null);
       }
+      case "login" -> {
+        handleLogin(request);
+      }
       default -> {
         sendError("Unknown action: " + action);
         support.firePropertyChange("parties", null, null);

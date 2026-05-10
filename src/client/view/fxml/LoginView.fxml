@@ -35,7 +35,7 @@
                                 <Font size="16.0" />
                             </font>
                         </Label>
-                        <TextField prefHeight="50.0" prefWidth="540.0" style="-fx-background-color: #101022; -fx-text-fill: white; -fx-border-color: #34436f; -fx-border-width: 1.5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 0 14 0 14;">
+                        <TextField fx:id="usernameField" prefHeight="50.0" prefWidth="540.0" style="-fx-background-color: #101022; -fx-text-fill: white; -fx-border-color: #34436f; -fx-border-width: 1.5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 0 14 0 14;">
                             <font>
                                 <Font size="16.0" />
                             </font>
@@ -46,7 +46,7 @@
                                 <Font size="16.0" />
                             </font>
                         </Label>
-                        <PasswordField prefHeight="42.0" prefWidth="540.0" style="-fx-background-color: #101022; -fx-text-fill: white; -fx-border-color: #34436f; -fx-border-width: 1.5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 0 14 0 14;">
+                        <PasswordField fx:id="passwordField" prefHeight="42.0" prefWidth="540.0" style="-fx-background-color: #101022; -fx-text-fill: white; -fx-border-color: #34436f; -fx-border-width: 1.5; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 0 14 0 14;">
                             <font>
                                 <Font size="16.0" />
                             </font>
@@ -55,6 +55,12 @@
                 </VBox>
             </children>
         </VBox>
+
+        <Label fx:id="errorLabel" layoutX="90.0" layoutY="400.0" prefWidth="540.0" textFill="#ff6b6b" wrapText="true">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
 
           <Label layoutX="272.0" layoutY="540.0" text="No account? Register here" textFill="#8580a6">
               <font>

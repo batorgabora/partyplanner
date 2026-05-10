@@ -24,6 +24,7 @@ public class LoginController
   @FXML private TextField passwordField;
   @FXML private Button signInButton;
   @FXML private Button registerButton;
+  @FXML private Label errorLabel;
 
   public void init(ViewHandler viewhandler, LoginViewModel viewmodel, Region root){
     this.root = root;
@@ -33,6 +34,7 @@ public class LoginController
     //bindings to viewmodel
     usernameField.textProperty().bindBidirectional(viewmodel.usernameProperty());
     passwordField.textProperty().bindBidirectional(viewmodel.passwordProperty());
+    errorLabel.textProperty().bind(viewmodel.errorProperty());
 
     passwordField.setOnKeyPressed(event -> {
       if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
