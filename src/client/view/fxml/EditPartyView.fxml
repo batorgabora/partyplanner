@@ -57,7 +57,7 @@
             </font>
         </Label>
         <ListView fx:id="timeList" layoutX="140.0" layoutY="394.0" prefHeight="77.0" prefWidth="227.0" />
-        <Button fx:id="declineButton" layoutX="747.0" layoutY="495.0" mnemonicParsing="false" text="delete party" />
+        <Button fx:id="deleteButton" layoutX="747.0" layoutY="495.0" mnemonicParsing="false" onAction="#onDelete" text="delete party" />
         <Label layoutX="439.0" layoutY="118.0" text="members:">
             <font>
                 <Font name="System Bold" size="20.0" />
@@ -73,7 +73,7 @@
 
         <TextField fx:id="itemField" layoutX="222.0" layoutY="321.0" prefHeight="26.0" prefWidth="141.0" text="new item" />
       <TextField fx:id="optionField" layoutX="224.0" layoutY="482.0" prefHeight="26.0" prefWidth="141.0" text="new option" />
-      <ComboBox fx:id="userDropdown" layoutX="651.0" layoutY="118.0" prefHeight="26.0" prefWidth="175.0" />
+      <ComboBox fx:id="userDropdown" layoutX="651.0" layoutY="118.0" prefHeight="26.0" prefWidth="175.0" promptText="select user" />
       <TextField fx:id="nameField" layoutX="141.0" layoutY="1.0" prefHeight="59.0" prefWidth="362.0" promptText="party name">
          <font>
             <Font name="System Bold" size="31.0" />
@@ -83,6 +83,6 @@
       <TextField fx:id="dateField" layoutX="667.0" layoutY="5.0" text="date" />
       <TextField fx:id="locationField" layoutX="668.0" layoutY="34.0" text="location" />
       <Label fx:id="statusLabel" layoutX="426.0" layoutY="500.0" prefHeight="17.0" prefWidth="209.0" text="status" />
-      <Button layoutX="761.0" layoutY="420.0" mnemonicParsing="false" onAction="#onBack" text="Save" />
+      <Button layoutX="761.0" layoutY="420.0" mnemonicParsing="false" onAction="#onBack" text="go back" />
     </children>
 </Pane>

@@ -33,7 +33,7 @@ public class DiscoverController
     this.viewhandler = viewhandler;
 
     //bindings to viewmodel
-    partyList.setItems(viewmodel.getParties());
+    partyList.setItems(viewmodel.getInvitedParties());
     viewmodel.updateParties();
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> viewmodel.selectedPartyProperty().set(newVal));
@@ -44,7 +44,7 @@ public class DiscoverController
             selectedLabel.setText(newVal.toString());
           }
           else {
-            selectedLabel.setText("no selected vinyl");
+            selectedLabel.setText("no selected party");
           }
         }
     );

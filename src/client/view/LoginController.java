@@ -52,7 +52,7 @@ public class LoginController
   @FXML
   public void onForward() {
     if (viewmodel.login()) {
-      viewhandler.openView("discover");
+      viewhandler.openView("my parties");
     }
   }
 

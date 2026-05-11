@@ -7,6 +7,7 @@ import shared.model.*;
 
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PartyClientModel implements PartyModel
@@ -47,8 +48,7 @@ public class PartyClientModel implements PartyModel
 
   }
 
-
-  @Override public List<Party> getParties(User user)
+  @Override public List<Party> getInvitedParties(User user)
   {
     return List.of();
   }
@@ -134,6 +134,26 @@ public class PartyClientModel implements PartyModel
       String confirmPassword, String mail)
   {
     return null;
+  }
+
+  @Override public ArrayList<Party> getMyParties(User user)
+  {
+    return null;
+  }
+
+  @Override public void acceptInvite(User user, Party party)
+  {
+
+  }
+
+  @Override public void declineInvite(User user, Party party)
+  {
+
+  }
+
+  @Override public String getStatus(User user, Party party)
+  {
+    return "";
   }
 
   @Override public List<Item> getItems(Party party)
