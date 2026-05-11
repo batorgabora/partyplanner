@@ -2,6 +2,8 @@ package client.viewModel;
 
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import shared.model.LocalUser;
@@ -16,6 +18,7 @@ public class MyPartiesViewModel implements PropertyChangeListener
   private final PartyModel model;
   private final ObjectProperty<Party> selectedParty;
   private final ObservableList<Party> parties;
+  private final StringProperty error = new SimpleStringProperty("");
 
   public MyPartiesViewModel(PartyModel model, ObjectProperty<Party> selectedParty)
   {
@@ -48,5 +51,9 @@ public class MyPartiesViewModel implements PropertyChangeListener
   public Party getSelectedParty()
   {
     return selectedParty.get();
+  }
+
+  public StringProperty errorProperty() {
+    return error;
   }
 }

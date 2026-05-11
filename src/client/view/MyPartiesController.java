@@ -4,11 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import shared.model.LocalUser;
-import client.viewModel.DiscoverViewModel;
 import shared.model.Party;
 import client.viewModel.MyPartiesViewModel;
 
@@ -16,7 +13,7 @@ public class MyPartiesController
 {
 
   private Region root;
-  private MyPartiesViewModel viewmodel;
+  private MyPartiesViewModel viewModel;
   private ViewHandler viewhandler;
 
   @FXML private ListView<Party> partyList;
@@ -25,18 +22,18 @@ public class MyPartiesController
   @FXML private Label userLabel;
   @FXML private Label errorLabel;
 
-  public void init(ViewHandler viewhandler, MyPartiesViewModel viewmodel, Region root)
+  public void init(ViewHandler viewhandler, MyPartiesViewModel viewModel, Region root)
   {
     this.root = root;
-    this.viewmodel = viewmodel;
+    this.viewModel = viewModel;
     this.viewhandler = viewhandler;
 
-    partyList.setItems(viewmodel.getParties());
-    viewmodel.updateParties();
+    partyList.setItems(viewModel.getParties());
+    viewModel.updateParties();
 
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> {
-          viewmodel.selectedPartyProperty().set(newVal);
+          viewModel.selectedPartyProperty().set(newVal);
           if (newVal != null)
             selectedLabel.setText(newVal.getName());
           else
@@ -44,13 +41,13 @@ public class MyPartiesController
         });
 
     userLabel.setText(LocalUser.getUser().getUsername());
-    errorLabel.textProperty().bind(viewmodel.errorProperty());
+    errorLabel.textProperty().bind(viewModel.errorProperty());
 
   }
 
   @FXML public void onFurther()
   {
-    if (viewmodel.getSelectedParty() == null)
+    if (viewModel.getSelectedParty() == null)
     {
       selectedLabel.setText("please select a party first");
       return;
@@ -68,6 +65,6 @@ public class MyPartiesController
 
   public void reset()
   {
-    viewmodel.updateParties();
+    viewModel.updateParties();
   }
 }
