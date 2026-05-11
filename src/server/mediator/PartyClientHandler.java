@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import server.dao.PartyDAO;
 import server.dao.UserDAO;
-import server.model.ModelManager;
 import shared.model.Party;
 import shared.model.PartyModel;
 import shared.model.User;
@@ -166,7 +165,18 @@ public class PartyClientHandler implements Runnable {
   }
 
   private void handleDeleteParty(JsonObject request) {
-
+    String partyId = request.get("partyId").getAsString();
+    Party party = new PartyDAO().getById(partyId);
+    if (party == null) {
+      sendError("Party not found.");
+      return;
+    }
+    try {
+      model.deleteParty(party);
+      sendResponse("deleteParty", "{}");
+    } catch (Exception e) {
+      sendError("Failed to delete party: " + e.getMessage());
+    }
   }
 
   private void handleAddParticipant(JsonObject request) {

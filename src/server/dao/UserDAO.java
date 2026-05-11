@@ -11,7 +11,7 @@ public class UserDAO {
 
   public User getById(String userid) {
     String sql = "SELECT * FROM \"user\" WHERE userid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
       ResultSet rs = ps.executeQuery();
@@ -24,7 +24,7 @@ public class UserDAO {
 
   public User getByUsername(String username) {
     String sql = "SELECT * FROM \"user\" WHERE username = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, username);
       ResultSet rs = ps.executeQuery();
@@ -38,7 +38,7 @@ public class UserDAO {
   public ArrayList<User> getAll() {
     String sql = "SELECT * FROM \"user\"";
     ArrayList<User> users = new ArrayList<>();
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery(sql)) {
       while (rs.next()) users.add(mapRow(rs));
@@ -50,7 +50,7 @@ public class UserDAO {
 
   public String create(String userid, String username, String mail, String hashpass) {
     String sql = "INSERT INTO \"user\" (userid, username, mail, hashpass) VALUES (?, ?, ?, ?)";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
       ps.setString(2, username);
@@ -66,7 +66,7 @@ public class UserDAO {
 
   public void update(String userid, String username, String mail, String hashpass) {
     String sql = "UPDATE \"user\" SET username = ?, mail = ?, hashpass = ? WHERE userid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, username);
       ps.setString(2, mail);
@@ -80,7 +80,7 @@ public class UserDAO {
 
   public void updatePassword(String userid, String hashpass) {
     String sql = "UPDATE \"user\" SET hashpass = ? WHERE userid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, hashpass);
       ps.setString(2, userid);
@@ -92,7 +92,7 @@ public class UserDAO {
 
   public void delete(String userid) {
     String sql = "DELETE FROM \"user\" WHERE userid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
       ps.executeUpdate();

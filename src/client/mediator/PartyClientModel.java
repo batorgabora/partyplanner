@@ -99,7 +99,7 @@ public class PartyClientModel implements PartyModel
 
   @Override public void deleteParty(Party party)
   {
-
+    client.requestDeleteParty(party.getId());
   }
 
   @Override public void manageParty(Party party, String title,
