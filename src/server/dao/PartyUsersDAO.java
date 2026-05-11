@@ -86,7 +86,7 @@ public class PartyUsersDAO {
 
   public void removeByParty(String partyid) {
     String sql = "DELETE FROM partyusers WHERE partyid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyid);
       ps.executeUpdate();

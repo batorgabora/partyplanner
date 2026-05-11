@@ -1,7 +1,9 @@
 package client.view;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -12,6 +14,7 @@ import javafx.scene.layout.Region;
 import shared.model.LocalUser;
 import client.viewModel.DiscoverViewModel;
 import shared.model.Party;
+import javafx.scene.control.ProgressIndicator;
 
 public class DiscoverController
 {
@@ -25,6 +28,7 @@ public class DiscoverController
   @FXML private Button onFurtherButton; // joined parties
   // invited parties
   @FXML private Label userLabel;
+  @FXML private ProgressIndicator loadingIndicator;
 
 
   public void init(ViewHandler viewhandler, DiscoverViewModel viewmodel, Region root){
@@ -38,6 +42,7 @@ public class DiscoverController
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> viewmodel.selectedPartyProperty().set(newVal));
     userLabel.setText(LocalUser.getUser().getUsername());
+
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> {
           if (newVal != null) {
@@ -48,6 +53,17 @@ public class DiscoverController
           }
         }
     );
+
+    partyList.setVisible(false);
+    loadingIndicator.setVisible(true);
+    new Thread(() -> {
+      viewmodel.updateParties();
+      Platform.runLater(() -> {
+        partyList.setItems(viewmodel.getParties());
+        partyList.setVisible(true);
+        loadingIndicator.setVisible(false);
+      });
+    }).start();
   }
 
   @FXML public void onFurther() {
@@ -90,6 +106,16 @@ public class DiscoverController
   }
 
   public void reset(){
-    viewmodel.updateParties();
+    partyList.setVisible(false);
+    loadingIndicator.setVisible(true);
+    new Thread(() -> {
+       viewmodel.updateParties();
+      Platform.runLater(() -> {
+        partyList.setVisible(true);
+        partyList.setItems(viewmodel.getParties());
+        loadingIndicator.setVisible(false);
+      });
+    }).start();
+
   }
 }
