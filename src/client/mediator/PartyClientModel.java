@@ -22,9 +22,14 @@ public class PartyClientModel implements PartyModel
       while (true) {
         String response = client.receive();
         if (response != null) {
-          JsonObject json = JsonParser.parseString(response).getAsJsonObject();
-          String action = json.get("action").getAsString();
-          support.firePropertyChange(action, null, json);
+          try {
+            JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+            if (!json.has("action")) continue;
+            String action = json.get("action").getAsString();
+            support.firePropertyChange(action, null, json);
+          } catch (Exception e) {
+            System.out.println("Listener error: " + e.getMessage());
+          }
         }
       }
     });
@@ -75,7 +80,7 @@ public class PartyClientModel implements PartyModel
 
   @Override public void deleteParty(Party party)
   {
-
+    client.requestDeleteParty(party.getId());
   }
 
   @Override public void manageParty(Party party, String title,

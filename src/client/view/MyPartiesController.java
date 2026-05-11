@@ -39,6 +39,7 @@ public class MyPartiesController
 
   }
 
+
   @FXML public void onMyParties() {
     viewhandler.openView("my parties");
   }
