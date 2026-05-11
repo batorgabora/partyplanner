@@ -10,7 +10,7 @@ public class ItemDAO {
 
   public Item getById(String itemid) {
     String sql = "SELECT * FROM item WHERE itemid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, itemid);
       ResultSet rs = ps.executeQuery();
@@ -25,7 +25,7 @@ public class ItemDAO {
     System.out.println("Fetching items for partyid: " + partyid);
     String sql = "SELECT * FROM item WHERE partyid = ?";
     List<Item> items = new ArrayList<>();
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyid);
       ResultSet rs = ps.executeQuery();
@@ -43,7 +43,7 @@ public class ItemDAO {
 
   public void create(String itemid, String name, int quantity, String partyid) {
     String sql = "INSERT INTO item (itemid, name, quantity, partyid) VALUES (?, ?, ?, ?)";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, itemid);
       ps.setString(2, name);
@@ -57,7 +57,7 @@ public class ItemDAO {
 
   public void update(String itemid, String name, int quantity) {
     String sql = "UPDATE item SET name = ?, quantity = ? WHERE itemid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, name);
       ps.setInt(2, quantity);
@@ -71,7 +71,7 @@ public class ItemDAO {
   public void delete(String itemid) {
     String deleteClaims = "DELETE FROM claimitem WHERE itemid = ?";
     String deleteItem = "DELETE FROM item WHERE itemid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps1 = conn.prepareStatement(deleteClaims);
         PreparedStatement ps2 = conn.prepareStatement(deleteItem)) {
       ps1.setString(1, itemid);

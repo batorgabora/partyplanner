@@ -9,7 +9,7 @@ public class ClaimedItemDAO {
 
   public void claim(String userid, String itemid, int quantityClaimed) {
     String sql = "INSERT INTO claimitem (userid, itemid, quantityclaimed) VALUES (?, ?, ?)";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
       ps.setString(2, itemid);
@@ -22,7 +22,7 @@ public class ClaimedItemDAO {
 
   public void unclaim(String userid, String itemid) {
     String sql = "DELETE FROM claimitem WHERE userid = ? AND itemid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
       ps.setString(2, itemid);
@@ -34,7 +34,7 @@ public class ClaimedItemDAO {
 
   public void updateClaim(String userid, String itemid, int quantityClaimed) {
     String sql = "UPDATE claimitem SET quantityclaimed = ? WHERE userid = ? AND itemid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setInt(1, quantityClaimed);
       ps.setString(2, userid);
@@ -47,7 +47,7 @@ public class ClaimedItemDAO {
 
   public int getTotalClaimed(String itemid) {
     String sql = "SELECT COALESCE(SUM(quantityclaimed), 0) FROM claimitem WHERE itemid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, itemid);
       ResultSet rs = ps.executeQuery();
@@ -61,7 +61,7 @@ public class ClaimedItemDAO {
   public Map<String, Integer> getClaimsForItem(String itemid) {
     String sql = "SELECT userid, quantityclaimed FROM claimitem WHERE itemid = ?";
     Map<String, Integer> claims = new HashMap<>();
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, itemid);
       ResultSet rs = ps.executeQuery();
