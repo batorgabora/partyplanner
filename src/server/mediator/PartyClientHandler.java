@@ -106,7 +106,7 @@ public class PartyClientHandler implements Runnable {
   }
 
   private void handleGetAll() {
-    sendResponse("getAll", gson.toJson(model.getParties(null)));
+    sendResponse("getAll", gson.toJson(model.getInvitedParties(null)));
   }
 
   private void handleLogin(JsonObject request) {

@@ -84,6 +84,33 @@ public class PartyUsersDAO {
     return participants;
   }
 
+  public void updateStatus(String userid, String partyid, String status) {
+    String sql = "UPDATE partyusers SET status = ? WHERE userid = ? AND partyid = ?";
+    try (Connection conn = DataBaseConnection.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, status);
+      ps.setString(2, userid);
+      ps.setString(3, partyid);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public String getStatus(String userid, String partyid) {
+    String sql = "SELECT status FROM partyusers WHERE userid = ? AND partyid = ?";
+    try (Connection conn = DataBaseConnection.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, userid);
+      ps.setString(2, partyid);
+      ResultSet rs = ps.executeQuery();
+      if (rs.next()) return rs.getString("status");
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return null;
+  }
+
   public List<String> getOrganizerIds(String partyid) {
     String sql = "SELECT userid FROM partyusers WHERE partyid = ? AND role = 'organizer'";
     List<String> ids = new ArrayList<>();
