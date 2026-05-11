@@ -14,7 +14,7 @@ public class PartyDAO {
 
   public Party getById(String partyid) {
     String sql = "SELECT * FROM party WHERE partyid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyid);
       ResultSet rs = ps.executeQuery();
@@ -28,7 +28,7 @@ public class PartyDAO {
   public ArrayList<Party> getAll() {
     String sql = "SELECT * FROM party";
     ArrayList<Party> parties = new ArrayList<>();
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery(sql)) {
       while (rs.next()) parties.add(mapRow(rs));
@@ -41,7 +41,7 @@ public class PartyDAO {
   public ArrayList<Party> getByUser(String userid) {
     String sql = "SELECT p.* FROM party p JOIN partyusers pu ON p.partyid = pu.partyid WHERE pu.userid = ?";
     ArrayList<Party> parties = new ArrayList<>();
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
       ResultSet rs = ps.executeQuery();
@@ -59,7 +59,7 @@ public class PartyDAO {
 
   public void create(String partyid, String name, String description, String location, LocalDate date) {
     String sql = "INSERT INTO party (partyid, name, description, location, date) VALUES (?, ?, ?, ?, ?)";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyid);
       ps.setString(2, name);
@@ -74,7 +74,7 @@ public class PartyDAO {
 
   public void update(String partyid, String name, String description, String location) {
     String sql = "UPDATE party SET name = ?, description = ?, location = ? WHERE partyid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, name);
       ps.setString(2, description);
@@ -88,7 +88,7 @@ public class PartyDAO {
 
   public void updateDate(String partyid, String date) {
     String sql = "UPDATE party SET date = ? WHERE partyid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       try {
         ps.setDate(1, Date.valueOf(LocalDate.parse(date)));
@@ -105,7 +105,7 @@ public class PartyDAO {
 
   public void delete(String partyid) {
     String sql = "DELETE FROM party WHERE partyid = ?";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyid);
       ps.executeUpdate();
@@ -127,7 +127,7 @@ public class PartyDAO {
 
   private User getOrganizerForParty(String partyId) {
     String sql = "SELECT userid FROM partyusers WHERE partyid = ? AND role = 'organizer'";
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyId);
       ResultSet rs = ps.executeQuery();
