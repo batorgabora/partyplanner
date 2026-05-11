@@ -11,6 +11,7 @@ import shared.util.Action;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.time.LocalDate;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -136,6 +137,9 @@ public class PartyClientHandler implements Runnable {
     String description = request.get("description").getAsString();
     String location = request.get("location").getAsString();
     String organizerId = request.get("organizerId").getAsString();
+    LocalDate date = (request.has("date") && !request.get("date").isJsonNull())
+        ? LocalDate.parse(request.get("date").getAsString())
+        : null;
 
     if (name == null || name.trim().isEmpty()) {
       sendError("Party name is required.");
@@ -146,7 +150,7 @@ public class PartyClientHandler implements Runnable {
       return;
     }
 
-    Party party = model.createParty(name, description, location, organizerId);
+    Party party = model.createParty(name, description, location, organizerId, date);
     sendResponse("createParty", gson.toJson(party));
   }
 

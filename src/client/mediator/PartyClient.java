@@ -3,6 +3,7 @@ package client.mediator;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import shared.util.Action;
+import java.time.LocalDate;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -95,8 +96,16 @@ public class PartyClient
   }
 
   // Organizer operations
-  public void requestCreateParty(String title, String description, String location, String organizerId) {
-
+  public void requestCreateParty(String name, String description, String location, String organizerId, LocalDate date) {
+    JsonObject request = createRequest(Action.CREATE_PARTY);
+    request.addProperty("name", name);
+    request.addProperty("description", description);
+    request.addProperty("location", location);
+    request.addProperty("organizerId", organizerId);
+    if (date != null) {
+      request.addProperty("date", date.toString());
+    }
+    sendRequest(request);
   }
 
   public void requestDeleteParty(int partyId) {
