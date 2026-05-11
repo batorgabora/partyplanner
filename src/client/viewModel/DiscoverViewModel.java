@@ -44,18 +44,18 @@ public class DiscoverViewModel implements PropertyChangeListener
   @Override public void propertyChange(PropertyChangeEvent evt)
   {
     Platform.runLater(() -> {
-      parties.setAll(model.getParties(LocalUser.getUser()));
+      parties.setAll(model.getInvitedParties(LocalUser.getUser()));
     });
   }
 
 
 
-  public ObservableList<Party> getParties() {
+  public ObservableList<Party> getInvitedParties() {
     return parties;
   }
 
   public void updateParties() {
-    parties.setAll(model.getParties(LocalUser.getUser()));
+    parties.setAll(model.getInvitedParties(LocalUser.getUser()));
   }
 
 }
