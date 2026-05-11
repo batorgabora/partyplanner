@@ -107,11 +107,43 @@ public class PartyDAO {
   }
 
   public void delete(String partyid) {
-    String sql = "DELETE FROM party WHERE partyid = ?";
-    try (Connection conn = DataBaseConnection.getInstance().getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, partyid);
-      ps.executeUpdate();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection()) {
+      // delete votes on options belonging to this party
+      try (PreparedStatement ps = conn.prepareStatement(
+          "DELETE FROM voteoption WHERE optionid IN (SELECT optionid FROM \"option\" WHERE partyid = ?)")) {
+        ps.setString(1, partyid);
+        ps.executeUpdate();
+      }
+      // delete options
+      try (PreparedStatement ps = conn.prepareStatement(
+          "DELETE FROM \"option\" WHERE partyid = ?")) {
+        ps.setString(1, partyid);
+        ps.executeUpdate();
+      }
+      // delete claims on items belonging to this party
+      try (PreparedStatement ps = conn.prepareStatement(
+          "DELETE FROM claimitem WHERE itemid IN (SELECT itemid FROM item WHERE partyid = ?)")) {
+        ps.setString(1, partyid);
+        ps.executeUpdate();
+      }
+      // delete items
+      try (PreparedStatement ps = conn.prepareStatement(
+          "DELETE FROM item WHERE partyid = ?")) {
+        ps.setString(1, partyid);
+        ps.executeUpdate();
+      }
+      // delete partyusers
+      try (PreparedStatement ps = conn.prepareStatement(
+          "DELETE FROM partyusers WHERE partyid = ?")) {
+        ps.setString(1, partyid);
+        ps.executeUpdate();
+      }
+      // finally delete the party
+      try (PreparedStatement ps = conn.prepareStatement(
+          "DELETE FROM party WHERE partyid = ?")) {
+        ps.setString(1, partyid);
+        ps.executeUpdate();
+      }
     } catch (SQLException e) {
       log.severe("delete failed for partyid=" + partyid + ": " + e.getMessage());
     }

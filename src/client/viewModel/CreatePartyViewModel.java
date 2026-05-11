@@ -6,6 +6,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import shared.model.PartyModel;
+import shared.model.Party;
+import shared.model.LocalUser;
+
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -32,11 +35,16 @@ public class CreatePartyViewModel implements PropertyChangeListener
 
   public boolean createParty()
   {
-    if (name.get() == null || name.get().trim().isEmpty())               { error.set("Name is required.");        return false; }
-    if (description.get() == null || description.get().trim().isEmpty()) { error.set("Description is required."); return false; }
-    if (location.get() == null || location.get().trim().isEmpty())       { error.set("Location is required.");    return false; }
-    error.set("");
-    return false; // TODO: server call
+    Party party = model.createParty(
+        name.get(),
+        description.get(),
+        location.get(),
+        LocalUser.getUser().getId(),
+        date.get()
+    );
+    if (party != null) return true;
+    error.set("Failed to create party.");
+    return false;
   }
 
   public void clearError()

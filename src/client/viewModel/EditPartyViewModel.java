@@ -138,4 +138,10 @@ public class EditPartyViewModel implements PropertyChangeListener
   public void removeOption(Option option) {
     model.removeOption(option);
   }
+
+  public void deleteParty() {
+    if (selectedParty.get() == null) return;
+    model.deleteParty(selectedParty.get());
+    selectedParty.set(null);
+  }
 }

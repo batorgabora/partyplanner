@@ -92,6 +92,11 @@ public class EditPartyController
     });
   }
 
+  @FXML public void onDelete() {
+    viewmodel.deleteParty();
+    viewhandler.openView("discover");
+  }
+
   @FXML public void onBack() {
     if (viewmodel.getSelectedParty() == null) {
       return;
