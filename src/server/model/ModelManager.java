@@ -74,11 +74,12 @@ public class ModelManager implements PartyModel
   }
 
   @Override public synchronized Party createParty(String name, String description,
-      String location, String organizerId)
+      String location, String organizerId, LocalDate date)
   {
     String partyId = UUID.randomUUID().toString();
     PartyDAO partyDAO = new PartyDAO();
-    partyDAO.create(partyId, name, description, location, LocalDate.now());
+    partyDAO.create(partyId, name, description, location, date != null ? date : LocalDate.now());
+    new PartyUsersDAO().add(organizerId, partyId, "organizer");
     return partyDAO.getById(partyId);
   }
 
