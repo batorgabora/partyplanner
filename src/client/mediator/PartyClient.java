@@ -99,8 +99,10 @@ public class PartyClient
 
   }
 
-  public void requestDeleteParty(int partyId) {
-
+  public void requestDeleteParty(String partyId) {
+    JsonObject request = createRequest(Action.DELETE_PARTY);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
   }
 
   public void requestAddParticipant(int partyId, int userId) {

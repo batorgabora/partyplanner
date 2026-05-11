@@ -84,6 +84,17 @@ public class PartyUsersDAO {
     return participants;
   }
 
+  public void removeByParty(String partyid) {
+    String sql = "DELETE FROM partyusers WHERE partyid = ?";
+    try (Connection conn = DataBaseConnection.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, partyid);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public List<String> getOrganizerIds(String partyid) {
     String sql = "SELECT userid FROM partyusers WHERE partyid = ? AND role = 'organizer'";
     List<String> ids = new ArrayList<>();

@@ -115,7 +115,13 @@ public class ModelManager implements PartyModel
 
   @Override public synchronized void deleteParty(Party party)
   {
-
+    String partyId = party.getId();
+    for (Option option : new OptionDAO().getByParty(partyId))
+      new OptionDAO().delete(option.getOptionid());
+    for (Item item : new ItemDAO().getByParty(partyId))
+      new ItemDAO().delete(item.getId());
+    new PartyUsersDAO().removeByParty(partyId);
+    new PartyDAO().delete(partyId);
   }
 
 
