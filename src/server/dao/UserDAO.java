@@ -6,8 +6,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class UserDAO {
+
+  private static final Logger log = Logger.getLogger(UserDAO.class.getName());
 
   public User getById(String userid) {
     String sql = "SELECT * FROM \"user\" WHERE userid = ?";
@@ -17,7 +20,7 @@ public class UserDAO {
       ResultSet rs = ps.executeQuery();
       if (rs.next()) return mapRow(rs);
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getById failed for userid=" + userid + ": " + e.getMessage());
     }
     return null;
   }
@@ -30,7 +33,7 @@ public class UserDAO {
       ResultSet rs = ps.executeQuery();
       if (rs.next()) return mapRow(rs);
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getById failed for username=" + username + ": " + e.getMessage());
     }
     return null;
   }
@@ -43,7 +46,7 @@ public class UserDAO {
         ResultSet rs = st.executeQuery(sql)) {
       while (rs.next()) users.add(mapRow(rs));
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getAll failed with message: " + e.getMessage());
     }
     return users;
   }
@@ -56,13 +59,13 @@ public class UserDAO {
       ps.setString(2, username);
       ps.setString(3, mail);
       ps.setString(4, hashpass);
-      ps.executeUpdate(); // not executeQuery
+      ps.executeUpdate();
       return userid;
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("create failed for userid=" + userid + ": " + e.getMessage());
     }
+    return null;
   }
-
 
   public void update(String userid, String username, String mail, String hashpass) {
     String sql = "UPDATE \"user\" SET username = ?, mail = ?, hashpass = ? WHERE userid = ?";
@@ -74,7 +77,7 @@ public class UserDAO {
       ps.setString(4, userid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("update failed for userid=" + userid + ": " + e.getMessage());
     }
   }
 
@@ -86,7 +89,7 @@ public class UserDAO {
       ps.setString(2, userid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("updatePassword failed for userid=" + userid + ": " + e.getMessage());
     }
   }
 
@@ -97,7 +100,7 @@ public class UserDAO {
       ps.setString(1, userid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("delete failed for userid=" + userid + ": " + e.getMessage());
     }
   }
 

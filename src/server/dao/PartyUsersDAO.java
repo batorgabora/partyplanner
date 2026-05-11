@@ -6,8 +6,11 @@ import shared.model.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class PartyUsersDAO {
+
+  private static final Logger log = Logger.getLogger(PartyUsersDAO.class.getName());
 
   public void add(String userid, String partyid, String role) {
     String sql = "INSERT INTO partyusers (userid, partyid, role) VALUES (?, ?, ?)";
@@ -18,7 +21,7 @@ public class PartyUsersDAO {
       ps.setString(3, role);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("add failed for userid=" + userid + ", partyid=" + partyid + ": " + e.getMessage());
     }
   }
 
@@ -30,7 +33,7 @@ public class PartyUsersDAO {
       ps.setString(2, partyid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("remove failed for userid=" + userid + ", partyid=" + partyid + ": " + e.getMessage());
     }
   }
 
@@ -43,7 +46,7 @@ public class PartyUsersDAO {
       ResultSet rs = ps.executeQuery();
       if (rs.next()) return rs.getString("role");
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getRole failed for userid=" + userid + ", partyid=" + partyid + ": " + e.getMessage());
     }
     return null;
   }
@@ -57,8 +60,9 @@ public class PartyUsersDAO {
       ResultSet rs = ps.executeQuery();
       return rs.next();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("isMember failed for userid=" + userid + ", partyid=" + partyid + ": " + e.getMessage());
     }
+    return false;
   }
 
   public List<Participant> getParticipantsByParty(String partyid) {
@@ -79,7 +83,7 @@ public class PartyUsersDAO {
         participants.add(p);
       }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getParticipantsByParty failed for partyid=" + partyid + ": " + e.getMessage());
     }
     return participants;
   }
@@ -93,7 +97,7 @@ public class PartyUsersDAO {
       ResultSet rs = ps.executeQuery();
       while (rs.next()) ids.add(rs.getString("userid"));
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getOrganizerIds failed for partyid=" + partyid + ": " + e.getMessage());
     }
     return ids;
   }

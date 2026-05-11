@@ -5,8 +5,11 @@ import shared.model.Option;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class OptionDAO {
+
+  private static final Logger log = Logger.getLogger(OptionDAO.class.getName());
 
   public Option getById(String optionid) {
     String sql = "SELECT * FROM \"option\" WHERE optionid = ?";
@@ -16,7 +19,7 @@ public class OptionDAO {
       ResultSet rs = ps.executeQuery();
       if (rs.next()) return mapRow(rs);
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getById failed for optionid=" + optionid + ": " + e.getMessage());
     }
     return null;
   }
@@ -30,7 +33,7 @@ public class OptionDAO {
       ResultSet rs = ps.executeQuery();
       while (rs.next()) options.add(mapRow(rs));
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getByParty failed for partyid=" + partyid + ": " + e.getMessage());
     }
     return options;
   }
@@ -44,7 +47,7 @@ public class OptionDAO {
       ps.setString(3, partyid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("create failed for optionid=" + optionid + ": " + e.getMessage());
     }
   }
 
@@ -59,7 +62,7 @@ public class OptionDAO {
       ps2.setString(1, optionid);
       ps2.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("delete failed for optionid=" + optionid + ": " + e.getMessage());
     }
   }
 

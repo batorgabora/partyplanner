@@ -5,8 +5,11 @@ import shared.model.Item;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ItemDAO {
+
+  private static final Logger log = Logger.getLogger(ItemDAO.class.getName());
 
   public Item getById(String itemid) {
     String sql = "SELECT * FROM item WHERE itemid = ?";
@@ -16,7 +19,7 @@ public class ItemDAO {
       ResultSet rs = ps.executeQuery();
       if (rs.next()) return mapRow(rs);
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getById failed for itemid=" + itemid + ": " + e.getMessage());
     }
     return null;
   }
@@ -36,7 +39,7 @@ public class ItemDAO {
       }
       System.out.println("Total items: " + items.size());
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getByParty failed for partyid=" + partyid + ": " + e.getMessage());
     }
     return items;
   }
@@ -51,7 +54,7 @@ public class ItemDAO {
       ps.setString(4, partyid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("create failed for itemid=" + itemid + ": " + e.getMessage());
     }
   }
 
@@ -64,7 +67,7 @@ public class ItemDAO {
       ps.setString(3, itemid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("update failed for itemid=" + itemid + ": " + e.getMessage());
     }
   }
 
@@ -79,7 +82,7 @@ public class ItemDAO {
       ps2.setString(1, itemid);
       ps2.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("delete failed for itemid=" + itemid + ": " + e.getMessage());
     }
   }
 

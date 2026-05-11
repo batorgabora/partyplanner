@@ -1,14 +1,17 @@
 package client.viewModel;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import shared.model.PartyModel;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 
-public class CreatePartyViewModel
+public class CreatePartyViewModel implements PropertyChangeListener
 {
   private final PartyModel model;
   private final StringProperty name = new SimpleStringProperty("");
@@ -20,6 +23,11 @@ public class CreatePartyViewModel
   public CreatePartyViewModel(PartyModel model)
   {
     this.model = model;
+    model.addListener("error", this);
+  }
+
+  @Override public void propertyChange(PropertyChangeEvent evt) {
+    Platform.runLater(() -> error.set((String) evt.getNewValue()));
   }
 
   public boolean createParty()

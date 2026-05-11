@@ -4,8 +4,11 @@ import server.database.DataBaseConnection;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class ClaimedItemDAO {
+
+  private static final Logger log = Logger.getLogger(ClaimedItemDAO.class.getName());
 
   public void claim(String userid, String itemid, int quantityClaimed) {
     String sql = "INSERT INTO claimitem (userid, itemid, quantityclaimed) VALUES (?, ?, ?)";
@@ -16,7 +19,7 @@ public class ClaimedItemDAO {
       ps.setInt(3, quantityClaimed);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("claim failed for userid=" + userid + ", itemid=" + itemid + ": " + e.getMessage());
     }
   }
 
@@ -28,7 +31,7 @@ public class ClaimedItemDAO {
       ps.setString(2, itemid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("unclaim failed for userid=" + userid + ", itemid=" + itemid + ": " + e.getMessage());
     }
   }
 
@@ -41,7 +44,7 @@ public class ClaimedItemDAO {
       ps.setString(3, itemid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("updateClaim failed for userid=" + userid + ", itemid=" + itemid + ": " + e.getMessage());
     }
   }
 
@@ -53,7 +56,7 @@ public class ClaimedItemDAO {
       ResultSet rs = ps.executeQuery();
       if (rs.next()) return rs.getInt(1);
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getTotalClaimed failed for itemid=" + itemid + ": " + e.getMessage());
     }
     return 0;
   }
@@ -67,7 +70,7 @@ public class ClaimedItemDAO {
       ResultSet rs = ps.executeQuery();
       while (rs.next()) claims.put(rs.getString("userid"), rs.getInt("quantityclaimed"));
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getClaimsForItem failed for itemid=" + itemid + ": " + e.getMessage());
     }
     return claims;
   }

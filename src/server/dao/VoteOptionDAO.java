@@ -5,8 +5,11 @@ import server.database.DataBaseConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class VoteOptionDAO {
+
+  private static final Logger log = Logger.getLogger(VoteOptionDAO.class.getName());
 
   public void addVote(int optionid, int userid) {
     String sql = "INSERT INTO voteoption (optionid, userid) VALUES (?, ?)";
@@ -16,7 +19,7 @@ public class VoteOptionDAO {
       ps.setInt(2, userid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("addVote failed for optionid=" + optionid + ", userid=" + userid + ": " + e.getMessage());
     }
   }
 
@@ -28,7 +31,7 @@ public class VoteOptionDAO {
       ps.setInt(2, userid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("removeVote failed for optionid=" + optionid + ", userid=" + userid + ": " + e.getMessage());
     }
   }
 
@@ -41,8 +44,9 @@ public class VoteOptionDAO {
       ResultSet rs = ps.executeQuery();
       return rs.next();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("hasVoted failed for optionid=" + optionid + ", userid=" + userid + ": " + e.getMessage());
     }
+    return false;
   }
 
   public int getVoteCount(int optionid) {
@@ -53,22 +57,22 @@ public class VoteOptionDAO {
       ResultSet rs = ps.executeQuery();
       if (rs.next()) return rs.getInt(1);
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getVoteCount failed for optionid=" + optionid + ": " + e.getMessage());
     }
     return 0;
   }
 
   public ArrayList<Integer> getVotersForOption(String optionId) {
     String sql = "SELECT userid FROM voteoption WHERE optionid = ?";
-    List<Integer> voters = new ArrayList<>();
+    ArrayList<Integer> voters = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, optionId);
       ResultSet rs = ps.executeQuery();
       while (rs.next()) voters.add(rs.getInt("userid"));
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getVotersForOption failed for optionId=" + optionId + ": " + e.getMessage());
     }
-    return new ArrayList<>();
+    return voters;
   }
 }

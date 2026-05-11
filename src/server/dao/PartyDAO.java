@@ -9,8 +9,11 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class PartyDAO {
+
+  private static final Logger log = Logger.getLogger(PartyDAO.class.getName());
 
   public Party getById(String partyid) {
     String sql = "SELECT * FROM party WHERE partyid = ?";
@@ -20,7 +23,7 @@ public class PartyDAO {
       ResultSet rs = ps.executeQuery();
       if (rs.next()) return mapRow(rs);
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getById failed for partyid=" + partyid + ": " + e.getMessage());
     }
     return null;
   }
@@ -33,7 +36,7 @@ public class PartyDAO {
         ResultSet rs = st.executeQuery(sql)) {
       while (rs.next()) parties.add(mapRow(rs));
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getAll failed: " + e.getMessage());
     }
     return parties;
   }
@@ -52,7 +55,7 @@ public class PartyDAO {
       }
       System.out.println("Total parties loaded for user " + userid + ": " + parties.size());
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getByUser failed for userid=" + userid + ": " + e.getMessage());
     }
     return parties;
   }
@@ -68,7 +71,7 @@ public class PartyDAO {
       ps.setDate(5, Date.valueOf(date));
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("create failed for partyid=" + partyid + ": " + e.getMessage());
     }
   }
 
@@ -82,7 +85,7 @@ public class PartyDAO {
       ps.setString(4, partyid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("update failed for partyid=" + partyid + ": " + e.getMessage());
     }
   }
 
@@ -94,12 +97,12 @@ public class PartyDAO {
         ps.setDate(1, Date.valueOf(LocalDate.parse(date)));
       } catch (Exception e) {
         System.out.println("wrong time format");
-        return; // invalid date format, skip update
+        return;
       }
       ps.setString(2, partyid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("updateDate failed for partyid=" + partyid + ": " + e.getMessage());
     }
   }
 
@@ -110,7 +113,7 @@ public class PartyDAO {
       ps.setString(1, partyid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("delete failed for partyid=" + partyid + ": " + e.getMessage());
     }
   }
 
@@ -135,7 +138,7 @@ public class PartyDAO {
         return new UserDAO().getById(rs.getString("userid"));
       }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("getOrganizerForParty failed for partyId=" + partyId + ": " + e.getMessage());
     }
     return null;
   }

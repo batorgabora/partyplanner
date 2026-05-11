@@ -79,7 +79,9 @@ public class ModelManager implements PartyModel
     String partyId = UUID.randomUUID().toString();
     PartyDAO partyDAO = new PartyDAO();
     partyDAO.create(partyId, name, description, location, LocalDate.now());
-    return partyDAO.getById(partyId);
+    Party party = partyDAO.getById(partyId);
+    if (party == null) fireError("Failed to create party. Please try again.");
+    return party;
   }
 
   @Override public synchronized Party getParty(int id)
@@ -203,6 +205,10 @@ public class ModelManager implements PartyModel
 
 
 
+  private void fireError(String message) {
+    support.firePropertyChange("error", null, message);
+  }
+
   @Override public void addListener(String propertyName, PropertyChangeListener listener)
   {
     support.addPropertyChangeListener(propertyName, listener);
@@ -216,18 +222,17 @@ public class ModelManager implements PartyModel
 
   @Override
   public synchronized User createAccount(String username, String password, String confirmPassword, String mail) {
-    if (username == null || username.trim().isEmpty()) { System.out.println("FAIL: username"); return null; }
-    if (password == null || password.isEmpty()) { System.out.println("FAIL: password"); return null; }
-    if (mail == null || mail.trim().isEmpty()) { System.out.println("FAIL: mail"); return null; }
-    if (confirmPassword == null || confirmPassword.isEmpty()) { System.out.println("FAIL: confirmPassword"); return null; }
-    if (!password.equals(confirmPassword)) { System.out.println("FAIL: passwords don't match"); return null; }
+    if (username == null || username.trim().isEmpty()) { fireError("Username is required.");               return null; }
+    if (password == null || password.isEmpty())        { fireError("Password is required.");               return null; }
+    if (mail == null || mail.trim().isEmpty())          { fireError("Email is required.");                 return null; }
+    if (confirmPassword == null || confirmPassword.isEmpty()) { fireError("Please confirm your password."); return null; }
+    if (!password.equals(confirmPassword))              { fireError("Passwords do not match.");            return null; }
 
     UserDAO userDAO = new UserDAO();
-    if (userDAO.getByUsername(username) != null) { System.out.println("FAIL: username taken"); return null; }
+    if (userDAO.getByUsername(username) != null) { fireError("Username is already taken."); return null; }
 
-    System.out.println("Creating user: " + username + " mail: " + mail);
     String userId = userDAO.create(UUID.randomUUID().toString(), username, mail, PasswordUtil.hash(password));
-    System.out.println("Created with id: " + userId);
+    if (userId == null) { fireError("Failed to create account. Please try again."); return null; }
     return new User(userId, username, PasswordUtil.hash(password), mail);
   }
   @Override public List<User> getAllUsers()
