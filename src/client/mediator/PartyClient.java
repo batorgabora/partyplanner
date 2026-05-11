@@ -43,6 +43,13 @@ public class PartyClient
     sendRequest(request);
   }
 
+  public void requestGetParties(String userId)
+  {
+    JsonObject request = createRequest(Action.GET_ALL);
+    request.addProperty("userId", userId);
+    sendRequest(request);
+  }
+
 
   public String receive()
   {

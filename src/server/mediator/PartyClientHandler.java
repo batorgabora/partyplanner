@@ -3,6 +3,8 @@ package server.mediator;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import server.dao.PartyDAO;
+import server.dao.UserDAO;
 import server.model.ModelManager;
 import shared.model.Party;
 import shared.model.PartyModel;
@@ -71,7 +73,7 @@ public class PartyClientHandler implements Runnable {
     }
     switch (action) {
       case GET_ALL -> {
-        handleGetAll();
+        handleGetAll(request);
         support.firePropertyChange("parties", null, null);
       }
       case JOIN_PARTY -> {
@@ -106,8 +108,17 @@ public class PartyClientHandler implements Runnable {
     }
   }
 
-  private void handleGetAll() {
-    sendResponse("getAll", gson.toJson(model.getParties(null)));
+  private void handleGetAll(JsonObject request) {
+    if (!request.has("userId")) {
+      sendResponse("getAll", "[]");
+      return;
+    }
+    User user = new UserDAO().getById(request.get("userId").getAsString());
+    if (user == null) {
+      sendResponse("getAll", "[]");
+      return;
+    }
+    sendResponse("getAll", gson.toJson(model.getParties(user)));
   }
 
   private void handleLogin(JsonObject request) {

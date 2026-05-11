@@ -8,6 +8,7 @@ import shared.model.*;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,9 +26,14 @@ public class PartyClientModel implements PartyModel
       while (true) {
         String response = client.receive();
         if (response != null) {
-          JsonObject json = JsonParser.parseString(response).getAsJsonObject();
-          String action = json.get("action").getAsString();
-          support.firePropertyChange(action, null, json);
+          try {
+            JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+            if (!json.has("action")) continue;
+            String action = json.get("action").getAsString();
+            support.firePropertyChange(action, null, json);
+          } catch (Exception e) {
+            System.out.println("Listener error: " + e.getMessage());
+          }
         }
       }
     });
@@ -53,7 +59,22 @@ public class PartyClientModel implements PartyModel
 
   @Override public List<Party> getParties(User user)
   {
-    return List.of();
+    if (user == null) return List.of();
+    CompletableFuture<List<Party>> future = new CompletableFuture<>();
+    PropertyChangeListener listener = evt -> {
+      JsonObject json = (JsonObject) evt.getNewValue();
+      Party[] parties = gson.fromJson(json.get("data").getAsString(), Party[].class);
+      future.complete(Arrays.asList(parties));
+    };
+    support.addPropertyChangeListener("getAll", listener);
+    client.requestGetParties(user.getId());
+    try {
+      return future.get(5, TimeUnit.SECONDS);
+    } catch (Exception e) {
+      return List.of();
+    } finally {
+      support.removePropertyChangeListener("getAll", listener);
+    }
   }
 
   @Override public Party getParty(int id)

@@ -1,28 +1,52 @@
 package client.viewModel;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import shared.model.LocalUser;
 import shared.model.Party;
 import shared.model.PartyModel;
 
-public class MyPartiesViewModel
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+public class MyPartiesViewModel implements PropertyChangeListener
 {
-  private PartyModel model;
-  private ObjectProperty<Party> selectedParty;
-  private final StringProperty error = new SimpleStringProperty("");
+  private final PartyModel model;
+  private final ObjectProperty<Party> selectedParty;
+  private final ObservableList<Party> parties;
 
-
-
-  public MyPartiesViewModel(PartyModel model, ObjectProperty<Party> selectedParty){
-    //for wiring them together --> common selected
+  public MyPartiesViewModel(PartyModel model, ObjectProperty<Party> selectedParty)
+  {
     this.model = model;
     this.selectedParty = selectedParty;
-
-    // Register as listener for all 3 event types.
-    // From this point on, whenever the model fires these events,
-    // our propertyChange() method below is called automatically.
+    this.parties = FXCollections.observableArrayList();
+    model.addListener("getAll", this);
   }
 
-  public StringProperty errorProperty() { return error; }
+  @Override public void propertyChange(PropertyChangeEvent evt)
+  {
+    Platform.runLater(() -> parties.setAll(model.getParties(LocalUser.getUser())));
+  }
+
+  public ObservableList<Party> getParties()
+  {
+    return parties;
+  }
+
+  public void updateParties()
+  {
+    parties.setAll(model.getParties(LocalUser.getUser()));
+  }
+
+  public ObjectProperty<Party> selectedPartyProperty()
+  {
+    return selectedParty;
+  }
+
+  public Party getSelectedParty()
+  {
+    return selectedParty.get();
+  }
 }
