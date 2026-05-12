@@ -28,7 +28,7 @@ public class DiscoverController
   @FXML private Button onFurtherButton; // joined parties
   // invited parties
   @FXML private Label userLabel;
-  @FXML private ProgressIndicator loadingIndicator;
+  @FXML private ImageView loadingIndicator;
 
 
   public void init(ViewHandler viewhandler, DiscoverViewModel viewmodel, Region root){
@@ -55,6 +55,7 @@ public class DiscoverController
     );
 
     partyList.setVisible(false);
+
     loadingIndicator.setVisible(true);
     new Thread(() -> {
       viewmodel.updateParties();
