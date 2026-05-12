@@ -47,7 +47,7 @@ public class DiscoverViewModel implements PropertyChangeListener
     if ("error".equals(evt.getPropertyName())) {
       Platform.runLater(() -> errorProperty.set((String) evt.getNewValue()));
     } else {
-      Platform.runLater(() -> parties.setAll(model.getInvitedParties(LocalUser.getUser()));
+      Platform.runLater(() -> parties.setAll(model.getInvitedParties(LocalUser.getUser())));
     }
   }
 

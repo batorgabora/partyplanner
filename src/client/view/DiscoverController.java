@@ -59,7 +59,7 @@ public class DiscoverController
     new Thread(() -> {
       viewmodel.updateParties();
       Platform.runLater(() -> {
-        partyList.setItems(viewmodel.getParties());
+        partyList.setItems(viewmodel.getInvitedParties());
         partyList.setVisible(true);
         loadingIndicator.setVisible(false);
       });
@@ -112,7 +112,7 @@ public class DiscoverController
        viewmodel.updateParties();
       Platform.runLater(() -> {
         partyList.setVisible(true);
-        partyList.setItems(viewmodel.getParties());
+        partyList.setItems(viewmodel.getInvitedParties());
         loadingIndicator.setVisible(false);
       });
     }).start();

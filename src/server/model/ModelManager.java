@@ -110,6 +110,12 @@ public class ModelManager implements PartyModel
     return party;
   }
 
+  @Override public Party createParty(String name, String description,
+      String location, String organizerId)
+  {
+    return null;
+  }
+
   @Override public synchronized Party getParty(int id)
   {
     if (id < 0 || id >= parties.size())

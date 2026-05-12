@@ -59,10 +59,6 @@ public class MyPartiesController
 
   }
 
-  @FXML public void onMyParties() {
-    viewHandler.openView("my parties");
-  }
-
   @FXML public void onFurther()
   {
     if (viewModel.getSelectedParty() == null)
@@ -79,9 +75,6 @@ public class MyPartiesController
   @FXML public void onCreateParty(){ viewHandler.openView("create party"); }
   @FXML public void onLogout()     { viewHandler.openView("login"); }
 
-  @FXML public void onCreateParty() {
-    viewHandler.openView("create party");
-  }
   
   public Region getRoot() { return root; }
 

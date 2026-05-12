@@ -64,7 +64,7 @@ public class PartyDAO {
     String sql = "SELECT p.* FROM party p JOIN partyusers pu ON p.partyid = pu.partyid " +
         "WHERE pu.userid = ? AND pu.status IS NULL AND pu.role = 'participant'";
     ArrayList<Party> parties = new ArrayList<>();
-    try (Connection conn = DataBaseConnection.getConnection();
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
       ResultSet rs = ps.executeQuery();

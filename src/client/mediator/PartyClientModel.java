@@ -8,11 +8,8 @@ import shared.model.*;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class PartyClientModel implements PartyModel
 {
@@ -185,13 +182,20 @@ public class PartyClientModel implements PartyModel
     return List.of();
   }
 
+
   @Override public Party createParty(String name, String description,
-      String location, String organizerId)
+      String location, String organizerId, LocalDate date)
   {
-    client.requestCreateParty(name, description, location, organizerId);
+    client.requestCreateParty(name, description, location, organizerId, date);
     String response = client.receive();
     JsonObject json = JsonParser.parseString(response).getAsJsonObject();
     return gson.fromJson(json.get("data"), Party.class);
+  }
+
+  @Override public Party createParty(String name, String description,
+      String location, String organizerId)
+  {
+    return null;
   }
 
   @Override public void updateParty(Party party, String name,

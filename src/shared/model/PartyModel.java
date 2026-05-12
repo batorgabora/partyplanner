@@ -43,5 +43,7 @@ public interface PartyModel {
 
   Party createParty(String name, String description, String location, String organizerId, java.time.LocalDate date);
 
+  Party createParty(String name, String description, String location,
+      String organizerId);
   void updateParty(Party party, String name, String description, String location);
 }

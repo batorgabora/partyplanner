@@ -15,7 +15,10 @@ import javafx.collections.ObservableList;
 import shared.model.Party;
 import shared.model.PartyModel;
 
-public class MyPartiesViewModel
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+public class MyPartiesViewModel implements PropertyChangeListener
 {
   private PartyModel model;
   private ObjectProperty<Party> selectedParty;
