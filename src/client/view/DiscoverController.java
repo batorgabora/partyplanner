@@ -1,5 +1,7 @@
 package client.view;
 
+import javafx.animation.Animation;
+import javafx.animation.RotateTransition;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -55,7 +57,6 @@ public class DiscoverController
     );
 
     partyList.setVisible(false);
-
     loadingIndicator.setVisible(true);
     new Thread(() -> {
       viewmodel.updateParties();
@@ -74,9 +75,6 @@ public class DiscoverController
     }
     viewhandler.openView("party");
   }
-
-
-
 
 
 

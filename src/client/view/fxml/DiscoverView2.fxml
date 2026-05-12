@@ -39,7 +39,7 @@
       <Label fx:id="selectedLabel" layoutX="146.0" layoutY="481.0" prefHeight="17.0" prefWidth="491.0" text="no selected party" />
         <ImageView fx:id="loadingIndicator" layoutX="370.0" layoutY="240.0" fitHeight="80.0" fitWidth="80.0" visible="false">
             <image>
-                <Image url="@../cat.gif" />
+                <Image url="@../cat-2.gif" />
             </image>
         </ImageView>
     </children>

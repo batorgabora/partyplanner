@@ -7,6 +7,8 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.MyPartiesController">
     <children>
         <Pane layoutX="-1.0" layoutY="-2.0" prefHeight="534.0" prefWidth="118.0">
@@ -36,5 +38,10 @@
       <Label fx:id="selectedLabel" layoutX="146.0" layoutY="481.0" text="no selected party" />
       <Button fx:id="furtherButton1" layoutX="734.0" layoutY="8.0" mnemonicParsing="false" onAction="#onCreateParty" text="+ create party" />
       <Label fx:id="errorLabel" layoutX="146.0" layoutY="505.0" prefWidth="668.0" textFill="#cc0000" wrapText="true" />
+        <ImageView fx:id="loadingIndicator" layoutX="370.0" layoutY="240.0" fitHeight="80.0" fitWidth="80.0" visible="false">
+            <image>
+                <Image url="@../cat-2.gif" />
+            </image>
+        </ImageView>
     </children>
 </Pane>

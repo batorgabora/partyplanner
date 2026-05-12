@@ -1,10 +1,12 @@
 package client.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import shared.model.LocalUser;
 import shared.model.Party;
@@ -22,6 +24,7 @@ public class MyPartiesController
   @FXML private Label selectedLabel;
   @FXML private Label userLabel;
   @FXML private Label errorLabel;
+  @FXML private ImageView loadingIndicator;
 
   public void init(ViewHandler viewHandler, MyPartiesViewModel viewModel, Region root)
   {
@@ -33,7 +36,6 @@ public class MyPartiesController
     errorLabel.textProperty().bind(viewModel.errorProperty());
 
     partyList.setItems(viewModel.getMyParties());
-    viewModel.updateParties();
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> viewModel.selectedPartyProperty().set(newVal));
     userLabel.setText(LocalUser.getUser().getUsername());
@@ -56,6 +58,18 @@ public class MyPartiesController
         }
       }
     });
+
+
+    partyList.setVisible(false);
+    loadingIndicator.setVisible(true);
+    new Thread(() -> {
+      viewModel.updateParties();
+      Platform.runLater(() -> {
+        partyList.setItems(viewModel.getMyParties());
+        partyList.setVisible(true);
+        loadingIndicator.setVisible(false);
+      });
+    }).start();
 
   }
 
@@ -80,6 +94,15 @@ public class MyPartiesController
 
   public void reset()
   {
-    viewModel.updateParties();
+    partyList.setVisible(false);
+    loadingIndicator.setVisible(true);
+    new Thread(() -> {
+      viewModel.updateParties();
+      Platform.runLater(() -> {
+        partyList.setVisible(true);
+        partyList.setItems(viewModel.getMyParties());
+        loadingIndicator.setVisible(false);
+      });
+    }).start();
   }
 }
