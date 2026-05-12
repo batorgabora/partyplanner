@@ -66,7 +66,7 @@ public class PartyUsersDAO {
   }
 
   public List<Participant> getParticipantsByParty(String partyid) {
-    String sql = "SELECT u.*, pu.role FROM \"user\" u JOIN partyusers pu ON u.userid = pu.userid WHERE pu.partyid = ?";
+    String sql = "SELECT u.*, pu.role FROM \"user\" u JOIN partyusers pu ON u.userid = pu.userid WHERE pu.partyid = ? AND pu.status != 'declined'";
     List<Participant> participants = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
