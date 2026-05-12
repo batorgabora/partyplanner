@@ -41,7 +41,7 @@ public interface PartyModel {
   public String getRole(User user, Party party);
   public List<Option> getOptions(Party party);
 
-  Party createParty(String name, String description, String location, String organizerId);
+  Party createParty(String name, String description, String location, String organizerId, java.time.LocalDate date);
 
   void updateParty(Party party, String name, String description, String location);
 }

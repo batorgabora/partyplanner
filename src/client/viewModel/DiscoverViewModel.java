@@ -30,7 +30,8 @@ public class DiscoverViewModel implements PropertyChangeListener
     this.model = model;
     errorProperty = new SimpleStringProperty("");
     model.addListener("getAll", this);
-    parties = FXCollections.observableArrayList();  // initialize empty
+    model.addListener("error", this);
+    parties = FXCollections.observableArrayList();
   }
 
 
@@ -43,10 +44,14 @@ public class DiscoverViewModel implements PropertyChangeListener
 
   @Override public void propertyChange(PropertyChangeEvent evt)
   {
-    Platform.runLater(() -> {
-      parties.setAll(model.getInvitedParties(LocalUser.getUser()));
-    });
+    if ("error".equals(evt.getPropertyName())) {
+      Platform.runLater(() -> errorProperty.set((String) evt.getNewValue()));
+    } else {
+      Platform.runLater(() -> parties.setAll(model.getInvitedParties(LocalUser.getUser()));
+    }
   }
+
+  public StringProperty errorProperty() { return errorProperty; }
 
 
 

@@ -61,7 +61,7 @@ public class EditPartyController
     userLabel.setText(LocalUser.getUser().getUsername());
 
     userDropdown.setItems(viewmodel.getAllUsers());
-    statusLabel.setText("");
+    statusLabel.textProperty().bind(viewmodel.errorProperty());
 
     nameField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
       if (!isNowFocused) {
@@ -92,6 +92,11 @@ public class EditPartyController
     });
   }
 
+  @FXML public void onDelete() {
+    viewmodel.deleteParty();
+    viewhandler.openView("discover");
+  }
+
   @FXML public void onBack() {
     if (viewmodel.getSelectedParty() == null) {
       return;
@@ -120,7 +125,7 @@ public class EditPartyController
 
   @FXML public void onRemoveItem() {
     Item selected = itemList.getSelectionModel().getSelectedItem();
-    if (selected == null) { statusLabel.setText("Select an item first"); return; }
+    if (selected == null) { viewmodel.setError("Select an item first"); return; }
     viewmodel.removeItem(selected);
     itemList.setItems(viewmodel.getItems());
   }
@@ -135,7 +140,7 @@ public class EditPartyController
 
   @FXML public void onRemoveOption() {
     Option selected = (Option) timeList.getSelectionModel().getSelectedItem();
-    if (selected == null) { statusLabel.setText("Select an option first"); return; }
+    if (selected == null) { viewmodel.setError("Select an option first"); return; }
     viewmodel.removeOption(selected);
     timeList.setItems(viewmodel.getOptions());
   }
@@ -146,19 +151,19 @@ public class EditPartyController
 
     if (selectedUser == null)
     {
-      statusLabel.setText("Select a user first");
+      viewmodel.setError("Select a user first");
       return;
     }
 
     if (viewmodel.isAlreadyParticipant(selectedUser))
     {
-      statusLabel.setText("User is already in the party");
+      viewmodel.setError("User is already in the party");
       return;
     }
 
     viewmodel.addParticipant(selectedUser);
     memberList.setItems(viewmodel.getMembers());
-    statusLabel.setText(selectedUser.getUsername() + " added to the party");
+    viewmodel.setError(selectedUser.getUsername() + " added to the party");
   }
 
   @FXML public void onRemoveParticipant()
@@ -167,20 +172,20 @@ public class EditPartyController
 
     if (selectedParticipant == null)
     {
-      statusLabel.setText("Select a participant first");
+      viewmodel.setError("Select a participant first");
       return;
     }
 
     if (selected.getOrganizer() != null &&
         selected.getOrganizer().getId().equals(selectedParticipant.getUser().getId()))
     {
-      statusLabel.setText("Organizer cannot be removed");
+      viewmodel.setError("Organizer cannot be removed");
       return;
     }
 
     viewmodel.removeParticipant(selectedParticipant);
     memberList.setItems(viewmodel.getMembers());
-    statusLabel.setText(selectedParticipant.getUser().getUsername() + " removed from the party");
+    viewmodel.setError(selectedParticipant.getUser().getUsername() + " removed from the party");
   }
 
   @FXML public void onDelete()

@@ -1,6 +1,9 @@
 package client.viewModel;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import shared.model.*;
@@ -13,23 +16,24 @@ public class EditPartyViewModel implements PropertyChangeListener
 {
   private PartyModel model;
   private ObjectProperty<Party> selectedParty;
-
-
+  private final StringProperty error = new SimpleStringProperty("");
 
   public EditPartyViewModel(PartyModel model, ObjectProperty<Party> selectedParty){
-    //for wiring them together --> common selected
     this.model = model;
     this.selectedParty = selectedParty;
     model.addListener("party", this);
-    // Register as listener for all 3 event types.
-    // From this point on, whenever the model fires these events,
-    // our propertyChange() method below is called automatically.
+    model.addListener("error", this);
   }
 
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
-    // refresh data
+    if ("error".equals(evt.getPropertyName())) {
+      Platform.runLater(() -> error.set((String) evt.getNewValue()));
+    }
   }
+
+  public StringProperty errorProperty() { return error; }
+  public void setError(String message)  { error.set(message); }
 
 
   public ObservableList<Item> getItems() {
@@ -133,5 +137,11 @@ public class EditPartyViewModel implements PropertyChangeListener
 
   public void removeOption(Option option) {
     model.removeOption(option);
+  }
+
+  public void deleteParty() {
+    if (selectedParty.get() == null) return;
+    model.deleteParty(selectedParty.get());
+    selectedParty.set(null);
   }
 }

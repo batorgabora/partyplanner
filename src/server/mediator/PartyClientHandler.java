@@ -3,7 +3,8 @@ package server.mediator;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import server.model.ModelManager;
+import server.dao.PartyDAO;
+import server.dao.UserDAO;
 import shared.model.Party;
 import shared.model.PartyModel;
 import shared.model.User;
@@ -11,6 +12,7 @@ import shared.util.Action;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.time.LocalDate;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -70,7 +72,7 @@ public class PartyClientHandler implements Runnable {
     }
     switch (action) {
       case GET_ALL -> {
-        handleGetAll();
+        handleGetAll(request);
         support.firePropertyChange("parties", null, null);
       }
       case JOIN_PARTY -> {
@@ -105,7 +107,16 @@ public class PartyClientHandler implements Runnable {
     }
   }
 
-  private void handleGetAll() {
+  private void handleGetAll(JsonObject request) {
+    if (!request.has("userId")) {
+      sendResponse("getAll", "[]");
+      return;
+    }
+    User user = new UserDAO().getById(request.get("userId").getAsString());
+    if (user == null) {
+      sendResponse("getAll", "[]");
+      return;
+    }
     sendResponse("getAll", gson.toJson(model.getInvitedParties(null)));
   }
 
@@ -136,6 +147,9 @@ public class PartyClientHandler implements Runnable {
     String description = request.get("description").getAsString();
     String location = request.get("location").getAsString();
     String organizerId = request.get("organizerId").getAsString();
+    LocalDate date = (request.has("date") && !request.get("date").isJsonNull())
+        ? LocalDate.parse(request.get("date").getAsString())
+        : null;
 
     if (name == null || name.trim().isEmpty()) {
       sendError("Party name is required.");
@@ -146,12 +160,23 @@ public class PartyClientHandler implements Runnable {
       return;
     }
 
-    Party party = model.createParty(name, description, location, organizerId);
+    Party party = model.createParty(name, description, location, organizerId, date);
     sendResponse("createParty", gson.toJson(party));
   }
 
   private void handleDeleteParty(JsonObject request) {
-
+    String partyId = request.get("partyId").getAsString();
+    Party party = new PartyDAO().getById(partyId);
+    if (party == null) {
+      sendError("Party not found.");
+      return;
+    }
+    try {
+      model.deleteParty(party);
+      sendResponse("deleteParty", "{}");
+    } catch (Exception e) {
+      sendError("Failed to delete party: " + e.getMessage());
+    }
   }
 
   private void handleAddParticipant(JsonObject request) {
