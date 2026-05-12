@@ -1,10 +1,7 @@
 package client.view;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
@@ -71,6 +68,8 @@ public class LoginController
   {
     viewhandler.openView("create account");
   }
+
+  @FXML private ProgressIndicator loadingIndicator;
 
 
 }
