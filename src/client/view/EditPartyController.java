@@ -44,6 +44,8 @@ public class EditPartyController
     selected = viewmodel.getSelectedParty();
     if (selected == null) return;
 
+    userLabel.setText(LocalUser.getUser().getUsername());
+
     loadParty();
   }
 
@@ -58,7 +60,6 @@ public class EditPartyController
     locationField.setText(selected.getLocation());
     timeList.setItems(viewmodel.getOptions());
 
-    userLabel.setText(LocalUser.getUser().getUsername());
 
     userDropdown.setItems(viewmodel.getAllUsers());
     statusLabel.textProperty().bind(viewmodel.errorProperty());

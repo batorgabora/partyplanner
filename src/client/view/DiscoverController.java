@@ -33,40 +33,33 @@ public class DiscoverController
   @FXML private ImageView loadingIndicator;
 
 
-  public void init(ViewHandler viewhandler, DiscoverViewModel viewmodel, Region root){
+  public void init(ViewHandler viewhandler, DiscoverViewModel viewmodel, Region root) {
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
 
-    //bindings to viewmodel
-    partyList.setItems(viewmodel.getInvitedParties());
-    viewmodel.updateParties();
-    partyList.getSelectionModel().selectedItemProperty().addListener(
-        (obs, oldVal, newVal) -> viewmodel.selectedPartyProperty().set(newVal));
     userLabel.setText(LocalUser.getUser().getUsername());
 
     partyList.getSelectionModel().selectedItemProperty().addListener(
-        (obs, oldVal, newVal) -> {
-          if (newVal != null) {
-            selectedLabel.setText(newVal.toString());
-          }
-          else {
-            selectedLabel.setText("no selected party");
-          }
-        }
-    );
+        (obs, oldVal, newVal) -> viewmodel.selectedPartyProperty().set(newVal));
+
+    partyList.getSelectionModel().selectedItemProperty().addListener(
+        (obs, oldVal, newVal) -> selectedLabel.setText(newVal != null ? newVal.toString() : "no selected party"));
 
     partyList.setVisible(false);
     loadingIndicator.setVisible(true);
+
     new Thread(() -> {
       viewmodel.updateParties();
+      var items = viewmodel.getInvitedParties();
       Platform.runLater(() -> {
-        partyList.setItems(viewmodel.getInvitedParties());
+        partyList.setItems(items);
         partyList.setVisible(true);
         loadingIndicator.setVisible(false);
       });
     }).start();
   }
+
 
   @FXML public void onFurther() {
     if (viewmodel.getSelectedParty() == null) {

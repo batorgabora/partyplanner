@@ -32,14 +32,9 @@ public class MyPartiesController
     this.viewModel = viewModel;
     this.viewHandler = viewHandler;
 
-    //bindings to viewModel
     errorLabel.textProperty().bind(viewModel.errorProperty());
-
-    partyList.setItems(viewModel.getMyParties());
-    partyList.getSelectionModel().selectedItemProperty().addListener(
-        (obs, oldVal, newVal) -> viewModel.selectedPartyProperty().set(newVal));
     userLabel.setText(LocalUser.getUser().getUsername());
-    
+
     partyList.setCellFactory(lv -> new ListCell<Party>() {
       @Override
       protected void updateItem(Party party, boolean empty) {
@@ -50,27 +45,26 @@ public class MyPartiesController
         } else {
           String role = viewModel.getRoleForParty(party);
           setText(party.getName() + " (" + role + ")");
-          if ("organizer".equals(role)) {
-            setStyle("-fx-font-weight: bold;"); //-fx-text-fill: #1E4A45;
-          } else {
-            setStyle("-fx-text-fill: inherit;");
-          }
+          setStyle("organizer".equals(role) ? "-fx-font-weight: bold;" : "-fx-text-fill: inherit;");
         }
       }
     });
 
+    partyList.getSelectionModel().selectedItemProperty().addListener(
+        (obs, oldVal, newVal) -> viewModel.selectedPartyProperty().set(newVal));
 
     partyList.setVisible(false);
     loadingIndicator.setVisible(true);
+
     new Thread(() -> {
       viewModel.updateParties();
+      var items = viewModel.getMyParties(); // fetch off UI thread
       Platform.runLater(() -> {
-        partyList.setItems(viewModel.getMyParties());
+        partyList.setItems(items);           // UI thread does minimal work
         partyList.setVisible(true);
         loadingIndicator.setVisible(false);
       });
     }).start();
-
   }
 
   @FXML public void onFurther()

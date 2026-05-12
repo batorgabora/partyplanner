@@ -1,9 +1,11 @@
 package client.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
 import shared.model.Item;
@@ -32,6 +34,7 @@ public class PartyController
   @FXML private Button declineButton; //these thee change based on if party has been accepted or not
   @FXML private Button leaveButton;
   @FXML private Label userLabel;
+  @FXML private ImageView loadingIndicator;
 
   private Party selected;
 
@@ -51,31 +54,52 @@ public class PartyController
     selected = viewmodel.getSelectedParty();
     if (selected == null) return;
 
+    // instant — no network, just local data
     userLabel.setText(LocalUser.getUser().getUsername());
     nameLabel.setText(selected.getName());
     descriptionLabel.setText(selected.getDescription());
     locationLabel.setText(selected.getLocation());
     dateLabel.setText(selected.getDate());
-    itemList.setItems(viewmodel.getItems());
-    memberList.setItems(viewmodel.getMembers());
-    roleLabel.setText(viewmodel.getRole());
-    dateLabel.setText(selected.getDate());
-    locationLabel.setText(selected.getLocation());
-    timeList.setItems(viewmodel.getOptions());
 
-    String role = viewmodel.getRoleForCurrentUser(selected.getId());
-    String status = viewmodel.getStatusForCurrentUser(selected.getId());
+    // hide lists, show cat
+    itemList.setVisible(false);
+    memberList.setVisible(false);
+    timeList.setVisible(false);
+    loadingIndicator.setVisible(true);
 
-    roleLabel.setText(role != null ? role : "participant");
-    editButton.setVisible("organizer".equals(role));
+    new Thread(() -> {
+      // slow network calls off UI thread
+      var items   = viewmodel.getItems();
+      var members = viewmodel.getMembers();
+      var options = viewmodel.getOptions();
+      var role    = viewmodel.getRoleForCurrentUser(selected.getId());
+      var status  = viewmodel.getStatusForCurrentUser(selected.getId());
 
-    // show accept/decline only if invited (null status), show leave if accepted
-    boolean isInvited = status == null;
-    boolean isAccepted = "accepted".equals(status);
+      Platform.runLater(() -> {
+        itemList.setItems(items);
+        memberList.setItems(members);
+        timeList.setItems(options);
 
-    acceptButton.setVisible(isInvited);
-    declineButton.setVisible(isInvited);
-    leaveButton.setVisible(isAccepted && !"organizer".equals(role));
+        roleLabel.setText(role != null ? role : "participant");
+        editButton.setVisible("organizer".equals(role));
+
+        boolean isInvited;
+        if (status == null) {
+          isInvited = true;
+        } else {
+          isInvited = false;
+        }
+        boolean isAccepted = "accepted".equals(status);
+        acceptButton.setVisible(isInvited);
+        declineButton.setVisible(isInvited);
+        leaveButton.setVisible(isAccepted && !"organizer".equals(role));
+
+        itemList.setVisible(true);
+        memberList.setVisible(true);
+        timeList.setVisible(true);
+        loadingIndicator.setVisible(false);
+      });
+    }).start();
   }
 
   @FXML public void onDiscover() {
