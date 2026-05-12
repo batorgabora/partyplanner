@@ -12,7 +12,7 @@ public interface PartyModel {
   void removeFriend(User user, User friend);
 
 
-  List<Party> getParties(User user);
+  List<Party> getInvitedParties(User user);
   Party getParty(int id);
   void joinParty(User user, Party party);
   void leaveParty(User user, Party party);
@@ -32,6 +32,10 @@ public interface PartyModel {
   void addListener(String propertyName, PropertyChangeListener listener);
   void removeListener(String propertyName, PropertyChangeListener listener);
   User createAccount(String username, String password, String confirmPassword, String mail);
+  ArrayList<Party> getMyParties(User user);
+  void acceptInvite(User user, Party party);
+  void declineInvite(User user, Party party);
+  String getStatus(User user, Party party);
   public List<Item> getItems(Party party);
   public List<Participant> getParticipants(Party party);
   public String getRole(User user, Party party);

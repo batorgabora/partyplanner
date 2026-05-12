@@ -1,5 +1,6 @@
 package client.viewModel;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -59,6 +60,28 @@ public class PartyViewModel implements PropertyChangeListener
   public String getRoleForCurrentUser(String partyId) {
     if (selectedParty.get() == null) return null;
     return model.getRole(LocalUser.getUser(), selectedParty.get());
+  }
+
+  public void acceptInvitation() {
+    Party party = selectedParty.get();
+    if (party == null) return;
+    model.acceptInvite(LocalUser.getUser(), party);
+  }
+
+  public void declineInvitation() {
+    Party party = selectedParty.get();
+    if (party == null) return;
+    model.declineInvite(LocalUser.getUser(), party);
+  }
+
+  public String getStatusForCurrentUser(String partyId) {
+    return model.getStatus(LocalUser.getUser(), selectedParty.get());
+  }
+
+  public void leaveParty() {
+    Party party = selectedParty.get();
+    if (party == null) return;
+    model.leaveParty(LocalUser.getUser(), party);
   }
 
   @Override public void propertyChange(PropertyChangeEvent evt)

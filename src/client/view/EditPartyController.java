@@ -188,6 +188,11 @@ public class EditPartyController
     viewmodel.setError(selectedParticipant.getUser().getUsername() + " removed from the party");
   }
 
+  @FXML public void onDelete()
+  {
+//    delete party
+  }
+
 
   public Region getRoot()
   {

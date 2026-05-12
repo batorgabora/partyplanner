@@ -46,11 +46,31 @@ public class ModelManager implements PartyModel
     friend.removeFriend(user);
   }
 
-  @Override public synchronized ArrayList<Party> getParties(User user)
+
+  @Override public synchronized ArrayList<Party> getInvitedParties(User user)
   {
     if (user == null) return new ArrayList<>();
     PartyDAO partyDAO = new PartyDAO();
-    return partyDAO.getByUser(user.getId());
+    return partyDAO.getInvitedByUser((user.getId()));
+  }
+
+  @Override public synchronized ArrayList<Party> getMyParties(User user)
+  {
+    if (user == null) return new ArrayList<>();
+    PartyDAO partyDAO = new PartyDAO();
+    return partyDAO.getAcceptedByUser((user.getId()));
+  }
+
+  @Override public void acceptInvite(User user, Party party) {
+    new PartyUsersDAO().updateStatus(user.getId(), party.getId(), "accepted");
+  }
+
+  @Override public void declineInvite(User user, Party party) {
+    new PartyUsersDAO().updateStatus(user.getId(), party.getId(), "declined");
+  }
+
+  @Override public String getStatus(User user, Party party) {
+    return new PartyUsersDAO().getStatus(user.getId(), party.getId());
   }
 
 
@@ -107,18 +127,10 @@ public class ModelManager implements PartyModel
   }
 
 
-  @Override public synchronized void leaveParty(User user, Party party)
-  {
-      ArrayList<Participant> participants = party.getParticipants();
-      for (int i = 0; i < participants.size(); i++)
-      {
-        if (participants.get(i).getUser().equals(user))
-        {
-          participants.remove(i);
-          user.leaveParty(party);
-          break;
-        }
-      }
+  @Override public synchronized void leaveParty(User user, Party party) {
+    new PartyUsersDAO().updateStatus(user.getId(), party.getId(), "declined");
+    //or fully remove
+    //new PartyUsersDAO().remove(user.getId(), party.getId());
   }
 
   @Override public synchronized void deleteParty(Party party)

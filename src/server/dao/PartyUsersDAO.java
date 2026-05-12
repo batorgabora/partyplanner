@@ -95,8 +95,38 @@ public class PartyUsersDAO {
       ps.setString(1, partyid);
       ps.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      log.severe("removeByParty failed for partyId=" + partyid);
     }
+  }
+
+  public void updateStatus(String userid, String partyid, String status) {
+    String sql = "UPDATE partyusers SET status = ? WHERE userid = ? AND partyid = ?";
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, status);
+      ps.setString(2, userid);
+      ps.setString(3, partyid);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      log.severe("updateStatus failed for userId=" + userid
+      + " partyId=" + partyid  + " and status=" + status);
+    }
+  }
+
+  public String getStatus(String userid, String partyid) {
+    String sql = "SELECT status FROM partyusers WHERE userid = ? AND partyid = ?";
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, userid);
+      ps.setString(2, partyid);
+      ResultSet rs = ps.executeQuery();
+      if (rs.next())
+        return rs.getString("status");
+    } catch (SQLException e) {
+      log.severe("updateStatus failed for userId=" + userid
+          + " partyId=" + partyid);
+    }
+    return "";
   }
 
   public List<String> getOrganizerIds(String partyid) {

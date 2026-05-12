@@ -28,6 +28,8 @@ public class PartyController
   @FXML private ListView timeList;
   @FXML private ListView<Participant> memberList;
   @FXML private Button editButton;
+  @FXML private Button acceptButton;
+  @FXML private Button declineButton; //these thee change based on if party has been accepted or not
   @FXML private Button leaveButton;
   @FXML private Label userLabel;
 
@@ -49,6 +51,7 @@ public class PartyController
     selected = viewmodel.getSelectedParty();
     if (selected == null) return;
 
+    userLabel.setText(LocalUser.getUser().getUsername());
     nameLabel.setText(selected.getName());
     descriptionLabel.setText(selected.getDescription());
     locationLabel.setText(selected.getLocation());
@@ -61,8 +64,18 @@ public class PartyController
     timeList.setItems(viewmodel.getOptions());
 
     String role = viewmodel.getRoleForCurrentUser(selected.getId());
+    String status = viewmodel.getStatusForCurrentUser(selected.getId());
+
     roleLabel.setText(role != null ? role : "participant");
-    userLabel.setText(LocalUser.getUser().getUsername());
+    editButton.setVisible("organizer".equals(role));
+
+    // show accept/decline only if invited (null status), show leave if accepted
+    boolean isInvited = status == null;
+    boolean isAccepted = "accepted".equals(status);
+
+    acceptButton.setVisible(isInvited);
+    declineButton.setVisible(isInvited);
+    leaveButton.setVisible(isAccepted && !"organizer".equals(role));
   }
 
   @FXML public void onDiscover() {
@@ -75,17 +88,25 @@ public class PartyController
     viewhandler.openView("my parties");
   }
   @FXML public void onLogOut() {viewhandler.openView("login");}
-  @FXML public void addFriend()
-  {
-    //addd friend logic
-    viewhandler.openView("friends");
-  }
+  @FXML public void addFriend() { viewhandler.openView("friends");}
   @FXML public void onEditParty() {
     viewhandler.openView("edit party");
   }
 
+  @FXML public void onAccept() {
+    viewmodel.acceptInvitation();
+    viewhandler.openView("my parties");
+  }
 
+  @FXML public void onDecline() {
+    viewmodel.declineInvitation();
+    viewhandler.openView("discover");
+  }
 
+  @FXML public void onLeave() {
+    viewmodel.leaveParty();
+    viewhandler.openView("my parties");
+  }
 
   public Region getRoot()
   {

@@ -41,8 +41,9 @@ public class PartyDAO {
     return parties;
   }
 
-  public ArrayList<Party> getByUser(String userid) {
-    String sql = "SELECT p.* FROM party p JOIN partyusers pu ON p.partyid = pu.partyid WHERE pu.userid = ?";
+  public ArrayList<Party> getAcceptedByUser(String userid) {
+    String sql = "SELECT p.* FROM party p JOIN partyusers pu ON p.partyid = pu.partyid " +
+        "WHERE pu.userid = ? AND (pu.status = 'accepted' OR pu.role = 'organizer')";
     ArrayList<Party> parties = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -50,10 +51,28 @@ public class PartyDAO {
       ResultSet rs = ps.executeQuery();
       while (rs.next()) {
         Party p = mapRow(rs);
-        System.out.println("Loaded party: " + p.getName());
+        System.out.println("Loaded accepted party: " + p.getName());
         parties.add(p);
       }
-      System.out.println("Total parties loaded for user " + userid + ": " + parties.size());
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return parties;
+  }
+
+  public ArrayList<Party> getInvitedByUser(String userid) {
+    String sql = "SELECT p.* FROM party p JOIN partyusers pu ON p.partyid = pu.partyid " +
+        "WHERE pu.userid = ? AND pu.status IS NULL AND pu.role = 'participant'";
+    ArrayList<Party> parties = new ArrayList<>();
+    try (Connection conn = DataBaseConnection.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, userid);
+      ResultSet rs = ps.executeQuery();
+      while (rs.next()) {
+        Party p = mapRow(rs);
+        System.out.println("Loaded invite: " + p.getName());
+        parties.add(p);
+      }
     } catch (SQLException e) {
       log.severe("getByUser failed for userid=" + userid + ": " + e.getMessage());
     }
