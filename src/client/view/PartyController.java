@@ -59,55 +59,85 @@ public class PartyController
 
     userLabel.setText(LocalUser.getUser().getUsername());
     nameLabel.setText(selected.getName());
-    descriptionLabel.setText(selected.getDescription());
-    locationLabel.setText(selected.getLocation());
-    dateLabel.setText(selected.getDate());
 
+    // hide everything while loading
+    descriptionLabel.setVisible(false);
+    locationLabel.setVisible(false);
+    dateLabel.setVisible(false);
+    roleLabel.setVisible(false);
+    editButton.setVisible(false);
+    acceptButton.setVisible(false);
+    declineButton.setVisible(false);
+    leaveButton.setVisible(false);
+    voteButton.setVisible(false);
+    removeVoteButton.setVisible(false);
+    infoLabel.setVisible(false);
+    itemList.setVisible(false);
+    memberList.setVisible(false);
+    timeList.setVisible(false);
     loadingIndicator.setVisible(true);
 
-    var items    = viewmodel.getItems();
-    var members  = viewmodel.getMembers();
-    var options  = viewmodel.getOptions();
-    var role     = viewmodel.getRoleForCurrentUser(selected.getId());
-    var status   = viewmodel.getStatusForCurrentUser(selected.getId());
-    var hasVoted = viewmodel.hasVotedInParty(selected.getId());
+    new Thread(() -> {
+      var items    = viewmodel.getItems();
+      var members  = viewmodel.getMembers();
+      var options  = viewmodel.getOptions();
+      var role     = viewmodel.getRoleForCurrentUser(selected.getId());
+      var status   = viewmodel.getStatusForCurrentUser(selected.getId());
+      var hasVoted = viewmodel.hasVotedInParty(selected.getId());
+      var topVoted = viewmodel.getTopVotedOption(selected.getId());
 
-    itemList.setItems(items);
-    memberList.setItems(members);
-    timeList.setItems(options);
+      Platform.runLater(() -> {
+        dateLabel.setText(topVoted != null && !topVoted.equals("no votes yet") ? topVoted : selected.getDate());
+        locationLabel.setText(selected.getLocation());
 
-    timeList.setCellFactory(lv -> new javafx.scene.control.ListCell<Option>() {
-      @Override
-      protected void updateItem(Option option, boolean empty) {
-        super.updateItem(option, empty);
-        setText(empty || option == null ? null : option.getProposal() + " (" + option.getVoteCount() + " votes)");
-      }
-    });
+        itemList.setItems(items);
+        memberList.setItems(members);
+        timeList.setItems(options);
 
-    roleLabel.setText(role != null ? role : "participant");
-    editButton.setVisible("organizer".equals(role));
+        timeList.setCellFactory(lv -> new javafx.scene.control.ListCell<Option>() {
+          @Override
+          protected void updateItem(Option option, boolean empty) {
+            super.updateItem(option, empty);
+            setText(empty || option == null ? null : option.getProposal() + " (" + option.getVoteCount() + " votes)");
+          }
+        });
 
-    boolean isOrganizer = "organizer".equals(role);
-    boolean isInvited   = status == null;
-    boolean isAccepted  = "accepted".equals(status);
-    acceptButton.setVisible(!isOrganizer && isInvited);
-    declineButton.setVisible(!isOrganizer && isInvited);
-    leaveButton.setVisible(!isOrganizer && isAccepted);
+        roleLabel.setText(role != null ? role : "participant");
 
-    if (hasVoted) {
-      infoLabel.setText("you have already voted");
-      infoLabel.setStyle("-fx-text-fill: green;");
-      voteButton.setDisable(true);
-      removeVoteButton.setDisable(false);
-    } else {
-      infoLabel.setText("");
-      voteButton.setDisable(false);
-      removeVoteButton.setDisable(true);
-    }
+        boolean isOrganizer = "organizer".equals(role);
+        boolean isInvited   = status == null;
+        boolean isAccepted  = "accepted".equals(status);
 
-    loadingIndicator.setVisible(false);
+        // show everything back
+        dateLabel.setVisible(true);
+        locationLabel.setVisible(true);
+        roleLabel.setVisible(true);
+        itemList.setVisible(true);
+        memberList.setVisible(true);
+        timeList.setVisible(true);
+        voteButton.setVisible(true);
+        removeVoteButton.setVisible(true);
+        infoLabel.setVisible(true);
 
-    System.out.println(">> loading done");
+        editButton.setVisible("organizer".equals(role));
+        acceptButton.setVisible(!isOrganizer && isInvited);
+        declineButton.setVisible(!isOrganizer && isInvited);
+        leaveButton.setVisible(!isOrganizer && isAccepted);
+
+        if (hasVoted) {
+          infoLabel.setText("you have already voted");
+          infoLabel.setStyle("-fx-text-fill: green;");
+          voteButton.setDisable(true);
+          removeVoteButton.setDisable(false);
+        } else {
+          infoLabel.setText("");
+          voteButton.setDisable(false);
+          removeVoteButton.setDisable(true);
+        }
+
+        loadingIndicator.setVisible(false);
+      });
+    }).start();
   }
 
   @FXML public void onDiscover() {
