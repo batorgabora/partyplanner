@@ -64,3 +64,69 @@
 .text-area .content {
   -fx-background-color: #5C8E8A;
 }
+
+/* ── chat window ── */
+.chat-window {
+  -fx-background-color: #4A7A76;
+  -fx-border-color: #3a6460;
+  -fx-border-width: 0 0 0 2;
+}
+
+.chat-header {
+  -fx-background-color: #3a6460;
+  -fx-border-color: #2e5250;
+  -fx-border-width: 0 0 1 0;
+  -fx-padding: 0 12 0 12;
+}
+
+.chat-header-label {
+  -fx-font-weight: bold;
+  -fx-font-size: 13;
+}
+
+.chat-scroll {
+  -fx-background: #4A7A76;
+  -fx-background-color: #4A7A76;
+}
+
+.chat-messages {
+  -fx-padding: 10;
+  -fx-background-color: #4A7A76;
+}
+
+.chat-sender {
+  -fx-font-weight: bold;
+  -fx-font-size: 11;
+}
+
+.chat-time {
+  -fx-text-fill: #2e5250;
+  -fx-font-size: 10;
+}
+
+.chat-bubble-other {
+  -fx-background-color: #5C8E8A;
+  -fx-background-radius: 6;
+  -fx-padding: 6 8 6 8;
+}
+
+.chat-bubble-own {
+  -fx-background-color: #3a6460;
+  -fx-background-radius: 6;
+  -fx-padding: 6 8 6 8;
+}
+
+.chat-input-bar {
+  -fx-background-color: #3a6460;
+  -fx-border-color: #2e5250;
+  -fx-border-width: 1 0 0 0;
+  -fx-padding: 6;
+}
+
+.chat-input {
+  -fx-background-color: #4A7A76;
+}
+
+.chat-send-button {
+  -fx-font-size: 11;
+}
