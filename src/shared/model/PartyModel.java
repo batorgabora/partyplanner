@@ -46,4 +46,6 @@ public interface PartyModel {
   Party createParty(String name, String description, String location,
       String organizerId);
   void updateParty(Party party, String name, String description, String location);
+  void voteForOption(String optionId, String userId);
+  String getTopVotedOption(String partyId);
 }
