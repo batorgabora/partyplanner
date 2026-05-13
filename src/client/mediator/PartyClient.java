@@ -121,6 +121,26 @@ public class PartyClient
     sendRequest(request);
   }
 
+  public void requestVoteForOption(String optionId, String userId) {
+    JsonObject request = createRequest(Action.VOTE_FOR_OPTION);
+    request.addProperty("optionId", optionId);
+    request.addProperty("userId", userId);
+    sendRequest(request);
+  }
+
+  public void requestRemoveVote(String optionId, String userId) {
+    JsonObject request = createRequest(Action.REMOVE_VOTE);
+    request.addProperty("optionId", optionId);
+    request.addProperty("userId", userId);
+    sendRequest(request);
+  }
+
+  public void requestGetTopVotedOption(String partyId) {
+    JsonObject request = createRequest(Action.GET_TOP_VOTED_OPTION);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
   public void requestAddParticipant(int partyId, int userId) {
 
   }
