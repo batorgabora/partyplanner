@@ -109,6 +109,7 @@ public class PartyController
     acceptButton.setVisible(!isOrganizer && isInvited);
     declineButton.setVisible(!isOrganizer && isInvited);
     leaveButton.setVisible(!isOrganizer && isAccepted);
+    chatButton.setVisible(isOrganizer || isAccepted);
 
     if (hasVoted) {
       infoLabel.setText("you have already voted");
