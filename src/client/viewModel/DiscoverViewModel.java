@@ -60,7 +60,8 @@ public class DiscoverViewModel implements PropertyChangeListener
   }
 
   public void updateParties() {
-    parties.setAll(model.getInvitedParties(LocalUser.getUser()));
+    var result = model.getInvitedParties(LocalUser.getUser());
+    Platform.runLater(() -> parties.setAll(result));
   }
 
 }
