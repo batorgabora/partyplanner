@@ -4,14 +4,12 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
-import shared.model.Item;
-import shared.model.LocalUser;
-import shared.model.Participant;
-import shared.model.Party;
+import shared.model.*;
 import client.viewModel.PartyViewModel;
 
 public class PartyController
@@ -27,7 +25,7 @@ public class PartyController
   @FXML private Label dateLabel;
   @FXML private Label locationLabel;
   @FXML private ListView<Item> itemList;
-  @FXML private ListView timeList;
+  @FXML private ListView<Option> timeList;
   @FXML private ListView<Participant> memberList;
   @FXML private Button editButton;
   @FXML private Button acceptButton;
@@ -71,6 +69,14 @@ public class PartyController
     memberList.setItems(viewmodel.getMembers());
     timeList.setItems(viewmodel.getOptions());
 
+    timeList.setCellFactory(lv -> new ListCell<Option>() {
+      @Override
+      protected void updateItem(Option option, boolean empty) {
+        super.updateItem(option, empty);
+        setText(empty || option == null ? null : option.getProposal() + " (" + option.getVoteCount() + " votes)");
+      }
+    });
+
     String role   = viewmodel.getRoleForCurrentUser(selected.getId());
     String status = viewmodel.getStatusForCurrentUser(selected.getId());
 
@@ -112,13 +118,22 @@ public class PartyController
   }
 
   @FXML public void onVote() {
-    Object selected = timeList.getSelectionModel().getSelectedItem();
+    Option selected = timeList.getSelectionModel().getSelectedItem();
     if (selected == null) {
       topVoteLabel.setText("select an option first");
       return;
     }
-    viewmodel.voteForOption(selected.toString());
-    loadParty(); // refresh to show updated vote counts
+    viewmodel.voteForOption(selected.getOptionid());
+    loadParty();
+  }
+  @FXML public void onRemoveVote() {
+    Option selected = timeList.getSelectionModel().getSelectedItem();
+    if (selected == null) {
+      topVoteLabel.setText("select an option first");
+      return;
+    }
+    viewmodel.removeVote(selected.getOptionid());
+    loadParty();
   }
 
   @FXML public void onLeave() {

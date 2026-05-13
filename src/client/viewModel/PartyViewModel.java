@@ -81,6 +81,9 @@ public class PartyViewModel implements PropertyChangeListener
   public void voteForOption(String optionId) {
     model.voteForOption(optionId, LocalUser.getUser().getId());
   }
+  public void removeVote(String optionId) {
+    model.removeVote(optionId, LocalUser.getUser().getId());
+  }
 
   public String getTopVotedOption(String partyId) {
     return model.getTopVotedOption(partyId);

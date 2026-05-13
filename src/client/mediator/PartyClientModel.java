@@ -205,10 +205,21 @@ public class PartyClientModel implements PartyModel
   }
 
   @Override public void voteForOption(String optionId, String userId) {
+    client.requestVoteForOption(optionId, userId);
+    client.receive(); // wait for server ack
+  }
 
+  @Override public void removeVote(String optionId, String userId) {
+    client.requestRemoveVote(optionId, userId);
+    client.receive();
   }
 
   @Override public String getTopVotedOption(String partyId) {
-    return "";
+    client.requestGetTopVotedOption(partyId);
+    String response = client.receive();
+    JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+    return json.has("data") && !json.get("data").isJsonNull()
+        ? json.get("data").getAsString()
+        : "no votes yet";
   }
 }

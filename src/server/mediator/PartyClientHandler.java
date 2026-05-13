@@ -103,6 +103,9 @@ public class PartyClientHandler implements Runnable {
         handleAddFriend(request);
         support.firePropertyChange("parties", null, null);
       }
+      case VOTE_FOR_OPTION -> handleVoteForOption(request);
+      case REMOVE_VOTE     -> handleRemoveVote(request);
+      case GET_TOP_VOTED_OPTION -> handleGetTopVotedOption(request);
       case LOGIN -> handleLogin(request);
     }
   }
@@ -189,6 +192,26 @@ public class PartyClientHandler implements Runnable {
 
   private void handleAddFriend(JsonObject request) {
 
+  }
+
+  private void handleVoteForOption(JsonObject request) {
+    String optionId = request.get("optionId").getAsString();
+    String userId   = request.get("userId").getAsString();
+    model.voteForOption(optionId, userId);
+    sendResponse("voteForOption", "ok");
+  }
+
+  private void handleRemoveVote(JsonObject request) {
+    String optionId = request.get("optionId").getAsString();
+    String userId   = request.get("userId").getAsString();
+    model.removeVote(optionId, userId);
+    sendResponse("removeVote", "ok");
+  }
+
+  private void handleGetTopVotedOption(JsonObject request) {
+    String partyId = request.get("partyId").getAsString();
+    String top = model.getTopVotedOption(partyId);
+    sendResponse("getTopVotedOption", top != null ? top : "");
   }
 
   private void sendResponse(String action, String data) {
