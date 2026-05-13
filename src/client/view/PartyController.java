@@ -61,7 +61,9 @@ public class PartyController
     nameLabel.setText(selected.getName());
     descriptionLabel.setText(selected.getDescription());
     locationLabel.setText(selected.getLocation());
-    dateLabel.setText(selected.getDate());
+
+    var topVoted = viewmodel.getTopVotedOption(selected.getId());
+    dateLabel.setText(topVoted != null && !topVoted.equals("no votes yet") ? topVoted : selected.getDate());
 
     loadingIndicator.setVisible(true);
 
