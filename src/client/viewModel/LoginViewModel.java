@@ -9,7 +9,10 @@ import shared.model.PartyModel;
 import shared.model.User;
 import shared.util.PasswordUtil;
 
-public class LoginViewModel
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+public class LoginViewModel implements PropertyChangeListener
 {
   private PartyModel model;
   private final StringProperty username = new SimpleStringProperty("");
@@ -35,4 +38,9 @@ public class LoginViewModel
   public StringProperty usernameProperty() { return username; }
   public StringProperty passwordProperty() { return password; }
   public StringProperty errorProperty() { return error; }
+
+  @Override public void propertyChange(PropertyChangeEvent evt)
+  {
+
+  }
 }
