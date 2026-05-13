@@ -55,7 +55,6 @@ public class PartyController
 
   public void loadParty() {
     selected = viewmodel.getSelectedParty();
-    System.out.println(">>> selected: " + selected);
     if (selected == null) return;
 
     userLabel.setText(LocalUser.getUser().getUsername());
@@ -64,28 +63,14 @@ public class PartyController
     locationLabel.setText(selected.getLocation());
     dateLabel.setText(selected.getDate());
 
-    itemList.setVisible(false);
-    memberList.setVisible(false);
-    timeList.setVisible(false);
     loadingIndicator.setVisible(true);
 
-    var items = viewmodel.getItems();
-    System.out.println(">>> items: " + items.size());
-
-    var members = viewmodel.getMembers();
-    System.out.println(">>> members: " + members.size());
-
-    var options = viewmodel.getOptions();
-    System.out.println(">>> options: " + options.size());
-
-    var role = viewmodel.getRoleForCurrentUser(selected.getId());
-    System.out.println(">>> role: " + role);
-
-    var status = viewmodel.getStatusForCurrentUser(selected.getId());
-    System.out.println(">>> status: " + status);
-
+    var items    = viewmodel.getItems();
+    var members  = viewmodel.getMembers();
+    var options  = viewmodel.getOptions();
+    var role     = viewmodel.getRoleForCurrentUser(selected.getId());
+    var status   = viewmodel.getStatusForCurrentUser(selected.getId());
     var hasVoted = viewmodel.hasVotedInParty(selected.getId());
-    System.out.println(">>> hasVoted: " + hasVoted);
 
     itemList.setItems(items);
     memberList.setItems(members);
@@ -102,13 +87,13 @@ public class PartyController
     roleLabel.setText(role != null ? role : "participant");
     editButton.setVisible("organizer".equals(role));
 
-    boolean isInvited  = status == null;
-    boolean isAccepted = "accepted".equals(status);
-    acceptButton.setVisible(isInvited);
-    declineButton.setVisible(isInvited);
-    leaveButton.setVisible(isAccepted && !"organizer".equals(role));
+    boolean isOrganizer = "organizer".equals(role);
+    boolean isInvited   = status == null;
+    boolean isAccepted  = "accepted".equals(status);
+    acceptButton.setVisible(!isOrganizer && isInvited);
+    declineButton.setVisible(!isOrganizer && isInvited);
+    leaveButton.setVisible(!isOrganizer && isAccepted);
 
-    System.out.println(">>> setting vote buttons, hasVoted=" + hasVoted);
     if (hasVoted) {
       infoLabel.setText("you have already voted");
       infoLabel.setStyle("-fx-text-fill: green;");
@@ -120,11 +105,9 @@ public class PartyController
       removeVoteButton.setDisable(true);
     }
 
-    itemList.setVisible(true);
-    memberList.setVisible(true);
-    timeList.setVisible(true);
     loadingIndicator.setVisible(false);
-    System.out.println(">>> loadParty done");
+
+    System.out.println(">> loading done");
   }
 
   @FXML public void onDiscover() {
