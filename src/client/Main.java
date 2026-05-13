@@ -9,7 +9,7 @@ import client.viewModel.ViewModelFactory;
 import client.view.ViewHandler;
 
 public class Main extends Application {
-
+//scrummin
 
   @Override
   public void start(Stage stage) throws Exception {
