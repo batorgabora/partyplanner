@@ -36,6 +36,9 @@ public class PartyController
   @FXML private Label userLabel;
   @FXML private ImageView loadingIndicator;
 
+  @FXML private Button voteButton;
+  @FXML private Label topVoteLabel;
+
   private Party selected;
 
 
@@ -54,52 +57,33 @@ public class PartyController
     selected = viewmodel.getSelectedParty();
     if (selected == null) return;
 
-    // instant — no network, just local data
+    var topOption = viewmodel.getTopVotedOption(selected.getId());
+
     userLabel.setText(LocalUser.getUser().getUsername());
     nameLabel.setText(selected.getName());
     descriptionLabel.setText(selected.getDescription());
     locationLabel.setText(selected.getLocation());
-    dateLabel.setText(selected.getDate());
+    dateLabel.setText(topOption);
 
-    // hide lists, show cat
-    itemList.setVisible(false);
-    memberList.setVisible(false);
-    timeList.setVisible(false);
     loadingIndicator.setVisible(true);
 
-    new Thread(() -> {
-      // slow network calls off UI thread
-      var items   = viewmodel.getItems();
-      var members = viewmodel.getMembers();
-      var options = viewmodel.getOptions();
-      var role    = viewmodel.getRoleForCurrentUser(selected.getId());
-      var status  = viewmodel.getStatusForCurrentUser(selected.getId());
+    itemList.setItems(viewmodel.getItems());
+    memberList.setItems(viewmodel.getMembers());
+    timeList.setItems(viewmodel.getOptions());
 
-      Platform.runLater(() -> {
-        itemList.setItems(items);
-        memberList.setItems(members);
-        timeList.setItems(options);
+    String role   = viewmodel.getRoleForCurrentUser(selected.getId());
+    String status = viewmodel.getStatusForCurrentUser(selected.getId());
 
-        roleLabel.setText(role != null ? role : "participant");
-        editButton.setVisible("organizer".equals(role));
+    roleLabel.setText(role != null ? role : "participant");
+    editButton.setVisible("organizer".equals(role));
 
-        boolean isInvited;
-        if (status == null) {
-          isInvited = true;
-        } else {
-          isInvited = false;
-        }
-        boolean isAccepted = "accepted".equals(status);
-        acceptButton.setVisible(isInvited);
-        declineButton.setVisible(isInvited);
-        leaveButton.setVisible(isAccepted && !"organizer".equals(role));
+    boolean isInvited  = status == null;
+    boolean isAccepted = "accepted".equals(status);
+    acceptButton.setVisible(isInvited);
+    declineButton.setVisible(isInvited);
+    leaveButton.setVisible(isAccepted && !"organizer".equals(role));
 
-        itemList.setVisible(true);
-        memberList.setVisible(true);
-        timeList.setVisible(true);
-        loadingIndicator.setVisible(false);
-      });
-    }).start();
+    loadingIndicator.setVisible(false);
   }
 
   @FXML public void onDiscover() {
@@ -125,6 +109,16 @@ public class PartyController
   @FXML public void onDecline() {
     viewmodel.declineInvitation();
     viewhandler.openView("discover");
+  }
+
+  @FXML public void onVote() {
+    Object selected = timeList.getSelectionModel().getSelectedItem();
+    if (selected == null) {
+      topVoteLabel.setText("select an option first");
+      return;
+    }
+    viewmodel.voteForOption(selected.toString());
+    loadParty(); // refresh to show updated vote counts
   }
 
   @FXML public void onLeave() {
