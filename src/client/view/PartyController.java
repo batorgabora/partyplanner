@@ -49,6 +49,7 @@ public class PartyController
     descriptionLabel.setVisible(false);
     descriptionLabel.setManaged(false);
 
+    //bindings to viewmodel
     loadParty();
   }
 
@@ -56,12 +57,17 @@ public class PartyController
     selected = viewmodel.getSelectedParty();
     if (selected == null) return;
 
+    // instant — no network, just local data
     userLabel.setText(LocalUser.getUser().getUsername());
     nameLabel.setText(selected.getName());
     descriptionLabel.setText(selected.getDescription());
     locationLabel.setText(selected.getLocation());
     dateLabel.setText(selected.getDate());
 
+    // hide lists, show cat
+    itemList.setVisible(false);
+    memberList.setVisible(false);
+    timeList.setVisible(false);
     loadingIndicator.setVisible(true);
 
     var items    = viewmodel.getItems();

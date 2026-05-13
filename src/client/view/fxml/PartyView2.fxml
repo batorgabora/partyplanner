@@ -58,6 +58,8 @@
          </font>
       </Label>
       <ListView fx:id="timeList" layoutX="140.0" layoutY="409.0" prefHeight="86.0" prefWidth="290.0" />
+      <Button fx:id="voteButton" text="Vote" onAction="#onVote" />
+      <Label fx:id="topVoteLabel" text="Current top pick: none" />
       <Button fx:id="declineButton" layoutX="721.0" layoutY="482.0" mnemonicParsing="false" onAction="#onDecline" text="decline invitation" textFill="#e43b3b" />
       <Label layoutX="455.0" layoutY="117.0" text="members:">
          <font>
