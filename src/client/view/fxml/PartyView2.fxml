@@ -58,8 +58,6 @@
          </font>
       </Label>
       <ListView fx:id="timeList" layoutX="140.0" layoutY="409.0" prefHeight="86.0" prefWidth="290.0" />
-      <Button fx:id="voteButton" text="Vote" onAction="#onVote" />
-      <Label fx:id="topVoteLabel" text="Current top pick: none" />
       <Button fx:id="declineButton" layoutX="721.0" layoutY="482.0" mnemonicParsing="false" onAction="#onDecline" text="decline invitation" textFill="#e43b3b" />
       <Label layoutX="455.0" layoutY="117.0" text="members:">
          <font>
@@ -80,6 +78,5 @@
       <Label fx:id="infoLabel" layoutX="364.0" layoutY="500.0" prefHeight="17.0" prefWidth="304.0" />
       <Button fx:id="voteButton" layoutX="146.0" layoutY="496.0" mnemonicParsing="false" onAction="#onVote" text="vote" />
       <Button fx:id="removeVoteButton" layoutX="200.0" layoutY="495.0" mnemonicParsing="false" onAction="#onRemoveVote" text="remove vote" />
-      <Label fx:id="infoLabel" layoutX="295.0" layoutY="500.0" prefHeight="17.0" prefWidth="152.0" />
    </children>
 </Pane>

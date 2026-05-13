@@ -228,11 +228,4 @@ public class PartyClientModel implements PartyModel
 
   }
 
-  @Override public void voteForOption(String optionId, String userId) {
-
-  }
-
-  @Override public String getTopVotedOption(String partyId) {
-    return "";
-  }
 }

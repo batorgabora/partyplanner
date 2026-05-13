@@ -243,8 +243,9 @@ public class ModelManager implements PartyModel
     new OptionDAO().delete(option.getOptionid());
   }
 
-
-
+  @Override public boolean hasVotedInParty(String userId, String partyId) {
+    return new OptionDAO().hasVoted(userId, partyId);
+  }
 
   private void fireError(String message) {
     support.firePropertyChange("error", null, message);
