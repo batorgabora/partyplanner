@@ -9,7 +9,10 @@ public enum Action {
   DELETE_PARTY("deleteParty"),
   ADD_PARTICIPANT("addParticipant"),
   REMOVE_PARTICIPANT("removeParticipant"),
-  ADD_FRIEND("addFriend");
+  ADD_FRIEND("addFriend"),
+  VOTE_FOR_OPTION("voteForOption"),
+  REMOVE_VOTE("removeVote"),
+  GET_TOP_VOTED_OPTION("getTopVotedOption");
 
   private final String value;
 

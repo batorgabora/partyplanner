@@ -13,7 +13,7 @@ public class PartyUsersDAO {
   private static final Logger log = Logger.getLogger(PartyUsersDAO.class.getName());
 
   public void add(String userid, String partyid, String role) {
-    String sql = "INSERT INTO partyusers (userid, partyid, role) VALUES (?, ?, ?)";
+    String sql = "INSERT INTO partyusers (userid, partyid, role, status) VALUES (?, ?, ?, null) ON CONFLICT (userid, partyid) DO UPDATE SET role = EXCLUDED.role, status = null";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
@@ -66,7 +66,7 @@ public class PartyUsersDAO {
   }
 
   public List<Participant> getParticipantsByParty(String partyid) {
-    String sql = "SELECT u.*, pu.role FROM \"user\" u JOIN partyusers pu ON u.userid = pu.userid WHERE pu.partyid = ? AND pu.status != 'declined'";
+    String sql = "SELECT u.*, pu.role FROM \"user\" u JOIN partyusers pu ON u.userid = pu.userid WHERE pu.partyid = ? AND (pu.status != 'declined' OR pu.status IS NULL)";
     List<Participant> participants = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {

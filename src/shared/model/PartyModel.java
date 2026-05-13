@@ -24,11 +24,13 @@ public interface PartyModel {
   void manageParty(Party party, String title, String description, String location);
   void addParticipant(Party party, Participant participant);
   void removeParticipant(Party party, Participant participant);
+  void removeVote(String optionId, String userId);
   void updatePartyDate(Party party, String date);
   void addItem(Party party, String name);
   void removeItem(Item item);
   void addOption(Party party, String proposal);
   void removeOption(Option option);
+  boolean hasVotedInParty(String userId, String partyId);
   void addListener(String propertyName, PropertyChangeListener listener);
   void removeListener(String propertyName, PropertyChangeListener listener);
   User createAccount(String username, String password, String confirmPassword, String mail);
@@ -46,4 +48,6 @@ public interface PartyModel {
   Party createParty(String name, String description, String location,
       String organizerId);
   void updateParty(Party party, String name, String description, String location);
+  void voteForOption(String optionId, String userId);
+  String getTopVotedOption(String partyId);
 }

@@ -10,7 +10,6 @@ import client.view.ViewHandler;
 
 public class Main extends Application {
 
-
   @Override
   public void start(Stage stage) throws Exception {
     PartyModel model = new ModelManager();

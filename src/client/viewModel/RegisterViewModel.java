@@ -3,7 +3,10 @@ package client.viewModel;
 import shared.model.PartyModel;
 import shared.model.User;
 
-public class RegisterViewModel
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+public class RegisterViewModel implements PropertyChangeListener
 {
   private PartyModel model;
 
@@ -15,5 +18,10 @@ public class RegisterViewModel
   {
     User user = model.createAccount(username, password, confirmPassword, mail);
     return user != null;
+  }
+
+  @Override public void propertyChange(PropertyChangeEvent evt)
+  {
+
   }
 }

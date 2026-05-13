@@ -125,6 +125,11 @@ public class PartyClientModel implements PartyModel
 
   }
 
+  @Override public boolean hasVotedInParty(String userId, String partyId)
+  {
+    return false;
+  }
+
   @Override public void addListener(String propertyName, PropertyChangeListener listener)
   {
     support.addPropertyChangeListener(propertyName, listener);
@@ -155,6 +160,25 @@ public class PartyClientModel implements PartyModel
   @Override public void declineInvite(User user, Party party)
   {
 
+  }
+
+  @Override public void voteForOption(String optionId, String userId) {
+    client.requestVoteForOption(optionId, userId);
+    client.receive(); // wait for server ack
+  }
+
+  @Override public void removeVote(String optionId, String userId) {
+    client.requestRemoveVote(optionId, userId);
+    client.receive();
+  }
+
+  @Override public String getTopVotedOption(String partyId) {
+    client.requestGetTopVotedOption(partyId);
+    String response = client.receive();
+    JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+    return json.has("data") && !json.get("data").isJsonNull()
+        ? json.get("data").getAsString()
+        : "no votes yet";
   }
 
   @Override public String getStatus(User user, Party party)
@@ -203,4 +227,5 @@ public class PartyClientModel implements PartyModel
   {
 
   }
+
 }
