@@ -24,6 +24,7 @@ public interface PartyModel {
   void manageParty(Party party, String title, String description, String location);
   void addParticipant(Party party, Participant participant);
   void removeParticipant(Party party, Participant participant);
+  void removeVote(String optionId, String userId);
   void updatePartyDate(Party party, String date);
   void addItem(Party party, String name);
   void removeItem(Item item);

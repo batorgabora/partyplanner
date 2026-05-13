@@ -210,14 +210,15 @@ public class ModelManager implements PartyModel
     new PartyDAO().update(party.getId(), name, description, location);
   }
 
-  @Override public void voteForOption(String optionId, String userId)
-  {
-
+  @Override public void voteForOption(String optionId, String userId) {
+    new OptionDAO().vote(optionId, userId);
   }
 
-  @Override public String getTopVotedOption(String partyId)
-  {
-    return "";
+  @Override public String getTopVotedOption(String partyId) {
+    return new OptionDAO().getTopVoted(partyId);
+  }
+  @Override public void removeVote(String optionId, String userId) {
+    new OptionDAO().removeVote(optionId, userId);
   }
 
   @Override public void updatePartyDate(Party party, String date) {
