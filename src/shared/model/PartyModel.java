@@ -53,4 +53,6 @@ public interface PartyModel {
   String getTopVotedOption(String partyId);
   void claimItem(String itemId, String userId);
   void unclaimItem(String itemId);
+  Message sendMessage(String partyId, String userId, String content);
+  List<Message> getMessages(String partyId);
 }

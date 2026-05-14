@@ -96,8 +96,10 @@ public class PartyClientHandler implements Runnable {
       case GET_PARTICIPANTS     -> handleGetParticipants(request);
       case ADD_PARTICIPANT      -> handleAddParticipant(request);
       case REMOVE_PARTICIPANT   -> handleRemoveParticipant(request);
-      case CLAIM_ITEM   -> handleClaimItem(request);
-      case UNCLAIM_ITEM -> handleUnclaimItem(request);
+      case CLAIM_ITEM           -> handleClaimItem(request);
+      case UNCLAIM_ITEM         -> handleUnclaimItem(request);
+      case SEND_MESSAGE         -> handleSendMessage(request);
+      case GET_MESSAGES         -> handleGetMessages(request);
     }
   }
 
@@ -338,6 +340,25 @@ public class PartyClientHandler implements Runnable {
     if (party == null || user == null) { sendError("Party or user not found."); return; }
     model.removeParticipant(party, new Participant(party, user));
     sendResponse("removeParticipant", "ok");
+  }
+
+  private void handleSendMessage(JsonObject request) {
+    String partyId = request.get("partyId").getAsString();
+    String userId  = request.get("userId").getAsString();
+    String content = request.get("content").getAsString();
+    if (content.trim().isEmpty()) { sendError("Message content cannot be empty."); return; }
+    Party party = new PartyDAO().getById(partyId);
+    if (party == null) { sendError("Party not found."); return; }
+    Message message = model.sendMessage(partyId, userId, content);
+    if (message == null) { sendError("Failed to send message."); return; }
+    sendResponse("sendMessage", gson.toJson(message));
+  }
+
+  private void handleGetMessages(JsonObject request) {
+    String partyId = request.get("partyId").getAsString();
+    Party party = new PartyDAO().getById(partyId);
+    if (party == null) { sendError("Party not found."); return; }
+    sendResponse("getMessages", gson.toJson(model.getMessages(partyId)));
   }
 
   private void sendResponse(String action, String data) {

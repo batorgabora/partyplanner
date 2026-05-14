@@ -1,6 +1,8 @@
 package client.view;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

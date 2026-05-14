@@ -33,7 +33,9 @@ public enum Action {
   ADD_PARTICIPANT("addParticipant"),
   REMOVE_PARTICIPANT("removeParticipant"),
   CLAIM_ITEM("claimItem"),
-  UNCLAIM_ITEM("unclaimItem");
+  UNCLAIM_ITEM("unclaimItem"),
+  SEND_MESSAGE("sendMessage"),
+  GET_MESSAGES("getMessages");
 
   private final String value;
 

@@ -95,6 +95,7 @@ public class PartyController
     setContentVisible(false);
 
     new Thread(() -> {
+      // all server calls happen off the UI thread
       var items    = viewmodel.getItems();
       var members  = viewmodel.getMembers();
       var options  = viewmodel.getOptions();
@@ -203,14 +204,17 @@ public class PartyController
     Option option = timeList.getSelectionModel().getSelectedItem();
     if (option == null) {
       infoLabel.setText("select an option first");
+      infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
     if (viewmodel.hasVotedInParty(selected.getId())) {
       infoLabel.setText("you already voted, remove your vote first");
+      infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
     viewmodel.voteForOption(option.getOptionid());
     infoLabel.setText("vote cast!");
+    infoLabel.setStyle("-fx-text-fill: green;");
     loadParty();
   }
 
@@ -219,12 +223,21 @@ public class PartyController
     Option option = timeList.getSelectionModel().getSelectedItem();
     if (option == null) {
       infoLabel.setText("select an option first");
+      infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
     viewmodel.removeVote(option.getOptionid());
     infoLabel.setText("vote removed");
+    infoLabel.setStyle("-fx-text-fill: orange;");
     loadParty();
   }
+
+  @FXML public void onDiscover()   { viewhandler.openView("discover"); }
+  @FXML public void onFriends()    { viewhandler.openView("friends"); }
+  @FXML public void onMyParties()  { viewhandler.openView("my parties"); }
+  @FXML public void onLogOut()     { viewhandler.openView("login"); }
+  @FXML public void addFriend()    { viewhandler.openView("friends"); }
+  @FXML public void onEditParty()  { viewhandler.openView("edit party"); }
 
   private boolean chatOpen = false;
   @FXML public void onChat()
@@ -263,13 +276,6 @@ public class PartyController
       memberList.setPrefWidth(216);
     }
   }
-
-  @FXML public void onDiscover()   { viewhandler.openView("discover"); }
-  @FXML public void onFriends()    { viewhandler.openView("friends"); }
-  @FXML public void onMyParties()  { viewhandler.openView("my parties"); }
-  @FXML public void onLogOut()     { viewhandler.openView("login"); }
-  @FXML public void addFriend()    { viewhandler.openView("friends"); }
-  @FXML public void onEditParty()  { viewhandler.openView("edit party"); }
 
   @FXML public void onAccept()
   {
