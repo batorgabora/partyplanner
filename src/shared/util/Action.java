@@ -2,17 +2,35 @@ package shared.util;
 
 public enum Action {
   GET_ALL("getAll"),
+  GET_MY_PARTIES("getMyParties"),
+  GET_INVITED_PARTIES("getInvitedParties"),
   LOGIN("login"),
+  CREATE_ACCOUNT("createAccount"),
+  GET_ALL_USERS("getAllUsers"),
+  ADD_FRIEND("addFriend"),
   JOIN_PARTY("joinParty"),
   LEAVE_PARTY("leaveParty"),
+  ACCEPT_INVITE("acceptInvite"),
+  DECLINE_INVITE("declineInvite"),
+  GET_STATUS("getStatus"),
+  GET_ROLE("getRole"),
   CREATE_PARTY("createParty"),
+  UPDATE_PARTY("updateParty"),
+  UPDATE_PARTY_DATE("updatePartyDate"),
   DELETE_PARTY("deleteParty"),
-  ADD_PARTICIPANT("addParticipant"),
-  REMOVE_PARTICIPANT("removeParticipant"),
-  ADD_FRIEND("addFriend"),
+  GET_ITEMS("getItems"),
+  ADD_ITEM("addItem"),
+  REMOVE_ITEM("removeItem"),
+  GET_OPTIONS("getOptions"),
+  ADD_OPTION("addOption"),
+  REMOVE_OPTION("removeOption"),
   VOTE_FOR_OPTION("voteForOption"),
   REMOVE_VOTE("removeVote"),
-  GET_TOP_VOTED_OPTION("getTopVotedOption");
+  GET_TOP_VOTED_OPTION("getTopVotedOption"),
+  HAS_VOTED("hasVoted"),
+  GET_PARTICIPANTS("getParticipants"),
+  ADD_PARTICIPANT("addParticipant"),
+  REMOVE_PARTICIPANT("removeParticipant");
 
   private final String value;
 
