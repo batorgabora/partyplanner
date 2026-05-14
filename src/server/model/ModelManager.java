@@ -213,12 +213,20 @@ public class ModelManager implements PartyModel
   @Override public void voteForOption(String optionId, String userId) {
     new OptionDAO().vote(optionId, userId);
   }
-
+  @Override public boolean hasVotedForOption(String userId, String optionId) {
+    return new OptionDAO().hasVotedForOption(userId, optionId);
+  }
   @Override public String getTopVotedOption(String partyId) {
     return new OptionDAO().getTopVoted(partyId);
   }
   @Override public void removeVote(String optionId, String userId) {
     new OptionDAO().removeVote(optionId, userId);
+  }
+  @Override public void claimItem(String itemId, String userId) {
+    new ItemDAO().claimItem(itemId, userId);
+  }
+  @Override public void unclaimItem(String itemId) {
+    new ItemDAO().unclaimItem(itemId);
   }
 
   @Override public void updatePartyDate(Party party, String date) {

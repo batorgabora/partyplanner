@@ -94,6 +94,20 @@ public class OptionDAO {
     }
   }
 
+  public boolean hasVotedForOption(String userId, String optionId) {
+    String sql = "SELECT COUNT(*) FROM vote WHERE userid = ? AND optionid = ?";
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, userId);
+      ps.setString(2, optionId);
+      ResultSet rs = ps.executeQuery();
+      return rs.next() && rs.getInt(1) > 0;
+    } catch (SQLException e) {
+      log.severe("hasVotedForOption failed: " + e.getMessage());
+    }
+    return false;
+  }
+
   public String getTopVoted(String partyId) {
     String sql = """
         SELECT o.proposal
