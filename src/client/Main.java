@@ -1,5 +1,6 @@
 package client;
 
+import client.mediator.PartyClientModel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import server.model.ModelManager;
@@ -12,7 +13,7 @@ public class Main extends Application {
 
   @Override
   public void start(Stage stage) throws Exception {
-    PartyModel model = new ModelManager();
+    PartyModel model = new PartyClientModel("localhost", 9999);
 
     ViewModelFactory viewModelFactory = new ViewModelFactory(model);
     ViewHandler viewHandler = new ViewHandler(viewModelFactory);

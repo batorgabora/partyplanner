@@ -6,8 +6,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+
 import shared.model.*;
 import client.viewModel.PartyViewModel;
 
@@ -30,6 +33,11 @@ public class PartyController
   @FXML private Button acceptButton;
   @FXML private Button declineButton;
   @FXML private Button leaveButton;
+  @FXML private Button chatButton;
+  @FXML private Button addfriendButton;
+  @FXML private VBox chatWindow;
+  @FXML private VBox chatMessages;
+  @FXML private TextField chatInput;
   @FXML private Label userLabel;
   @FXML private ImageView loadingIndicator;
   @FXML private Label infoLabel;
@@ -43,6 +51,9 @@ public class PartyController
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
+    leaveButton.setVisible(false);
+    chatButton.setVisible(false);
+    chatWindow.setVisible(false);
 
     descriptionLabel.setVisible(false);
     descriptionLabel.setManaged(false);
@@ -64,6 +75,7 @@ public class PartyController
     selected = viewmodel.getSelectedParty();
     if (selected == null) return;
 
+    // instant — no network, just local data
     userLabel.setText(LocalUser.getUser().getUsername());
     nameLabel.setText(selected.getName());
 
@@ -96,6 +108,7 @@ public class PartyController
         acceptButton.setVisible(!isOrganizer && isInvited);
         declineButton.setVisible(!isOrganizer && isInvited);
         leaveButton.setVisible(!isOrganizer && isAccepted);
+        chatButton.setVisible(isOrganizer || isAccepted);
 
         if (hasVoted) {
           infoLabel.setText("you have already voted");
@@ -175,7 +188,45 @@ public class PartyController
   @FXML public void onLogOut()     { viewhandler.openView("login"); }
   @FXML public void addFriend()    { viewhandler.openView("friends"); }
   @FXML public void onEditParty()  { viewhandler.openView("edit party"); }
-  @FXML public void onChat() {}
+
+  private boolean chatOpen = false;
+  @FXML public void onChat()
+  {
+    chatOpen = !chatOpen;
+    if (chatOpen) {
+      dateLabel.setLayoutX(509);
+      dateLabel.setLayoutY(2);
+      locationLabel.setLayoutX(509);
+      locationLabel.setLayoutY(28);
+      memberList.setPrefHeight(202);
+      editButton.setLayoutX(544);
+      editButton.setLayoutY(397);
+      chatButton.setLayoutX(543);
+      chatButton.setLayoutY(439);
+      leaveButton.setLayoutX(542);
+      leaveButton.setLayoutY(482);
+      addfriendButton.setLayoutX(555);
+      chatWindow.setVisible(true);
+      addfriendButton.setLayoutX(535);
+      memberList.setPrefWidth(175);
+    }
+    else {
+      dateLabel.setLayoutX(685);
+      dateLabel.setLayoutY(1);
+      locationLabel.setLayoutX(684);
+      locationLabel.setLayoutY(22);
+      memberList.setPrefHeight(331);
+      editButton.setLayoutX(785);
+      editButton.setLayoutY(342);
+      chatButton.setLayoutX(755);
+      chatButton.setLayoutY(439);
+      leaveButton.setLayoutX(752);
+      leaveButton.setLayoutY(482);
+      chatWindow.setVisible(false);
+      addfriendButton.setLayoutX(596);
+      memberList.setPrefWidth(216);
+    }
+  }
 
   @FXML public void onAccept()
   {

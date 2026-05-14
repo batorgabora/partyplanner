@@ -25,19 +25,13 @@ public class ItemDAO {
   }
 
   public List<Item> getByParty(String partyid) {
-    System.out.println("Fetching items for partyid: " + partyid);
     String sql = "SELECT * FROM item WHERE partyid = ?";
     List<Item> items = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyid);
       ResultSet rs = ps.executeQuery();
-      while (rs.next()) {
-        Item i = mapRow(rs);
-        System.out.println("Loaded item: " + i.getName());
-        items.add(i);
-      }
-      System.out.println("Total items: " + items.size());
+      while (rs.next()) items.add(mapRow(rs));
     } catch (SQLException e) {
       log.severe("getByParty failed for partyid=" + partyid + ": " + e.getMessage());
     }

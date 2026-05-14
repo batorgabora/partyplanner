@@ -37,20 +37,6 @@ public class PartyClient
     }
   }
 
-  public void requestGetAll()
-  {
-    JsonObject request = createRequest(Action.GET_ALL);
-    sendRequest(request);
-  }
-
-  public void requestGetParties(String userId)
-  {
-    JsonObject request = createRequest(Action.GET_ALL);
-    request.addProperty("userId", userId);
-    sendRequest(request);
-  }
-
-
   public String receive()
   {
     try
@@ -63,13 +49,17 @@ public class PartyClient
     }
   }
 
-
   private JsonObject createRequest(Action action)
   {
     JsonObject request = new JsonObject();
     request.addProperty("type", "request");
     request.addProperty("action", action.getValue());
     return request;
+  }
+
+  private synchronized void sendRequest(JsonObject request)
+  {
+    outputWriter.println(gson.toJson(request));
   }
 
   // User operations
@@ -80,7 +70,21 @@ public class PartyClient
     sendRequest(request);
   }
 
-  public void requestAddFriend(int userId, int friendId) {
+  public void requestCreateAccount(String username, String password, String confirmPassword, String mail) {
+    JsonObject request = createRequest(Action.CREATE_ACCOUNT);
+    request.addProperty("username", username);
+    request.addProperty("password", password);
+    request.addProperty("confirmPassword", confirmPassword);
+    request.addProperty("mail", mail);
+    sendRequest(request);
+  }
+
+  public void requestGetAllUsers() {
+    JsonObject request = createRequest(Action.GET_ALL_USERS);
+    sendRequest(request);
+  }
+
+  public void requestAddFriend(String userId, String friendId) {
     JsonObject request = createRequest(Action.ADD_FRIEND);
     request.addProperty("userId", userId);
     request.addProperty("friendId", friendId);
@@ -88,21 +92,23 @@ public class PartyClient
   }
 
   // Party operations
-  public void requestJoinParty(int userId, int partyId) {
-    JsonObject request = createRequest(Action.JOIN_PARTY);
-    request.addProperty("userId", userId);
-    request.addProperty("partyId", partyId);
+  public void requestGetAll() {
+    JsonObject request = createRequest(Action.GET_ALL);
     sendRequest(request);
   }
 
-  public void requestLeaveParty(int userId, int partyId) {
-    JsonObject request = createRequest(Action.LEAVE_PARTY);
+  public void requestGetMyParties(String userId) {
+    JsonObject request = createRequest(Action.GET_MY_PARTIES);
     request.addProperty("userId", userId);
-    request.addProperty("partyId", partyId);
     sendRequest(request);
   }
 
-  // Organizer operations
+  public void requestGetInvitedParties(String userId) {
+    JsonObject request = createRequest(Action.GET_INVITED_PARTIES);
+    request.addProperty("userId", userId);
+    sendRequest(request);
+  }
+
   public void requestCreateParty(String name, String description, String location, String organizerId, LocalDate date) {
     JsonObject request = createRequest(Action.CREATE_PARTY);
     request.addProperty("name", name);
@@ -118,6 +124,104 @@ public class PartyClient
   public void requestDeleteParty(String partyId) {
     JsonObject request = createRequest(Action.DELETE_PARTY);
     request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
+  public void requestUpdateParty(String partyId, String name, String description, String location) {
+    JsonObject request = createRequest(Action.UPDATE_PARTY);
+    request.addProperty("partyId", partyId);
+    request.addProperty("name", name);
+    request.addProperty("description", description);
+    request.addProperty("location", location);
+    sendRequest(request);
+  }
+
+  public void requestUpdatePartyDate(String partyId, String date) {
+    JsonObject request = createRequest(Action.UPDATE_PARTY_DATE);
+    request.addProperty("partyId", partyId);
+    request.addProperty("date", date);
+    sendRequest(request);
+  }
+
+  public void requestJoinParty(String userId, String partyId) {
+    JsonObject request = createRequest(Action.JOIN_PARTY);
+    request.addProperty("userId", userId);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
+  public void requestLeaveParty(String userId, String partyId) {
+    JsonObject request = createRequest(Action.LEAVE_PARTY);
+    request.addProperty("userId", userId);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
+  public void requestAcceptInvite(String userId, String partyId) {
+    JsonObject request = createRequest(Action.ACCEPT_INVITE);
+    request.addProperty("userId", userId);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
+  public void requestDeclineInvite(String userId, String partyId) {
+    JsonObject request = createRequest(Action.DECLINE_INVITE);
+    request.addProperty("userId", userId);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
+  public void requestGetStatus(String userId, String partyId) {
+    JsonObject request = createRequest(Action.GET_STATUS);
+    request.addProperty("userId", userId);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
+  public void requestGetRole(String userId, String partyId) {
+    JsonObject request = createRequest(Action.GET_ROLE);
+    request.addProperty("userId", userId);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
+  // Item operations
+  public void requestGetItems(String partyId) {
+    JsonObject request = createRequest(Action.GET_ITEMS);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
+  public void requestAddItem(String partyId, String name) {
+    JsonObject request = createRequest(Action.ADD_ITEM);
+    request.addProperty("partyId", partyId);
+    request.addProperty("name", name);
+    sendRequest(request);
+  }
+
+  public void requestRemoveItem(String itemId) {
+    JsonObject request = createRequest(Action.REMOVE_ITEM);
+    request.addProperty("itemId", itemId);
+    sendRequest(request);
+  }
+
+  // Option operations
+  public void requestGetOptions(String partyId) {
+    JsonObject request = createRequest(Action.GET_OPTIONS);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
+  public void requestAddOption(String partyId, String proposal) {
+    JsonObject request = createRequest(Action.ADD_OPTION);
+    request.addProperty("partyId", partyId);
+    request.addProperty("proposal", proposal);
+    sendRequest(request);
+  }
+
+  public void requestRemoveOption(String optionId) {
+    JsonObject request = createRequest(Action.REMOVE_OPTION);
+    request.addProperty("optionId", optionId);
     sendRequest(request);
   }
 
@@ -141,17 +245,32 @@ public class PartyClient
     sendRequest(request);
   }
 
-  public void requestAddParticipant(int partyId, int userId) {
-
+  public void requestHasVoted(String userId, String partyId) {
+    JsonObject request = createRequest(Action.HAS_VOTED);
+    request.addProperty("userId", userId);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
   }
 
-  public void requestRemoveParticipant(int partyId, int userId) {
-
+  // Participant operations
+  public void requestGetParticipants(String partyId) {
+    JsonObject request = createRequest(Action.GET_PARTICIPANTS);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
   }
 
-  private synchronized void sendRequest(JsonObject request)
-  {
-    outputWriter.println(gson.toJson(request));
+  public void requestAddParticipant(String partyId, String userId) {
+    JsonObject request = createRequest(Action.ADD_PARTICIPANT);
+    request.addProperty("partyId", partyId);
+    request.addProperty("userId", userId);
+    sendRequest(request);
+  }
+
+  public void requestRemoveParticipant(String partyId, String userId) {
+    JsonObject request = createRequest(Action.REMOVE_PARTICIPANT);
+    request.addProperty("partyId", partyId);
+    request.addProperty("userId", userId);
+    sendRequest(request);
   }
 
   public void close()
