@@ -82,6 +82,14 @@ public class PartyViewModel implements PropertyChangeListener
     return model.getTopVotedOption(partyId);
   }
 
+  public void claimItem(String itemId) {
+    model.claimItem(itemId, LocalUser.getUser().getId());
+  }
+
+  public void unclaimItem(String itemId) {
+    model.unclaimItem(itemId);
+  }
+
   public void leaveParty() {
     Party party = selectedParty.get();
     if (party == null) return;
@@ -90,6 +98,10 @@ public class PartyViewModel implements PropertyChangeListener
 
   public boolean hasVotedInParty(String id){
     return model.hasVotedInParty(LocalUser.getUser().getId(), id);
+  }
+
+  public boolean hasVotedForOption(String optionId) {
+    return model.hasVotedForOption(LocalUser.getUser().getId(), optionId);
   }
 
   public void voteForOption(String optionId) {

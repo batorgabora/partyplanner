@@ -12,6 +12,9 @@ import shared.model.LocalUser;
 import shared.model.Party;
 import client.viewModel.MyPartiesViewModel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MyPartiesController
 {
 
@@ -35,32 +38,39 @@ public class MyPartiesController
     errorLabel.textProperty().bind(viewModel.errorProperty());
     userLabel.setText(LocalUser.getUser().getUsername());
 
-    partyList.setCellFactory(lv -> new ListCell<Party>() {
-      @Override
-      protected void updateItem(Party party, boolean empty) {
-        super.updateItem(party, empty);
-        if (empty || party == null) {
-          setText(null);
-          setStyle("");
-        } else {
-          String role = viewModel.getRoleForParty(party);
-          setText(party.getName() + " (" + role + ")");
-          setStyle("organizer".equals(role) ? "-fx-font-weight: bold;" : "-fx-text-fill: inherit;");
-        }
-      }
-    });
-
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> viewModel.selectedPartyProperty().set(newVal));
 
+    loadParties();
+  }
+
+  private void loadParties()
+  {
     partyList.setVisible(false);
     loadingIndicator.setVisible(true);
 
     new Thread(() -> {
       viewModel.updateParties();
-      var items = viewModel.getMyParties(); // fetch off UI thread
+      var items = viewModel.getMyParties();
+
+      // fetch all roles off UI thread so cell factory doesn't make server calls while rendering
+      Map<String, String> roles = new HashMap<>();
+      for (Party party : items) {
+        roles.put(party.getId(), viewModel.getRoleForParty(party));
+      }
+
       Platform.runLater(() -> {
-        partyList.setItems(items);           // UI thread does minimal work
+        partyList.setCellFactory(lv -> new ListCell<Party>() {
+          @Override
+          protected void updateItem(Party party, boolean empty) {
+            super.updateItem(party, empty);
+            if (empty || party == null) { setText(null); setStyle(""); return; }
+            String role = roles.getOrDefault(party.getId(), "participant");
+            setText(party.getName() + " (" + role + ")");
+            setStyle("organizer".equals(role) ? "-fx-font-weight: bold;" : "-fx-text-fill: inherit;");
+          }
+        });
+        partyList.setItems(items);
         partyList.setVisible(true);
         loadingIndicator.setVisible(false);
       });
@@ -83,20 +93,6 @@ public class MyPartiesController
   @FXML public void onCreateParty(){ viewHandler.openView("create party"); }
   @FXML public void onLogout()     { viewHandler.openView("login"); }
 
-  
   public Region getRoot() { return root; }
-
-  public void reset()
-  {
-    partyList.setVisible(false);
-    loadingIndicator.setVisible(true);
-    new Thread(() -> {
-      viewModel.updateParties();
-      Platform.runLater(() -> {
-        partyList.setVisible(true);
-        partyList.setItems(viewModel.getMyParties());
-        loadingIndicator.setVisible(false);
-      });
-    }).start();
-  }
+  public void reset()     { loadParties(); }
 }

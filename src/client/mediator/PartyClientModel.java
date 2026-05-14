@@ -139,6 +139,7 @@ public class PartyClientModel implements PartyModel
     sendAndReceive();
   }
 
+
   @Override public void joinParty(User user, Party party) {
     client.requestJoinParty(user.getId(), party.getId());
     sendAndReceive();
@@ -173,6 +174,7 @@ public class PartyClientModel implements PartyModel
     return getData(json);
   }
 
+  //items
   @Override public List<Item> getItems(Party party) {
     client.requestGetItems(party.getId());
     JsonObject json = sendAndReceive();
@@ -191,6 +193,18 @@ public class PartyClientModel implements PartyModel
     sendAndReceive();
   }
 
+  @Override public void claimItem(String itemId, String userId) {
+    client.requestClaimItem(itemId, userId);
+    sendAndReceive();
+  }
+
+  @Override public void unclaimItem(String itemId) {
+    client.requestUnclaimItem(itemId);
+    sendAndReceive();
+  }
+
+
+  //options
   @Override public List<Option> getOptions(Party party) {
     client.requestGetOptions(party.getId());
     JsonObject json = sendAndReceive();
@@ -234,6 +248,15 @@ public class PartyClientModel implements PartyModel
     return Boolean.parseBoolean(getData(json));
   }
 
+  @Override public boolean hasVotedForOption(String userId, String optionId) {
+    client.requestHasVotedForOption(userId, optionId);
+    JsonObject json = sendAndReceive();
+    if (isError(json)) return false;
+    return Boolean.parseBoolean(getData(json));
+  }
+
+
+  //participants
   @Override public List<Participant> getParticipants(Party party) {
     client.requestGetParticipants(party.getId());
     JsonObject json = sendAndReceive();
@@ -252,7 +275,12 @@ public class PartyClientModel implements PartyModel
     sendAndReceive();
   }
 
-  @Override public void manageParty(Party party, String title, String description, String location) {}
+  @Override public void manageParty(Party party, String title,
+      String description, String location)
+  {
+
+  }
+
 
   @Override public void addListener(String propertyName, PropertyChangeListener listener) {
     support.addPropertyChangeListener(propertyName, listener);
