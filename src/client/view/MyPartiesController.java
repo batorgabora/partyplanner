@@ -1,6 +1,8 @@
 package client.view;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -53,14 +55,19 @@ public class MyPartiesController
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> viewModel.selectedPartyProperty().set(newVal));
 
+    loadParties();
+  }
+
+  private void loadParties()
+  {
     partyList.setVisible(false);
     loadingIndicator.setVisible(true);
 
     new Thread(() -> {
       viewModel.updateParties();
-      var items = viewModel.getMyParties(); // fetch off UI thread
+      ObservableList<Party> items = viewModel.getMyParties();
       Platform.runLater(() -> {
-        partyList.setItems(items);           // UI thread does minimal work
+        partyList.setItems(items);
         partyList.setVisible(true);
         loadingIndicator.setVisible(false);
       });
@@ -83,20 +90,10 @@ public class MyPartiesController
   @FXML public void onCreateParty(){ viewHandler.openView("create party"); }
   @FXML public void onLogout()     { viewHandler.openView("login"); }
 
-  
   public Region getRoot() { return root; }
 
   public void reset()
   {
-    partyList.setVisible(false);
-    loadingIndicator.setVisible(true);
-    new Thread(() -> {
-      viewModel.updateParties();
-      Platform.runLater(() -> {
-        partyList.setVisible(true);
-        partyList.setItems(viewModel.getMyParties());
-        loadingIndicator.setVisible(false);
-      });
-    }).start();
+    loadParties();
   }
 }
