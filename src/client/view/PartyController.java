@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -17,6 +18,10 @@ import shared.model.*;
 import client.viewModel.PartyViewModel;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class PartyController
 {
@@ -40,6 +45,7 @@ public class PartyController
   @FXML private Button chatButton;
   @FXML private Button addfriendButton;
   @FXML private VBox chatWindow;
+  @FXML private ScrollPane chatScrollPane;
   @FXML private VBox chatMessages;
   @FXML private TextField chatInput;
   @FXML private Label userLabel;
@@ -248,6 +254,7 @@ public class PartyController
 
       chatMessages.getChildren().add(msgBox);
     }
+    Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
   }
 
   private String resolveUsername(String userId) {
@@ -263,6 +270,29 @@ public class PartyController
   }
   
   private boolean chatOpen = false;
+  private ScheduledExecutorService messagePollExecutor;
+  private ScheduledFuture<?> messagePollTask;
+
+  private void startMessagePolling() {
+    if (messagePollExecutor == null || messagePollExecutor.isShutdown()) {
+      messagePollExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "message-poll");
+        t.setDaemon(true);
+        return t;
+      });
+    }
+    messagePollTask = messagePollExecutor.scheduleAtFixedRate(() -> {
+      List<Message> messages = viewmodel.getMessages();
+      Platform.runLater(() -> renderMessages(messages));
+    }, 3, 3, TimeUnit.SECONDS);
+  }
+
+  private void stopMessagePolling() {
+    if (messagePollTask != null) messagePollTask.cancel(false);
+    if (messagePollExecutor != null) messagePollExecutor.shutdownNow();
+    messagePollExecutor = null;
+  }
+
   @FXML public void onChat()
   {
     chatOpen = !chatOpen;
@@ -282,6 +312,8 @@ public class PartyController
       chatWindow.setVisible(true);
       addfriendButton.setLayoutX(535);
       memberList.setPrefWidth(175);
+      loadMessages();
+      startMessagePolling();
     }
     else {
       dateLabel.setLayoutX(685);
@@ -298,6 +330,7 @@ public class PartyController
       chatWindow.setVisible(false);
       addfriendButton.setLayoutX(596);
       memberList.setPrefWidth(216);
+      stopMessagePolling();
     }
   }
 
@@ -320,5 +353,5 @@ public class PartyController
   }
 
   public Region getRoot() { return root; }
-  public void reset()     { loadParty(); loadMessages(); }
+  public void reset()     { stopMessagePolling(); loadParty();}
 }

@@ -91,7 +91,7 @@
             </HBox>
 
             <!-- messages -->
-            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="chat-scroll">
+            <ScrollPane fx:id="chatScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="chat-scroll">
                <content>
                   <VBox fx:id="chatMessages" spacing="10" styleClass="chat-messages" />
                </content>
