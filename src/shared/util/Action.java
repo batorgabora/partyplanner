@@ -28,9 +28,12 @@ public enum Action {
   REMOVE_VOTE("removeVote"),
   GET_TOP_VOTED_OPTION("getTopVotedOption"),
   HAS_VOTED("hasVoted"),
+  HAS_VOTED_FOR_OPTION("hasVotedForOption"),
   GET_PARTICIPANTS("getParticipants"),
   ADD_PARTICIPANT("addParticipant"),
   REMOVE_PARTICIPANT("removeParticipant"),
+  CLAIM_ITEM("claimItem"),
+  UNCLAIM_ITEM("unclaimItem"),
   SEND_MESSAGE("sendMessage"),
   GET_MESSAGES("getMessages");
 
