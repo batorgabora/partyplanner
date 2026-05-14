@@ -247,6 +247,15 @@ public class ModelManager implements PartyModel
     return new OptionDAO().hasVoted(userId, partyId);
   }
 
+  @Override public synchronized Message sendMessage(String partyId, String userId, String content) {
+    String messageId = UUID.randomUUID().toString();
+    return new MessageDAO().create(messageId, partyId, userId, content);
+  }
+
+  @Override public synchronized List<Message> getMessages(String partyId) {
+    return new MessageDAO().getByParty(partyId);
+  }
+
   private void fireError(String message) {
     support.firePropertyChange("error", null, message);
   }

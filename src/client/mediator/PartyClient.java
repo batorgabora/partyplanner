@@ -273,6 +273,20 @@ public class PartyClient
     sendRequest(request);
   }
 
+  public void requestSendMessage(String partyId, String userId, String content) {
+    JsonObject request = createRequest(Action.SEND_MESSAGE);
+    request.addProperty("partyId", partyId);
+    request.addProperty("userId", userId);
+    request.addProperty("content", content);
+    sendRequest(request);
+  }
+
+  public void requestGetMessages(String partyId) {
+    JsonObject request = createRequest(Action.GET_MESSAGES);
+    request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
   public void close()
   {
     try

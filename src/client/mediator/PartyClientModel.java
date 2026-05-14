@@ -254,6 +254,21 @@ public class PartyClientModel implements PartyModel
 
   @Override public void manageParty(Party party, String title, String description, String location) {}
 
+  @Override public Message sendMessage(String partyId, String userId, String content) {
+    client.requestSendMessage(partyId, userId, content);
+    JsonObject json = sendAndReceive();
+    if (isError(json)) return null;
+    return gson.fromJson(json.get("data").getAsString(), Message.class);
+  }
+
+  @Override public List<Message> getMessages(String partyId) {
+    client.requestGetMessages(partyId);
+    JsonObject json = sendAndReceive();
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Message>>(){}.getType();
+    return gson.fromJson(json.get("data").getAsString(), type);
+  }
+
   @Override public void addListener(String propertyName, PropertyChangeListener listener) {
     support.addPropertyChangeListener(propertyName, listener);
   }
