@@ -74,6 +74,7 @@ public class PartyController
     });
 
     loadParty();
+    loadMessages();
   }
 
   public void loadParty()
@@ -281,7 +282,6 @@ public class PartyController
       chatWindow.setVisible(true);
       addfriendButton.setLayoutX(535);
       memberList.setPrefWidth(175);
-      loadMessages(); // fetch real messages when chat opens
     }
     else {
       dateLabel.setLayoutX(685);
@@ -320,5 +320,5 @@ public class PartyController
   }
 
   public Region getRoot() { return root; }
-  public void reset()     { loadParty(); }
+  public void reset()     { loadParty(); loadMessages(); }
 }
