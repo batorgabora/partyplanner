@@ -4,10 +4,10 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
-
 import shared.model.*;
 import client.viewModel.PartyViewModel;
 
@@ -28,20 +28,18 @@ public class PartyController
   @FXML private ListView<Participant> memberList;
   @FXML private Button editButton;
   @FXML private Button acceptButton;
-  @FXML private Button declineButton; //these thee change based on if party has been accepted or not
+  @FXML private Button declineButton;
   @FXML private Button leaveButton;
   @FXML private Label userLabel;
   @FXML private ImageView loadingIndicator;
-
   @FXML private Label infoLabel;
   @FXML private Button voteButton;
   @FXML private Button removeVoteButton;
 
   private Party selected;
 
-
-
-  public void init(ViewHandler viewhandler, PartyViewModel viewmodel, Region root) {
+  public void init(ViewHandler viewhandler, PartyViewModel viewmodel, Region root)
+  {
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
@@ -49,35 +47,30 @@ public class PartyController
     descriptionLabel.setVisible(false);
     descriptionLabel.setManaged(false);
 
-    //bindings to viewmodel
+    // set once — no need to re-apply on every load
+    timeList.setCellFactory(lv -> new ListCell<Option>() {
+      @Override
+      protected void updateItem(Option option, boolean empty) {
+        super.updateItem(option, empty);
+        setText(empty || option == null ? null : option.getProposal() + " (" + option.getVoteCount() + " votes)");
+      }
+    });
+
     loadParty();
   }
 
-  public void loadParty() {
+  public void loadParty()
+  {
     selected = viewmodel.getSelectedParty();
     if (selected == null) return;
 
     userLabel.setText(LocalUser.getUser().getUsername());
     nameLabel.setText(selected.getName());
 
-    // hide everything while loading
-    descriptionLabel.setVisible(false);
-    locationLabel.setVisible(false);
-    dateLabel.setVisible(false);
-    roleLabel.setVisible(false);
-    editButton.setVisible(false);
-    acceptButton.setVisible(false);
-    declineButton.setVisible(false);
-    leaveButton.setVisible(false);
-    voteButton.setVisible(false);
-    removeVoteButton.setVisible(false);
-    infoLabel.setVisible(false);
-    itemList.setVisible(false);
-    memberList.setVisible(false);
-    timeList.setVisible(false);
-    loadingIndicator.setVisible(true);
+    setContentVisible(false); // hide everything, show spinner
 
     new Thread(() -> {
+      // all server calls happen off the UI thread
       var items    = viewmodel.getItems();
       var members  = viewmodel.getMembers();
       var options  = viewmodel.getOptions();
@@ -89,37 +82,17 @@ public class PartyController
       Platform.runLater(() -> {
         dateLabel.setText(topVoted != null && !topVoted.equals("no votes yet") ? topVoted : selected.getDate());
         locationLabel.setText(selected.getLocation());
+        roleLabel.setText(role != null ? role : "participant");
 
         itemList.setItems(items);
         memberList.setItems(members);
         timeList.setItems(options);
 
-        timeList.setCellFactory(lv -> new javafx.scene.control.ListCell<Option>() {
-          @Override
-          protected void updateItem(Option option, boolean empty) {
-            super.updateItem(option, empty);
-            setText(empty || option == null ? null : option.getProposal() + " (" + option.getVoteCount() + " votes)");
-          }
-        });
-
-        roleLabel.setText(role != null ? role : "participant");
-
         boolean isOrganizer = "organizer".equals(role);
         boolean isInvited   = status == null;
         boolean isAccepted  = "accepted".equals(status);
 
-        // show everything back
-        dateLabel.setVisible(true);
-        locationLabel.setVisible(true);
-        roleLabel.setVisible(true);
-        itemList.setVisible(true);
-        memberList.setVisible(true);
-        timeList.setVisible(true);
-        voteButton.setVisible(true);
-        removeVoteButton.setVisible(true);
-        infoLabel.setVisible(true);
-
-        editButton.setVisible("organizer".equals(role));
+        editButton.setVisible(isOrganizer);
         acceptButton.setVisible(!isOrganizer && isInvited);
         declineButton.setVisible(!isOrganizer && isInvited);
         leaveButton.setVisible(!isOrganizer && isAccepted);
@@ -135,43 +108,37 @@ public class PartyController
           removeVoteButton.setDisable(true);
         }
 
-        loadingIndicator.setVisible(false);
+        setContentVisible(true); // show everything, hide spinner
       });
     }).start();
   }
 
-  @FXML public void onDiscover() {
-    viewhandler.openView("discover");
-  }
-  @FXML public void onFriends() {
-    viewhandler.openView("friends");
-  }
-  @FXML public void onMyParties() {
-    viewhandler.openView("my parties");
-  }
-  @FXML public void onLogOut() {viewhandler.openView("login");}
-  @FXML public void addFriend() { viewhandler.openView("friends");}
-  @FXML public void onEditParty() {
-    viewhandler.openView("edit party");
+  // toggles all content vs the loading spinner
+  private void setContentVisible(boolean visible)
+  {
+    loadingIndicator.setVisible(!visible);
+    dateLabel.setVisible(visible);
+    locationLabel.setVisible(visible);
+    roleLabel.setVisible(visible);
+    itemList.setVisible(visible);
+    memberList.setVisible(visible);
+    timeList.setVisible(visible);
+    voteButton.setVisible(visible);
+    removeVoteButton.setVisible(visible);
+    infoLabel.setVisible(visible);
+
+    // while loading hide all buttons; role logic sets them individually when visible=true
+    if (!visible) {
+      editButton.setVisible(false);
+      acceptButton.setVisible(false);
+      declineButton.setVisible(false);
+      leaveButton.setVisible(false);
+    }
   }
 
-  @FXML public void onAccept() {
-    viewmodel.acceptInvitation();
-    viewhandler.openView("my parties");
-  }
-
-  @FXML public void onDecline() {
-    viewmodel.declineInvitation();
-    viewhandler.openView("discover");
-  }
-
-  @FXML public void onLeave() {
-    viewmodel.leaveParty();
-    viewhandler.openView("my parties");
-  }
-
-  @FXML public void onVote() {
-    shared.model.Option selected = timeList.getSelectionModel().getSelectedItem();
+  @FXML public void onVote()
+  {
+    Option selected = timeList.getSelectionModel().getSelectedItem();
     if (selected == null) {
       infoLabel.setText("select an option first");
       infoLabel.setStyle("-fx-text-fill: red;");
@@ -188,7 +155,8 @@ public class PartyController
     loadParty();
   }
 
-  @FXML public void onRemoveVote() {
+  @FXML public void onRemoveVote()
+  {
     Option selected = timeList.getSelectionModel().getSelectedItem();
     if (selected == null) {
       infoLabel.setText("select an option first");
@@ -201,13 +169,32 @@ public class PartyController
     loadParty();
   }
 
-  public Region getRoot()
+  @FXML public void onDiscover()   { viewhandler.openView("discover"); }
+  @FXML public void onFriends()    { viewhandler.openView("friends"); }
+  @FXML public void onMyParties()  { viewhandler.openView("my parties"); }
+  @FXML public void onLogOut()     { viewhandler.openView("login"); }
+  @FXML public void addFriend()    { viewhandler.openView("friends"); }
+  @FXML public void onEditParty()  { viewhandler.openView("edit party"); }
+  @FXML public void onChat() {}
+
+  @FXML public void onAccept()
   {
-    return root;
+    viewmodel.acceptInvitation();
+    viewhandler.openView("my parties");
   }
 
-  public void reset(){
-    loadParty();
+  @FXML public void onDecline()
+  {
+    viewmodel.declineInvitation();
+    viewhandler.openView("discover");
   }
 
+  @FXML public void onLeave()
+  {
+    viewmodel.leaveParty();
+    viewhandler.openView("my parties");
+  }
+
+  public Region getRoot() { return root; }
+  public void reset()     { loadParty(); }
 }
