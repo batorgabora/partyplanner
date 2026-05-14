@@ -30,7 +30,9 @@ public enum Action {
   HAS_VOTED("hasVoted"),
   GET_PARTICIPANTS("getParticipants"),
   ADD_PARTICIPANT("addParticipant"),
-  REMOVE_PARTICIPANT("removeParticipant");
+  REMOVE_PARTICIPANT("removeParticipant"),
+  SEND_MESSAGE("sendMessage"),
+  GET_MESSAGES("getMessages");
 
   private final String value;
 

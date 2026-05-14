@@ -50,4 +50,6 @@ public interface PartyModel {
   void updateParty(Party party, String name, String description, String location);
   void voteForOption(String optionId, String userId);
   String getTopVotedOption(String partyId);
+  Message sendMessage(String partyId, String userId, String content);
+  List<Message> getMessages(String partyId);
 }
