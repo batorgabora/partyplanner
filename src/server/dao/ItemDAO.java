@@ -25,7 +25,11 @@ public class ItemDAO {
   }
 
   public List<Item> getByParty(String partyid) {
-    String sql = "SELECT * FROM item WHERE partyid = ?";
+    String sql = "SELECT i.*, c.userid AS claimer_id, u.username AS claimer_name " +
+        "FROM item i " +
+        "LEFT JOIN claimitem c ON i.itemid = c.itemid " +
+        "LEFT JOIN \"user\" u ON c.userid = u.userid " +
+        "WHERE i.partyid = ?";
     List<Item> items = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -67,7 +71,7 @@ public class ItemDAO {
 
   public void delete(String itemid) {
     String deleteClaims = "DELETE FROM claimitem WHERE itemid = ?";
-    String deleteItem = "DELETE FROM item WHERE itemid = ?";
+    String deleteItem   = "DELETE FROM item WHERE itemid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps1 = conn.prepareStatement(deleteClaims);
         PreparedStatement ps2 = conn.prepareStatement(deleteItem)) {
@@ -80,7 +84,39 @@ public class ItemDAO {
     }
   }
 
+  public void claimItem(String itemid, String userid) {
+    String delete = "DELETE FROM claimitem WHERE itemid = ?";
+    String insert = "INSERT INTO claimitem (itemid, userid, quantityclaimed) VALUES (?, ?, 1)";
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
+        PreparedStatement ps1 = conn.prepareStatement(delete);
+        PreparedStatement ps2 = conn.prepareStatement(insert)) {
+      ps1.setString(1, itemid);
+      ps1.executeUpdate();
+      ps2.setString(1, itemid);
+      ps2.setString(2, userid);
+      ps2.executeUpdate();
+    } catch (SQLException e) {
+      log.severe("claimItem failed for itemid=" + itemid + ": " + e.getMessage());
+    }
+  }
+
+  public void unclaimItem(String itemid) {
+    String sql = "DELETE FROM claimitem WHERE itemid = ?";
+    try (Connection conn = DataBaseConnection.getInstance().getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, itemid);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      log.severe("unclaimItem failed for itemid=" + itemid + ": " + e.getMessage());
+    }
+  }
+
   private Item mapRow(ResultSet rs) throws SQLException {
-    return new Item(rs.getString("itemid"), rs.getString("name"));
+    Item item = new Item(rs.getString("itemid"), rs.getString("name"));
+    String claimerName = rs.getString("claimer_name");
+    if (claimerName != null) {
+      item.claim(claimerName);
+    }
+    return item;
   }
 }

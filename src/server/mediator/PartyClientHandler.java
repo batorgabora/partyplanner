@@ -93,9 +93,12 @@ public class PartyClientHandler implements Runnable {
       case REMOVE_VOTE          -> handleRemoveVote(request);
       case GET_TOP_VOTED_OPTION -> handleGetTopVotedOption(request);
       case HAS_VOTED            -> handleHasVoted(request);
+      case HAS_VOTED_FOR_OPTION -> handleHasVotedForOption(request);
       case GET_PARTICIPANTS     -> handleGetParticipants(request);
       case ADD_PARTICIPANT      -> handleAddParticipant(request);
       case REMOVE_PARTICIPANT   -> handleRemoveParticipant(request);
+      case CLAIM_ITEM           -> handleClaimItem(request);
+      case UNCLAIM_ITEM         -> handleUnclaimItem(request);
       case SEND_MESSAGE         -> handleSendMessage(request);
       case GET_MESSAGES         -> handleGetMessages(request);
     }
@@ -230,6 +233,8 @@ public class PartyClientHandler implements Runnable {
     sendResponse("getRole", model.getRole(user, party));
   }
 
+
+  //items
   private void handleGetItems(JsonObject request) {
     Party party = new PartyDAO().getById(request.get("partyId").getAsString());
     if (party == null) { sendError("Party not found."); return; }
@@ -251,6 +256,21 @@ public class PartyClientHandler implements Runnable {
     sendResponse("removeItem", "ok");
   }
 
+  private void handleClaimItem(JsonObject request) {
+    String itemId = request.get("itemId").getAsString();
+    String userId = request.get("userId").getAsString();
+    model.claimItem(itemId, userId);
+    sendResponse("claimItem", "ok");
+  }
+
+  private void handleUnclaimItem(JsonObject request) {
+    String itemId = request.get("itemId").getAsString();
+    model.unclaimItem(itemId);
+    sendResponse("unclaimItem", "ok");
+  }
+
+
+  //options
   private void handleGetOptions(JsonObject request) {
     Party party = new PartyDAO().getById(request.get("partyId").getAsString());
     if (party == null) { sendError("Party not found."); return; }
@@ -292,6 +312,15 @@ public class PartyClientHandler implements Runnable {
     sendResponse("hasVoted", String.valueOf(result));
   }
 
+  private void handleHasVotedForOption(JsonObject request) {
+    boolean result = model.hasVotedForOption(
+        request.get("userId").getAsString(),
+        request.get("optionId").getAsString());
+    sendResponse("hasVotedForOption", String.valueOf(result));
+  }
+
+
+//participants
   private void handleGetParticipants(JsonObject request) {
     Party party = new PartyDAO().getById(request.get("partyId").getAsString());
     if (party == null) { sendError("Party not found."); return; }

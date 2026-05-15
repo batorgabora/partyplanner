@@ -7,30 +7,25 @@ public class Item
   private String id;
   private String name;
   private boolean claimed;
-  private Participant claimedBy;
+  private String claimedBy; // changed from Participant to String
 
   public Item(String name) {
     this.id = UUID.randomUUID().toString();
     this.name = name;
-    this.claimed = false;
-    this.claimedBy = null;
   }
   public Item(String id, String name) {
     this.id = id;
     this.name = name;
-    this.claimed = false;
-    this.claimedBy = null;
   }
 
-  // Getters
-  public String getId() { return id; }
-  public String getName() { return name; }
-  public boolean isClaimed() { return claimed; }
-  public Participant getClaimedBy() { return claimedBy; }
-  // Methods
-  public void claim(Participant participant) {
+  public String getId()        { return id; }
+  public String getName()      { return name; }
+  public boolean isClaimed()   { return claimed; }
+  public String getClaimedBy() { return claimedBy; } // changed return type
+
+  public void claim(String username) {
     this.claimed = true;
-    this.claimedBy = participant;
+    this.claimedBy = username;
   }
 
   public void unclaim() {
@@ -38,8 +33,5 @@ public class Item
     this.claimedBy = null;
   }
 
-  @Override public String toString()
-  {
-    return name;
-  }
+  @Override public String toString() { return name; }
 }

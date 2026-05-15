@@ -53,6 +53,7 @@ public class PartyController
   @FXML private Label infoLabel;
   @FXML private Button voteButton;
   @FXML private Button removeVoteButton;
+  @FXML private Button claimButton;
 
   private Party selected;
 
@@ -61,16 +62,15 @@ public class PartyController
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
+
     leaveButton.setVisible(false);
     chatButton.setVisible(false);
     chatWindow.setVisible(false);
-
     descriptionLabel.setVisible(false);
     descriptionLabel.setManaged(false);
 
     chatInput.textProperty().bindBidirectional(viewmodel.messageInputProperty());
 
-    // set once — no need to re-apply on every load
     timeList.setCellFactory(lv -> new ListCell<Option>() {
       @Override
       protected void updateItem(Option option, boolean empty) {
@@ -78,6 +78,20 @@ public class PartyController
         setText(empty || option == null ? null : option.getProposal() + " (" + option.getVoteCount() + " votes)");
       }
     });
+
+    itemList.setCellFactory(lv -> new ListCell<Item>() {
+      @Override
+      protected void updateItem(Item item, boolean empty) {
+        super.updateItem(item, empty);
+        if (empty || item == null) { setText(null); return; }
+        setText(item.isClaimed()
+            ? item.getName() + " — claimed by " + item.getClaimedBy()
+            : item.getName() + " — unclaimed");
+      }
+    });
+
+    itemList.getSelectionModel().selectedItemProperty().addListener(
+        (obs, oldVal, newVal) -> updateClaimButton(newVal));
 
     loadParty();
     loadMessages();
@@ -88,11 +102,10 @@ public class PartyController
     selected = viewmodel.getSelectedParty();
     if (selected == null) return;
 
-    // instant — no network, just local data
     userLabel.setText(LocalUser.getUser().getUsername());
     nameLabel.setText(selected.getName());
 
-    setContentVisible(false); // hide everything, show spinner
+    setContentVisible(false);
 
     new Thread(() -> {
       // all server calls happen off the UI thread
@@ -125,7 +138,6 @@ public class PartyController
 
         if (hasVoted) {
           infoLabel.setText("you have already voted");
-          infoLabel.setStyle("-fx-text-fill: green;");
           voteButton.setDisable(true);
           removeVoteButton.setDisable(false);
         } else {
@@ -134,12 +146,12 @@ public class PartyController
           removeVoteButton.setDisable(true);
         }
 
-        setContentVisible(true); // show everything, hide spinner
+        updateClaimButton(null);
+        setContentVisible(true);
       });
     }).start();
   }
 
-  // toggles all content vs the loading spinner
   private void setContentVisible(boolean visible)
   {
     loadingIndicator.setVisible(!visible);
@@ -152,30 +164,68 @@ public class PartyController
     voteButton.setVisible(visible);
     removeVoteButton.setVisible(visible);
     infoLabel.setVisible(visible);
-
-    // while loading hide all buttons; role logic sets them individually when visible=true
+    claimButton.setVisible(visible);
     if (!visible) {
       editButton.setVisible(false);
       acceptButton.setVisible(false);
       declineButton.setVisible(false);
       leaveButton.setVisible(false);
+      claimButton.setVisible(false);
     }
+  }
+
+  private void updateClaimButton(Item item)
+  {
+    if (item == null) {
+      claimButton.setText("claim");
+      claimButton.setDisable(true);
+      return;
+    }
+    String currentUser     = LocalUser.getUser().getUsername();
+    boolean claimedByMe    = item.isClaimed() && item.getClaimedBy().equals(currentUser);
+    boolean claimedByOther = item.isClaimed() && !claimedByMe;
+
+    claimButton.setText(claimedByMe ? "unclaim" : "claim");
+    claimButton.setDisable(claimedByOther);
+  }
+
+  @FXML public void onClaim()
+  {
+    Item item = itemList.getSelectionModel().getSelectedItem();
+    if (item == null) {
+      infoLabel.setText("select an item first");
+      return;
+    }
+
+    String currentUser  = LocalUser.getUser().getUsername();
+    boolean claimedByMe = item.isClaimed() && item.getClaimedBy().equals(currentUser);
+
+    if (claimedByMe) item.unclaim();
+    else             item.claim(currentUser);
+
+    itemList.refresh();
+    updateClaimButton(item);
+
+    new Thread(() -> {
+      if (claimedByMe) viewmodel.unclaimItem(item.getId());
+      else             viewmodel.claimItem(item.getId());
+    }).start();
   }
 
   @FXML public void onVote()
   {
-    Option selected = timeList.getSelectionModel().getSelectedItem();
-    if (selected == null) {
+    Option option = timeList.getSelectionModel().getSelectedItem();
+    if (option == null) {
       infoLabel.setText("select an option first");
       infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
-    if (viewmodel.hasVotedInParty(this.selected.getId())) {
+    if (viewmodel.hasVotedInParty(selected.getId())) {
       infoLabel.setText("you already voted, remove your vote first");
       infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
-    viewmodel.voteForOption(selected.getOptionid());
+    viewmodel.voteForOption(option.getOptionid());
     infoLabel.setText("vote cast!");
     infoLabel.setStyle("-fx-text-fill: green;");
     loadParty();
@@ -183,13 +233,13 @@ public class PartyController
 
   @FXML public void onRemoveVote()
   {
-    Option selected = timeList.getSelectionModel().getSelectedItem();
-    if (selected == null) {
+    Option option = timeList.getSelectionModel().getSelectedItem();
+    if (option == null) {
       infoLabel.setText("select an option first");
       infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
-    viewmodel.removeVote(selected.getOptionid());
+    viewmodel.removeVote(option.getOptionid());
     infoLabel.setText("vote removed");
     infoLabel.setStyle("-fx-text-fill: orange;");
     loadParty();
@@ -314,8 +364,7 @@ public class PartyController
       memberList.setPrefWidth(175);
       loadMessages();
       startMessagePolling();
-    }
-    else {
+    } else {
       dateLabel.setLayoutX(685);
       dateLabel.setLayoutY(1);
       locationLabel.setLayoutX(684);

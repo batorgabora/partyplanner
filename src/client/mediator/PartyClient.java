@@ -205,6 +205,19 @@ public class PartyClient
     sendRequest(request);
   }
 
+  public void requestClaimItem(String itemId, String userId) {
+    JsonObject request = createRequest(Action.CLAIM_ITEM);
+    request.addProperty("itemId", itemId);
+    request.addProperty("userId", userId);
+    sendRequest(request);
+  }
+
+  public void requestUnclaimItem(String itemId) {
+    JsonObject request = createRequest(Action.UNCLAIM_ITEM);
+    request.addProperty("itemId", itemId);
+    sendRequest(request);
+  }
+
   // Option operations
   public void requestGetOptions(String partyId) {
     JsonObject request = createRequest(Action.GET_OPTIONS);
@@ -249,6 +262,13 @@ public class PartyClient
     JsonObject request = createRequest(Action.HAS_VOTED);
     request.addProperty("userId", userId);
     request.addProperty("partyId", partyId);
+    sendRequest(request);
+  }
+
+  public void requestHasVotedForOption(String userId, String optionId) {
+    JsonObject request = createRequest(Action.HAS_VOTED_FOR_OPTION);
+    request.addProperty("userId", userId);
+    request.addProperty("optionId", optionId);
     sendRequest(request);
   }
 
