@@ -2,17 +2,26 @@ package client.view;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import shared.model.*;
 import client.viewModel.PartyViewModel;
+
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class PartyController
 {
@@ -36,6 +45,7 @@ public class PartyController
   @FXML private Button chatButton;
   @FXML private Button addfriendButton;
   @FXML private VBox chatWindow;
+  @FXML private ScrollPane chatScrollPane;
   @FXML private VBox chatMessages;
   @FXML private TextField chatInput;
   @FXML private Label userLabel;
@@ -58,6 +68,8 @@ public class PartyController
     chatWindow.setVisible(false);
     descriptionLabel.setVisible(false);
     descriptionLabel.setManaged(false);
+
+    chatInput.textProperty().bindBidirectional(viewmodel.messageInputProperty());
 
     timeList.setCellFactory(lv -> new ListCell<Option>() {
       @Override
@@ -82,6 +94,7 @@ public class PartyController
         (obs, oldVal, newVal) -> updateClaimButton(newVal));
 
     loadParty();
+    loadMessages();
   }
 
   public void loadParty()
@@ -239,7 +252,97 @@ public class PartyController
   @FXML public void addFriend()    { viewhandler.openView("friends"); }
   @FXML public void onEditParty()  { viewhandler.openView("edit party"); }
 
+  @FXML public void onSendMessage() {
+    if (viewmodel.messageInputProperty().get().trim().isEmpty()) return;
+    new Thread(() -> {
+      viewmodel.sendMessage();
+      List<Message> messages = viewmodel.getMessages();
+      Platform.runLater(() -> {
+        viewmodel.messageInputProperty().set("");
+        renderMessages(messages);
+      });
+    }).start();
+  }
+
+  private void loadMessages() {
+    new Thread(() -> {
+      List<Message> messages = viewmodel.getMessages();
+      Platform.runLater(() -> renderMessages(messages));
+    }).start();
+  }
+  
+  private void renderMessages(List<Message> messages) {
+    chatMessages.getChildren().clear();
+    String myId = LocalUser.getUser().getId();
+    for (Message msg : messages) {
+      boolean isOwn  = myId.equals(msg.getUserId());
+      String  sender = isOwn ? "You" : resolveUsername(msg.getUserId());
+      String  time   = extractTime(msg.getSentAt());
+
+      Label senderLabel = new Label(sender);
+      senderLabel.getStyleClass().add("chat-sender");
+      Label timeLabel = new Label(time);
+      timeLabel.getStyleClass().add("chat-time");
+
+      HBox header = new HBox(6);
+      if (isOwn) {
+        header.setAlignment(Pos.CENTER_RIGHT);
+        header.getChildren().addAll(timeLabel, senderLabel);
+      } else {
+        header.getChildren().addAll(senderLabel, timeLabel);
+      }
+
+      Label bubble = new Label(msg.getContent());
+      bubble.setWrapText(true);
+      bubble.setPrefWidth(190);
+      bubble.getStyleClass().add(isOwn ? "chat-bubble-own" : "chat-bubble-other");
+
+      VBox msgBox = new VBox(2);
+      msgBox.getStyleClass().add(isOwn ? "chat-message-own" : "chat-message-other");
+      if (isOwn) msgBox.setAlignment(Pos.CENTER_RIGHT);
+      msgBox.getChildren().addAll(header, bubble);
+
+      chatMessages.getChildren().add(msgBox);
+    }
+    Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
+  }
+
+  private String resolveUsername(String userId) {
+    for (Participant p : memberList.getItems()) {
+      if (p.getUser().getId().equals(userId)) return p.getUser().getUsername();
+    }
+    return userId.length() > 8 ? userId.substring(0, 8) : userId;
+  }
+
+  private String extractTime(String sentAt) {
+    if (sentAt != null && sentAt.length() >= 16) return sentAt.substring(11, 16);
+    return sentAt != null ? sentAt : "";
+  }
+  
   private boolean chatOpen = false;
+  private ScheduledExecutorService messagePollExecutor;
+  private ScheduledFuture<?> messagePollTask;
+
+  private void startMessagePolling() {
+    if (messagePollExecutor == null || messagePollExecutor.isShutdown()) {
+      messagePollExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "message-poll");
+        t.setDaemon(true);
+        return t;
+      });
+    }
+    messagePollTask = messagePollExecutor.scheduleAtFixedRate(() -> {
+      List<Message> messages = viewmodel.getMessages();
+      Platform.runLater(() -> renderMessages(messages));
+    }, 3, 3, TimeUnit.SECONDS);
+  }
+
+  private void stopMessagePolling() {
+    if (messagePollTask != null) messagePollTask.cancel(false);
+    if (messagePollExecutor != null) messagePollExecutor.shutdownNow();
+    messagePollExecutor = null;
+  }
+
   @FXML public void onChat()
   {
     chatOpen = !chatOpen;
@@ -259,6 +362,8 @@ public class PartyController
       chatWindow.setVisible(true);
       addfriendButton.setLayoutX(535);
       memberList.setPrefWidth(175);
+      loadMessages();
+      startMessagePolling();
     } else {
       dateLabel.setLayoutX(685);
       dateLabel.setLayoutY(1);
@@ -274,6 +379,7 @@ public class PartyController
       chatWindow.setVisible(false);
       addfriendButton.setLayoutX(596);
       memberList.setPrefWidth(216);
+      stopMessagePolling();
     }
   }
 
@@ -296,5 +402,5 @@ public class PartyController
   }
 
   public Region getRoot() { return root; }
-  public void reset()     { loadParty(); }
+  public void reset()     { stopMessagePolling(); loadParty();}
 }

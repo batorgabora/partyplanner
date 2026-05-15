@@ -8,6 +8,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import shared.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -15,23 +18,21 @@ import java.util.List;
 public class PartyViewModel implements PropertyChangeListener
 {
   private PartyModel model;
-  //for avoiding wiring them together --> shared selectedVinyl
   private ObjectProperty<Party> selectedParty;
   private final StringProperty errorProperty;
+  private final StringProperty messageInput;
   private ObservableList<Participant> members;
   private ObservableList<Item> items;
 
-  public PartyViewModel(PartyModel model,  ObjectProperty<Party> selectedParty){
+  public PartyViewModel(PartyModel model, ObjectProperty<Party> selectedParty) {
     this.model = model;
-
     this.selectedParty = selectedParty;
-
-    // Register as listener for all 3 event types.
-    // From this point on, whenever the model fires these events,
-    // our propertyChange() method below is called automatically.
-    errorProperty = new SimpleStringProperty("");
+    errorProperty  = new SimpleStringProperty("");
+    messageInput   = new SimpleStringProperty("");
     model.addListener("something", this);
   }
+
+  public StringProperty messageInputProperty() { return messageInput; }
 
   public ObservableList<Item> getItems() {
     if (selectedParty.get() == null) return FXCollections.emptyObservableList();
@@ -110,6 +111,19 @@ public class PartyViewModel implements PropertyChangeListener
 
   public void removeVote(String optionId) {
     model.removeVote(optionId, LocalUser.getUser().getId());
+  }
+
+  public List<Message> getMessages() {
+    Party party = selectedParty.get();
+    if (party == null) return new ArrayList<>();
+    return model.getMessages(party.getId());
+  }
+
+  public Message sendMessage() {
+    Party party   = selectedParty.get();
+    String content = messageInput.get().trim();
+    if (party == null || content.isEmpty()) return null;
+    return model.sendMessage(party.getId(), LocalUser.getUser().getId(), content);
   }
 
   @Override public void propertyChange(PropertyChangeEvent evt)

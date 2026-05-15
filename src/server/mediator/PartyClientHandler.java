@@ -10,6 +10,7 @@ import shared.util.Action;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
+import java.util.List;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -346,19 +347,24 @@ public class PartyClientHandler implements Runnable {
     String partyId = request.get("partyId").getAsString();
     String userId  = request.get("userId").getAsString();
     String content = request.get("content").getAsString();
-    if (content.trim().isEmpty()) { sendError("Message content cannot be empty."); return; }
+    System.out.println("[sendMessage] partyId=" + partyId + " userId=" + userId + " content=" + content);
+    if (content.trim().isEmpty()) { System.out.println("[sendMessage] rejected: empty content"); sendError("Message content cannot be empty."); return; }
     Party party = new PartyDAO().getById(partyId);
-    if (party == null) { sendError("Party not found."); return; }
+    if (party == null) { System.out.println("[sendMessage] rejected: party not found"); sendError("Party not found."); return; }
     Message message = model.sendMessage(partyId, userId, content);
-    if (message == null) { sendError("Failed to send message."); return; }
+    if (message == null) { System.out.println("[sendMessage] DAO returned null — INSERT failed"); sendError("Failed to send message."); return; }
+    System.out.println("[sendMessage] OK — messageId=" + message.getMessageId());
     sendResponse("sendMessage", gson.toJson(message));
   }
 
   private void handleGetMessages(JsonObject request) {
     String partyId = request.get("partyId").getAsString();
+    System.out.println("[getMessages] partyId=" + partyId);
     Party party = new PartyDAO().getById(partyId);
-    if (party == null) { sendError("Party not found."); return; }
-    sendResponse("getMessages", gson.toJson(model.getMessages(partyId)));
+    if (party == null) { System.out.println("[getMessages] party not found"); sendError("Party not found."); return; }
+    List<Message> msgs = model.getMessages(partyId);
+    System.out.println("[getMessages] returning " + msgs.size() + " messages");
+    sendResponse("getMessages", gson.toJson(msgs));
   }
 
   private void sendResponse(String action, String data) {

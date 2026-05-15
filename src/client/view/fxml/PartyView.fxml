@@ -92,58 +92,9 @@
             </HBox>
 
             <!-- messages -->
-            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="chat-scroll">
+            <ScrollPane fx:id="chatScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="chat-scroll">
                <content>
-                  <VBox fx:id="chatMessages" spacing="10" styleClass="chat-messages">
-                     <children>
-
-                        <!-- sample message - other -->
-                        <VBox spacing="2" styleClass="chat-message-other">
-                           <children>
-                              <HBox spacing="6">
-                                 <children>
-                                    <Label text="Gandolf" styleClass="chat-sender" />
-                                    <Label text="10:32" styleClass="chat-time" />
-                                 </children>
-                              </HBox>
-                              <Label text="Who's bringing the lemons?"
-                                     wrapText="true" prefWidth="190.0"
-                                     styleClass="chat-bubble-other" />
-                           </children>
-                        </VBox>
-
-                        <!-- sample message - own -->
-                        <VBox spacing="2" alignment="CENTER_RIGHT" styleClass="chat-message-own">
-                           <children>
-                              <HBox spacing="6" alignment="CENTER_RIGHT">
-                                 <children>
-                                    <Label text="10:33" styleClass="chat-time" />
-                                    <Label text="You" styleClass="chat-sender" />
-                                 </children>
-                              </HBox>
-                              <Label text="I got them!"
-                                     wrapText="true" prefWidth="190.0"
-                                     styleClass="chat-bubble-own" />
-                           </children>
-                        </VBox>
-
-                        <!-- sample message - other -->
-                        <VBox spacing="2" styleClass="chat-message-other">
-                           <children>
-                              <HBox spacing="6">
-                                 <children>
-                                    <Label text="Rufus" styleClass="chat-sender" />
-                                    <Label text="10:35" styleClass="chat-time" />
-                                 </children>
-                              </HBox>
-                              <Label text="I'll bring the music!"
-                                     wrapText="true" prefWidth="190.0"
-                                     styleClass="chat-bubble-other" />
-                           </children>
-                        </VBox>
-
-                     </children>
-                  </VBox>
+                  <VBox fx:id="chatMessages" spacing="10" styleClass="chat-messages" />
                </content>
             </ScrollPane>
 
@@ -151,7 +102,7 @@
             <HBox spacing="4" alignment="CENTER" styleClass="chat-input-bar">
                <children>
                   <TextField fx:id="chatInput" promptText="Message..." HBox.hgrow="ALWAYS" styleClass="chat-input" />
-                  <Button text="Send" styleClass="chat-send-button" />
+                  <Button text="Send" onAction="#onSendMessage" styleClass="chat-send-button" />
                </children>
             </HBox>
 
