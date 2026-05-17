@@ -32,6 +32,18 @@ public class LoginController
     usernameField.textProperty().bindBidirectional(viewmodel.usernameProperty());
     passwordField.textProperty().bindBidirectional(viewmodel.passwordProperty());
     errorLabel.textProperty().bind(viewmodel.errorProperty());
+
+    usernameField.setOnKeyPressed(event -> {
+      switch (event.getCode()) {
+        case ENTER -> onForward();
+        case TAB   -> { passwordField.requestFocus(); event.consume(); }
+        default    -> {}
+      }
+    });
+
+    passwordField.setOnKeyPressed(event -> {
+      if (event.getCode() == javafx.scene.input.KeyCode.ENTER) onForward();
+    });
   }
 
   @FXML

@@ -101,7 +101,7 @@
             <HBox alignment="CENTER" spacing="4" styleClass="chat-input-bar">
                <children>
                   <TextField fx:id="chatInput" promptText="Message..." styleClass="chat-input" HBox.hgrow="ALWAYS" />
-                  <Button onAction="#onSendMessage" styleClass="chat-send-button" text="Send" />
+                  <Button onAction="#onSendMessage" defaultButton="false" focusTraversable="false" styleClass="chat-send-button" text="send" />
                </children>
             </HBox>
 

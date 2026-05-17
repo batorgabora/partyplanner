@@ -95,6 +95,13 @@ public class PartyController
 
     loadParty();
     loadMessages();
+
+    chatInput.setOnKeyPressed(event -> {
+      if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+        onSendMessage();
+        event.consume();
+      }
+    });
   }
 
   public void loadParty()
@@ -250,17 +257,29 @@ public class PartyController
   @FXML public void onFriends()    { viewhandler.openView("friends"); }
   @FXML public void onMyParties()  { viewhandler.openView("my parties"); }
   @FXML public void onLogOut()     { viewhandler.openView("login"); }
-  @FXML public void addFriend()    { viewhandler.openView("friends"); }
+  @FXML public void addFriend() {
+    Participant selected = memberList.getSelectionModel().getSelectedItem();
+    if (selected == null) {
+      infoLabel.setText("select a member first");
+      infoLabel.setStyle("-fx-text-fill: red;");
+      return;
+    }
+    viewmodel.addFriend(selected.getUser());
+    infoLabel.setText(selected.getUser().getUsername() + " added as friend");
+    infoLabel.setStyle("-fx-text-fill: green;");
+  }
   @FXML public void onEditParty()  { viewhandler.openView("edit party"); }
 
   @FXML public void onSendMessage() {
     if (viewmodel.messageInputProperty().get().trim().isEmpty()) return;
+    stopMessagePolling(); // stop polling while sending
     new Thread(() -> {
       viewmodel.sendMessage();
       List<Message> messages = viewmodel.getMessages();
       Platform.runLater(() -> {
         viewmodel.messageInputProperty().set("");
         renderMessages(messages);
+        startMessagePolling(); // restart after done
       });
     }).start();
   }

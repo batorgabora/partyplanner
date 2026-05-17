@@ -113,6 +113,10 @@ public class PartyViewModel implements PropertyChangeListener
     model.removeVote(optionId, LocalUser.getUser().getId());
   }
 
+  public void addFriend(User friend) {
+    model.addFriend(LocalUser.getUser(), friend);
+  }
+
   public List<Message> getMessages() {
     Party party = selectedParty.get();
     if (party == null) return new ArrayList<>();
