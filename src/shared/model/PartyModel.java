@@ -8,7 +8,6 @@ public interface PartyModel {
 
 
   User login(String username, String password);
-
  List<User> getFriends(User user);
  List<User> getNonFriends(User user);
  void addFriend(User user, User friend);
