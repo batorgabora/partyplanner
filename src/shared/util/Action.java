@@ -34,6 +34,9 @@ public enum Action {
   REMOVE_PARTICIPANT("removeParticipant"),
   CLAIM_ITEM("claimItem"),
   UNCLAIM_ITEM("unclaimItem"),
+  GET_FRIENDS("getFriends"),
+  GET_NON_FRIENDS("getNonFriends"),
+  REMOVE_FRIEND("removeFriend"),
   SEND_MESSAGE("sendMessage"),
   GET_MESSAGES("getMessages");
 
