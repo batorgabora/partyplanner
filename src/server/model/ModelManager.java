@@ -39,7 +39,6 @@ public class ModelManager implements PartyModel
       friend.addFriend(user);
     }
   }
-
   @Override public synchronized void removeFriend(User user, User friend)
   {
     user.removeFriend(friend);
