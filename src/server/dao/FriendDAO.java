@@ -13,18 +13,13 @@ public class FriendDAO {
   private static final Logger log = Logger.getLogger(FriendDAO.class.getName());
 
   public void addFriend(String userId, String friendId) {
-    // one INSERT statement, executed twice with swapped parameters.
-    // first insert: A -> B, second insert: B -> A.
-    // this gives us the two-row approach so both users see each other as friends.
-    // ON CONFLICT DO NOTHING means if they're already friends it silently skips.
+    // one direction only — A follows B, B doesn't automatically follow A back.
+    // ON CONFLICT DO NOTHING silently skips if already following.
     String sql = "INSERT INTO friends (userid, friendid) VALUES (?, ?) ON CONFLICT DO NOTHING";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, userId);   // A -> B
+      ps.setString(1, userId);
       ps.setString(2, friendId);
-      ps.executeUpdate();
-      ps.setString(1, friendId); // B -> A (same statement, swapped args)
-      ps.setString(2, userId);
       ps.executeUpdate();
     } catch (SQLException e) {
       log.severe("addFriend failed for userId=" + userId + ", friendId=" + friendId + ": " + e.getMessage());
@@ -32,15 +27,12 @@ public class FriendDAO {
   }
 
   public void removeFriend(String userId, String friendId) {
-    // deletes both rows in one query using OR.
-    // without this both directions would remain and the friendship would still show up.
-    String sql = "DELETE FROM friends WHERE (userid = ? AND friendid = ?) OR (userid = ? AND friendid = ?)";
+    // only removes A -> B, leaves B -> A untouched if it exists.
+    String sql = "DELETE FROM friends WHERE userid = ? AND friendid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, userId);   // A -> B
+      ps.setString(1, userId);
       ps.setString(2, friendId);
-      ps.setString(3, friendId); // B -> A
-      ps.setString(4, userId);
       ps.executeUpdate();
     } catch (SQLException e) {
       log.severe("removeFriend failed for userId=" + userId + ", friendId=" + friendId + ": " + e.getMessage());
@@ -48,10 +40,7 @@ public class FriendDAO {
   }
 
   public List<User> getFriends(String userId) {
-    // joins "user" with friends on friendid so we get the full user data
-    // of everyone who is a friend of the given user.
-    // because of the two-row approach, WHERE f.userid = ? is enough —
-    // no need to check the other direction.
+    // gets everyone the user is following (A -> B means B is in A's friend list).
     String sql = """
             SELECT u.* FROM "user" u
             JOIN friends f ON u.userid = f.friendid
@@ -77,8 +66,7 @@ public class FriendDAO {
   }
 
   public List<User> getNonFriends(String userId) {
-    // gets everyone who is NOT already a friend and is not the user themselves.
-    // used to populate the "add friend" list in the UI.
+    // gets everyone the user is NOT already following and is not themselves.
     // subquery fetches all current friendids for the user,
     // then the outer query excludes them.
     String sql = """
@@ -108,9 +96,8 @@ public class FriendDAO {
     return nonFriends;
   }
 
-  public boolean areFriends(String userId, String friendId) {
-    // only needs to check one direction because of the two-row approach —
-    // if A -> B exists, B -> A also exists by definition.
+  public boolean isFollowing(String userId, String friendId) {
+    // checks one direction only — is A following B?
     String sql = "SELECT 1 FROM friends WHERE userid = ? AND friendid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -118,7 +105,7 @@ public class FriendDAO {
       ps.setString(2, friendId);
       return ps.executeQuery().next();
     } catch (SQLException e) {
-      log.severe("areFriends failed for userId=" + userId + ", friendId=" + friendId + ": " + e.getMessage());
+      log.severe("isFollowing failed for userId=" + userId + ", friendId=" + friendId + ": " + e.getMessage());
       return false;
     }
   }
