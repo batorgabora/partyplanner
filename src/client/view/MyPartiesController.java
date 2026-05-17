@@ -46,16 +46,13 @@ public class MyPartiesController
     loadParties();
   }
 
-  private void loadParties()
-  {
+  private void loadParties() {
     partyList.setVisible(false);
     loadingIndicator.setVisible(true);
 
     new Thread(() -> {
-      viewModel.updateParties();
-      var items = viewModel.getMyParties();
+      var items = viewModel.updateParties(); // returns the list directly
 
-      // fetch all roles off UI thread so cell factory doesn't make server calls while rendering
       Map<String, String> roles = new HashMap<>();
       for (Party party : items) {
         roles.put(party.getId(), viewModel.getRoleForParty(party));

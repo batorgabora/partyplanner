@@ -17,6 +17,7 @@ import shared.model.PartyModel;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 
 public class MyPartiesViewModel implements PropertyChangeListener
 {
@@ -46,13 +47,9 @@ public class MyPartiesViewModel implements PropertyChangeListener
     return selectedParty.get();
   }
 
-  public void updateParties() {
-    var result = model.getMyParties(LocalUser.getUser()); // fetch off UI thread
-    Platform.runLater(() -> parties.setAll(result));      // update on UI thread
-  }
-
-  public ObservableList<Party> getMyParties() {
-    return parties;
+  public ObservableList<Party> updateParties() {
+    var result = model.getMyParties(LocalUser.getUser());
+    return FXCollections.observableArrayList(result != null ? result : new ArrayList<>());
   }
 
   public StringProperty errorProperty() { return error; }
