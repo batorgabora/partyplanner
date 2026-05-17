@@ -31,18 +31,20 @@ public class ModelManager implements PartyModel
     return null;
   }
 
-  @Override public synchronized void addFriend(User user, User friend)
-  {
-    if (!user.getFriendList().contains(friend))
-    {
-      user.addFriend(friend);
-      friend.addFriend(user);
-    }
+  @Override public List<User> getFriends(User user) {
+    return new FriendDAO().getFriends(user.getId());
   }
-  @Override public synchronized void removeFriend(User user, User friend)
-  {
-    user.removeFriend(friend);
-    friend.removeFriend(user);
+
+  @Override public List<User> getNonFriends(User user) {
+    return new FriendDAO().getNonFriends(user.getId());
+  }
+
+  @Override public void addFriend(User user, User friend) {
+    new FriendDAO().addFriend(user.getId(), friend.getId());
+  }
+
+  @Override public void removeFriend(User user, User friend) {
+    new FriendDAO().removeFriend(user.getId(), friend.getId());
   }
 
 

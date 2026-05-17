@@ -99,6 +99,9 @@ public class PartyClientHandler implements Runnable {
       case REMOVE_PARTICIPANT   -> handleRemoveParticipant(request);
       case CLAIM_ITEM           -> handleClaimItem(request);
       case UNCLAIM_ITEM         -> handleUnclaimItem(request);
+      case GET_FRIENDS    -> handleGetFriends(request);
+      case GET_NON_FRIENDS -> handleGetNonFriends(request);
+      case REMOVE_FRIEND  -> handleRemoveFriend(request);
       case SEND_MESSAGE         -> handleSendMessage(request);
       case GET_MESSAGES         -> handleGetMessages(request);
     }
@@ -319,6 +322,28 @@ public class PartyClientHandler implements Runnable {
     sendResponse("hasVotedForOption", String.valueOf(result));
   }
 
+
+  //friends
+
+  private void handleGetFriends(JsonObject request) {
+    User user = new UserDAO().getById(request.get("userId").getAsString());
+    if (user == null) { sendError("User not found."); return; }
+    sendResponse("getFriends", gson.toJson(model.getFriends(user)));
+  }
+
+  private void handleGetNonFriends(JsonObject request) {
+    User user = new UserDAO().getById(request.get("userId").getAsString());
+    if (user == null) { sendError("User not found."); return; }
+    sendResponse("getNonFriends", gson.toJson(model.getNonFriends(user)));
+  }
+
+  private void handleRemoveFriend(JsonObject request) {
+    User user   = new UserDAO().getById(request.get("userId").getAsString());
+    User friend = new UserDAO().getById(request.get("friendId").getAsString());
+    if (user == null || friend == null) { sendError("User not found."); return; }
+    model.removeFriend(user, friend);
+    sendResponse("removeFriend", "ok");
+  }
 
 //participants
   private void handleGetParticipants(JsonObject request) {
