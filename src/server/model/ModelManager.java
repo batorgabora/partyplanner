@@ -31,6 +31,23 @@ public class ModelManager implements PartyModel
     return null;
   }
 
+  @Override public List<User> getFriends(User user) {
+    return new FriendDAO().getFriends(user.getId());
+  }
+
+  @Override public List<User> getNonFriends(User user) {
+    return new FriendDAO().getNonFriends(user.getId());
+  }
+
+  @Override public void addFriend(User user, User friend) {
+    new FriendDAO().addFriend(user.getId(), friend.getId());
+  }
+
+  @Override public void removeFriend(User user, User friend) {
+    new FriendDAO().removeFriend(user.getId(), friend.getId());
+  }
+
+
   @Override public synchronized ArrayList<Party> getInvitedParties(User user)
   {
     if (user == null) return new ArrayList<>();
@@ -237,22 +254,6 @@ public class ModelManager implements PartyModel
 
   @Override public boolean hasVotedInParty(String userId, String partyId) {
     return new OptionDAO().hasVoted(userId, partyId);
-  }
-
-  @Override public List<User> getFriends(User user) {
-    return new FriendDAO().getFriends(user.getId());
-  }
-
-  @Override public List<User> getNonFriends(User user) {
-    return new FriendDAO().getNonFriends(user.getId());
-  }
-
-  @Override public void addFriend(User user, User friend) {
-    new FriendDAO().addFriend(user.getId(), friend.getId());
-  }
-
-  @Override public void removeFriend(User user, User friend) {
-    new FriendDAO().removeFriend(user.getId(), friend.getId());
   }
 
   @Override public synchronized Message sendMessage(String partyId, String userId, String content) {

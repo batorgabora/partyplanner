@@ -272,6 +272,26 @@ public class PartyClient
     sendRequest(request);
   }
 
+  //friends
+  public void requestGetFriends(String userId) {
+    JsonObject request = createRequest(Action.GET_FRIENDS);
+    request.addProperty("userId", userId);
+    sendRequest(request);
+  }
+
+  public void requestGetNonFriends(String userId) {
+    JsonObject request = createRequest(Action.GET_NON_FRIENDS);
+    request.addProperty("userId", userId);
+    sendRequest(request);
+  }
+
+  public void requestRemoveFriend(String userId, String friendId) {
+    JsonObject request = createRequest(Action.REMOVE_FRIEND);
+    request.addProperty("userId", userId);
+    request.addProperty("friendId", friendId);
+    sendRequest(request);
+  }
+
   // Participant operations
   public void requestGetParticipants(String partyId) {
     JsonObject request = createRequest(Action.GET_PARTICIPANTS);
