@@ -61,7 +61,7 @@ public class EditPartyController
     timeList.setItems(viewmodel.getOptions());
 
 
-    userDropdown.setItems(viewmodel.getAllUsers());
+    userDropdown.setItems(viewmodel.getFriends());
     statusLabel.textProperty().bind(viewmodel.errorProperty());
 
     nameField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {

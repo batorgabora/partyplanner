@@ -41,6 +41,12 @@ public class EditPartyViewModel implements PropertyChangeListener
     return FXCollections.observableArrayList(model.getItems(selectedParty.get()));
   }
 
+  public ObservableList<User> getFriends(){
+    return FXCollections.observableArrayList(
+        model.getFriends(LocalUser.getUser())
+    );
+  }
+
   public ObservableList<Participant> getMembers() {
     return FXCollections.observableArrayList(
         model.getParticipants(selectedParty.get())

@@ -1,6 +1,7 @@
 package client.view;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -68,8 +69,8 @@ public class FriendsController
       var friends    = viewmodel.getFriends();
       var nonFriends = viewmodel.getNonFriends();
       Platform.runLater(() -> {
-        friendsList.setItems(friends);
-        nonFriendsDrop.setItems(nonFriends);
+        friendsList.setItems(FXCollections.observableArrayList(friends));
+        nonFriendsDrop.setItems(FXCollections.observableArrayList(nonFriends));
         friendsList.setVisible(true);
         nonFriendsDrop.setVisible(true);
         loadingIndicator.setVisible(false);

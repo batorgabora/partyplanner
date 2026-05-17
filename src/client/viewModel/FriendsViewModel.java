@@ -10,6 +10,7 @@ import shared.model.User;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
 public class FriendsViewModel implements PropertyChangeListener
 {
@@ -22,14 +23,12 @@ public class FriendsViewModel implements PropertyChangeListener
     this.model = model;
   }
 
-  public ObservableList<User> getFriends() {
-    friends.setAll(model.getFriends(LocalUser.getUser()));
-    return friends;
+  public List<User> getFriends() {
+    return model.getFriends(LocalUser.getUser());
   }
 
-  public ObservableList<User> getNonFriends() {
-    nonFriends.setAll(model.getNonFriends(LocalUser.getUser()));
-    return nonFriends;
+  public List<User> getNonFriends() {
+    return model.getNonFriends(LocalUser.getUser());
   }
 
   public void addFriend(User friend) {
