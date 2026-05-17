@@ -47,7 +47,8 @@ public class MyPartiesViewModel implements PropertyChangeListener
   }
 
   public void updateParties() {
-    parties.setAll(model.getMyParties(LocalUser.getUser()));
+    var result = model.getMyParties(LocalUser.getUser()); // fetch off UI thread
+    Platform.runLater(() -> parties.setAll(result));      // update on UI thread
   }
 
   public ObservableList<Party> getMyParties() {

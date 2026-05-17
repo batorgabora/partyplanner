@@ -1,11 +1,13 @@
 package client.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
 import shared.model.*;
@@ -23,6 +25,7 @@ public class FriendsController
   @FXML private Button removefriendButton;
   @FXML private Label userLabel;
   @FXML private Label statusLabel;
+  @FXML private ImageView loadingIndicator;
 
   public void init(ViewHandler viewhandler, FriendsViewModel viewmodel, Region root) {
     this.root = root;
@@ -57,8 +60,21 @@ public class FriendsController
   }
 
   private void loadData() {
-    friendsList.setItems(viewmodel.getFriends());
-    nonFriendsDrop.setItems(viewmodel.getNonFriends());
+    loadingIndicator.setVisible(true);
+    friendsList.setVisible(false);
+    nonFriendsDrop.setVisible(false);
+
+    new Thread(() -> {
+      var friends    = viewmodel.getFriends();
+      var nonFriends = viewmodel.getNonFriends();
+      Platform.runLater(() -> {
+        friendsList.setItems(friends);
+        nonFriendsDrop.setItems(nonFriends);
+        friendsList.setVisible(true);
+        nonFriendsDrop.setVisible(true);
+        loadingIndicator.setVisible(false);
+      });
+    }).start();
   }
 
   public void reset() {

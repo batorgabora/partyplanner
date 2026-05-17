@@ -386,7 +386,7 @@ public class PartyController
   @FXML public void onAccept()
   {
     viewmodel.acceptInvitation();
-    viewhandler.openView("my parties");
+    viewhandler.openView("party");
   }
 
   @FXML public void onDecline()
