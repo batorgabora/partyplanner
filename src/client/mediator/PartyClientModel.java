@@ -88,12 +88,31 @@ public class PartyClientModel implements PartyModel
     return gson.fromJson(json.get("data").getAsString(), type);
   }
 
+  @Override public List<User> getFriends(User user) {
+    client.requestGetFriends(user.getId());
+    JsonObject json = sendAndReceive();
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<User>>(){}.getType();
+    return gson.fromJson(json.get("data").getAsString(), type);
+  }
+
+  @Override public List<User> getNonFriends(User user) {
+    client.requestGetNonFriends(user.getId());
+    JsonObject json = sendAndReceive();
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<User>>(){}.getType();
+    return gson.fromJson(json.get("data").getAsString(), type);
+  }
+
   @Override public void addFriend(User user, User friend) {
     client.requestAddFriend(user.getId(), friend.getId());
     sendAndReceive();
   }
 
-  @Override public void removeFriend(User user, User friend) {}
+  @Override public void removeFriend(User user, User friend) {
+    client.requestRemoveFriend(user.getId(), friend.getId());
+    sendAndReceive();
+  }
 
   @Override public ArrayList<Party> getMyParties(User user) {
     client.requestGetMyParties(user.getId());
