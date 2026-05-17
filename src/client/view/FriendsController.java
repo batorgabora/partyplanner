@@ -33,7 +33,6 @@ public class FriendsController
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
 
-    userLabel.setText(LocalUser.getUser().getUsername());
 
     // show username in the friends list
     friendsList.setCellFactory(lv -> new ListCell<User>() {
@@ -61,6 +60,7 @@ public class FriendsController
   }
 
   private void loadData() {
+    userLabel.setText(LocalUser.getUser().getUsername());
     loadingIndicator.setVisible(true);
     friendsList.setVisible(false);
     nonFriendsDrop.setVisible(false);

@@ -53,6 +53,7 @@ public class CreatePartyController
 
   public void reset()
   {
+    userLabel.setText(LocalUser.getUser().getUsername());
     nameField.clear();
     descriptionField.clear();
     locationField.clear();

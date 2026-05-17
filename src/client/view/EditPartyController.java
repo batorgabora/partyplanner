@@ -50,6 +50,7 @@ public class EditPartyController
   }
 
   public void loadParty() {
+    userLabel.setText(LocalUser.getUser().getUsername());
     if (selected == null) return;
     nameField.setText(selected.getName());
     descriptionField.setText(selected.getDescription());

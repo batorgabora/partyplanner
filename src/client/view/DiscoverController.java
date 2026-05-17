@@ -45,6 +45,7 @@ public class DiscoverController
   // fetches parties off the UI thread to avoid freezing, then updates UI when done
   private void loadParties()
   {
+    userLabel.setText(LocalUser.getUser().getUsername());
     partyList.setVisible(false);
     loadingIndicator.setVisible(true);
 

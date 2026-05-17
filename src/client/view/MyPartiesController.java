@@ -38,7 +38,7 @@ public class MyPartiesController
     this.viewHandler = viewHandler;
 
     errorLabel.textProperty().bind(viewModel.errorProperty());
-    userLabel.setText(LocalUser.getUser().getUsername());
+
 
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> viewModel.selectedPartyProperty().set(newVal));
@@ -47,6 +47,8 @@ public class MyPartiesController
   }
 
   private void loadParties() {
+    userLabel.setText(LocalUser.getUser().getUsername());
+
     partyList.setVisible(false);
     loadingIndicator.setVisible(true);
 

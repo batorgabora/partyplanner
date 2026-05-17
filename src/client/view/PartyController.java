@@ -99,10 +99,11 @@ public class PartyController
 
   public void loadParty()
   {
+    userLabel.setText(LocalUser.getUser().getUsername());
+
     selected = viewmodel.getSelectedParty();
     if (selected == null) return;
 
-    userLabel.setText(LocalUser.getUser().getUsername());
     nameLabel.setText(selected.getName());
 
     setContentVisible(false);
