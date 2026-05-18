@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.DiscoverController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="837.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.DiscoverController">
     <children>
         <Pane layoutX="-1.0" layoutY="-2.0" prefHeight="534.0" prefWidth="118.0">
             <children>
@@ -36,9 +36,9 @@
 
       <ListView fx:id="partyList" layoutX="146.0" layoutY="22.0" prefHeight="417.0" prefWidth="668.0" />
 
-      <Button fx:id="onFurtherButton" layoutX="742.0" layoutY="476.0" mnemonicParsing="false" onAction="#onFurther" text="further info" />
-      <Label fx:id="selectedLabel" layoutX="146.0" layoutY="481.0" prefHeight="17.0" prefWidth="491.0" text="no selected party" />
-        <ImageView fx:id="loadingIndicator" layoutX="370.0" layoutY="240.0" fitHeight="80.0" fitWidth="80.0" visible="false">
+      <Button fx:id="onFurtherButton" layoutX="744.0" layoutY="485.0" mnemonicParsing="false" onAction="#onFurther" text="further info" />
+      <Label fx:id="selectedLabel" layoutX="146.0" layoutY="490.0" prefHeight="17.0" prefWidth="491.0" text="no selected party" />
+        <ImageView fx:id="loadingIndicator" fitHeight="80.0" fitWidth="80.0" layoutX="370.0" layoutY="240.0" visible="false">
             <image>
                 <Image url="@../cat-2.gif" />
             </image>
