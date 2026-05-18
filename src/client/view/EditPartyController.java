@@ -1,5 +1,6 @@
 package client.view;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -52,46 +53,43 @@ public class EditPartyController
   public void loadParty() {
     userLabel.setText(LocalUser.getUser().getUsername());
     if (selected == null) return;
+
+    // Set fields from the local Party object immediately — no network needed
     nameField.setText(selected.getName());
     descriptionField.setText(selected.getDescription());
-    itemList.setItems(viewmodel.getItems());
-    memberList.setItems(viewmodel.getMembers());
-    roleLabel.setText(viewmodel.getRoleForCurrentUser(viewmodel.getSelectedParty().getId()));
     dateField.setText(selected.getDate());
     locationField.setText(selected.getLocation());
-    timeList.setItems(viewmodel.getOptions());
-
-
-    userDropdown.setItems(viewmodel.getFriends());
     statusLabel.textProperty().bind(viewmodel.errorProperty());
 
-    nameField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-      if (!isNowFocused) {
-        // lost focus - save it
-        viewmodel.updateName(nameField.getText());
-      }
-    });
+    // Network calls go in a background thread
+    new Thread(() -> {
+      var items    = viewmodel.getItems();
+      var members  = viewmodel.getMembers();
+      var options  = viewmodel.getOptions();
+      var friends  = viewmodel.getFriends();
+      var role     = viewmodel.getRoleForCurrentUser(selected.getId());
 
-    descriptionField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-      if (!isNowFocused) {
-        // lost focus - save it
-        viewmodel.updateDescription(descriptionField.getText());
-      }
-    });
+      Platform.runLater(() -> {
+        itemList.setItems(items);
+        memberList.setItems(members);
+        timeList.setItems(options);
+        userDropdown.setItems(friends);
+        roleLabel.setText(role);
 
-    locationField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-      if (!isNowFocused) {
-        // lost focus - save it
-        viewmodel.updateLocation(locationField.getText());
-      }
-    });
-
-    dateField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-      if (!isNowFocused) {
-        // lost focus - save it
-        viewmodel.updateDate(dateField.getText());
-      }
-    });
+        nameField.focusedProperty().addListener((obs, was, isNow) -> {
+          if (!isNow) viewmodel.updateName(nameField.getText());
+        });
+        descriptionField.focusedProperty().addListener((obs, was, isNow) -> {
+          if (!isNow) viewmodel.updateDescription(descriptionField.getText());
+        });
+        locationField.focusedProperty().addListener((obs, was, isNow) -> {
+          if (!isNow) viewmodel.updateLocation(locationField.getText());
+        });
+        dateField.focusedProperty().addListener((obs, was, isNow) -> {
+          if (!isNow) viewmodel.updateDate(dateField.getText());
+        });
+      });
+    }).start();
   }
 
   @FXML public void onDelete() {
