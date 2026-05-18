@@ -1,0 +1,137 @@
+.root {
+  -fx-background-color: #BFD8AF;
+}
+
+.titled-pane > .title {
+  -fx-background-color: #BFD8AF;
+  -fx-font-weight: bold;
+}
+
+.titled-pane > .content,
+.list-view,
+.list-view .list-cell {
+  -fx-background-color: #BFD8AF;
+}
+
+.list-view .list-cell:selected {
+  -fx-background-color: rgba(100, 150, 80, 0.3);
+}
+
+.titled-pane > .content {
+  -fx-border-color: transparent;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+  -fx-border-width: 0;
+}
+
+.button {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+  -fx-effect: null;
+}
+
+.button:hover {
+  -fx-underline: true;
+  -fx-text-fill: #4a6e3a;
+}
+
+.text-field, .text-area, .combo-box, .combo-box .list-cell {
+  -fx-background-color: #99BC85;
+  -fx-border-color: transparent;
+  -fx-effect: null;
+  -fx-text-fill: inherit;
+}
+
+.text-field:focused, .text-area:focused {
+  -fx-background-color: #99BC85;
+  -fx-border-color: transparent;
+}
+
+.combo-box .arrow-button {
+  -fx-background-color: #99BC85;
+  -fx-border-color: transparent;
+}
+
+.combo-box-popup .list-view,
+.combo-box-popup .list-cell {
+  -fx-background-color: #99BC85;
+}
+
+.combo-box-popup .list-cell:hover {
+  -fx-background-color: #7a9e6a;
+}
+
+.text-area .content {
+  -fx-background-color: #99BC85;
+}
+
+/* ── chat window ── */
+.chat-window {
+  -fx-background-color: #BFD8AF;
+  -fx-border-color: transparent;
+  -fx-border-width: 0;
+}
+
+.chat-header {
+  -fx-background-color: #BFD8AF;
+  -fx-border-color: #99BC85;
+  -fx-border-width: 0 0 1 0;
+  -fx-padding: 0 12 0 12;
+}
+
+.chat-header-label {
+  -fx-font-weight: bold;
+  -fx-font-size: 13;
+}
+
+.chat-scroll {
+  -fx-background: #BFD8AF;
+  -fx-background-color: #BFD8AF;
+}
+
+.chat-messages {
+  -fx-padding: 10;
+  -fx-background-color: #BFD8AF;
+}
+
+.chat-sender {
+  -fx-font-weight: bold;
+  -fx-font-size: 11;
+}
+
+.chat-time {
+  -fx-text-fill: #7a9e6a;
+  -fx-font-size: 10;
+}
+
+.chat-bubble-other {
+  -fx-background-color: #99BC85;
+  -fx-background-radius: 6;
+  -fx-padding: 6 8 6 8;
+}
+
+.chat-bubble-own {
+  -fx-background-color: #7a9e6a;
+  -fx-background-radius: 6;
+  -fx-padding: 6 8 6 8;
+}
+
+.chat-input-bar {
+  -fx-background-color: #99BC85;
+  -fx-border-color: #7a9e6a;
+  -fx-border-width: 1 0 0 0;
+  -fx-padding: 6;
+}
+
+.chat-input {
+  -fx-background-color: #BFD8AF;
+}
+
+.chat-send-button {
+  -fx-font-size: 11;
+}
+
+.separator:vertical .line {
+  -fx-border-color: black;
+  -fx-border-width: 0 0 0 1;
+}
