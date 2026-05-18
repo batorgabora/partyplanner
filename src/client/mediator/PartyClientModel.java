@@ -73,16 +73,62 @@ public class PartyClientModel implements PartyModel {
     }
   }
 
+  private boolean isError(JsonObject json) {
+    // json.has("type") — checks the key exists at all
+    // json.get("type").getAsString() — reads it as a plain String
+    // Returns true only if type is exactly "error"
+    return json.has("type") && "error".equals(json.get("type").getAsString());
+  }
+
   private String getData(JsonObject json) {
+    // Used for plain string responses (role, status, vote count, etc.)
+    // where "data" is just "organizer" or "true" — not a JSON object/array.
+
+    // Guard: if "data" key is missing or explicitly null, return null
     if (!json.has("data") || json.get("data").isJsonNull()) return null;
-    var data = json.get("data");
+
+    var data = json.get("data"); // JsonElement — could be string, object, array
+
+    // isJsonPrimitive() means it's a string, number, or boolean —
+    // getAsString() safely reads it as a plain Java String
     if (data.isJsonPrimitive()) return data.getAsString();
+
+    // Fallback: if it's somehow an object or array, toString() gives
+    // the raw JSON text — better than crashing
     return data.toString();
   }
 
-  private boolean isError(JsonObject json) {
-    return json.has("type") && "error".equals(json.get("type").getAsString());
+  @Override public ArrayList<Party> getMyParties(User user) {
+
+    // sendAndReceive takes a Runnable — a piece of code to run.
+    // It acquires the lock, runs the send, waits for the response,
+    // then releases the lock. The lambda () -> ... is the "send" part.
+    JsonObject json = sendAndReceive(() -> client.requestGetMyParties(user.getId()));
+
+    // isError checks if the response has "type":"error" in it.
+    // The server sends this when something goes wrong (user not found, DB error, etc.)
+    // If so, return an empty list rather than crashing.
+    if (isError(json)) return new ArrayList<>();
+
+    // Gson needs to know the exact type to deserialize into at runtime.
+    // Java erases generic types at runtime (type erasure), so
+    // List<Party>.class doesn't exist — you have to use TypeToken to
+    // capture it. This is Gson's workaround for that limitation.
+    Type type = new TypeToken<ArrayList<Party>>(){}.getType();
+
+    // json.get("data") returns the "data" field from the response JsonObject.
+    // The full response looks like:
+    // {
+    //   "type": "response",
+    //   "action": "getMyParties",
+    //   "data": [ { "id": "...", "name": "...", ... }, { ... } ]
+    // }
+    // gson.fromJson() walks the JSON array and maps each object
+    // to a Party instance using reflection (matching field names).
+    return gson.fromJson(json.get("data"), type);
   }
+
+  //same process later on
 
   @Override public User login(String username, String password) {
     JsonObject json = sendAndReceive(() -> client.requestLogin(username, password));
@@ -125,12 +171,7 @@ public class PartyClientModel implements PartyModel {
     sendAndReceive(() -> client.requestRemoveFriend(user.getId(), friend.getId()));
   }
 
-  @Override public ArrayList<Party> getMyParties(User user) {
-    JsonObject json = sendAndReceive(() -> client.requestGetMyParties(user.getId()));
-    if (isError(json)) return new ArrayList<>();
-    Type type = new TypeToken<ArrayList<Party>>(){}.getType();
-    return gson.fromJson(json.get("data"), type);
-  }
+
 
   @Override public List<Party> getInvitedParties(User user) {
     JsonObject json = sendAndReceive(() -> client.requestGetInvitedParties(user.getId()));
