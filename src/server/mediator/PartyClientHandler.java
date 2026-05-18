@@ -396,7 +396,11 @@ public class PartyClientHandler implements Runnable {
     JsonObject response = new JsonObject();
     response.addProperty("type", "response");
     response.addProperty("action", action);
-    response.addProperty("data", data);
+    try {
+      response.add("data", JsonParser.parseString(data));
+    } catch (Exception e) {
+      response.addProperty("data", data);
+    }
     outputWriter.println(gson.toJson(response));
   }
 

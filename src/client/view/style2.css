@@ -1,0 +1,237 @@
+.root {
+  -fx-background-color: #3D6B68;
+  -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* ── LIST VIEW ── */
+.list-view {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+  -fx-padding: 4;
+}
+
+.list-view .list-cell {
+  -fx-background-color: #4A7A76;
+  -fx-background-radius: 6;
+  -fx-padding: 10 14 10 14;
+  -fx-text-fill: #F0F7F7;
+  -fx-font-size: 13px;
+  -fx-border-color: transparent;
+}
+
+.list-view .list-cell:odd {
+  -fx-background-color: #3D6B68;
+}
+
+.list-view .list-cell:selected {
+  -fx-background-color: #1E4A45;
+  -fx-text-fill: white;
+}
+
+.list-view .list-cell:hover {
+  -fx-background-color: #3a6460;
+  -fx-text-fill: white;
+}
+
+/* ── BUTTONS ── */
+.button {
+  -fx-background-color: transparent;
+  -fx-text-fill: #B8D8D6;
+  -fx-font-size: 13px;
+  -fx-cursor: hand;
+  -fx-border-color: transparent;
+  -fx-padding: 6 12 6 12;
+}
+
+.button:hover {
+  -fx-text-fill: white;
+  -fx-underline: true;
+}
+
+/* ── TEXT FIELDS ── */
+.text-field, .password-field {
+  -fx-background-color: #4A7A76;
+  -fx-text-fill: white;
+  -fx-prompt-text-fill: #8ABAB7;
+  -fx-background-radius: 6;
+  -fx-border-color: transparent;
+  -fx-padding: 10 14 10 14;
+  -fx-font-size: 13px;
+}
+
+.text-field:focused, .password-field:focused {
+  -fx-background-color: #3D6B68;
+  -fx-border-color: #7EC8C4;
+  -fx-border-radius: 6;
+  -fx-border-width: 1;
+}
+
+/* ── TEXT AREA ── */
+.text-area {
+  -fx-background-color: #4A7A76;
+  -fx-text-fill: white;
+  -fx-background-radius: 6;
+  -fx-border-color: transparent;
+  -fx-font-size: 13px;
+}
+
+.text-area .content {
+  -fx-background-color: #4A7A76;
+  -fx-background-radius: 6;
+}
+
+.text-area:focused .content {
+  -fx-background-color: #3D6B68;
+}
+
+/* ── LABELS ── */
+.label {
+  -fx-text-fill: #E0F0EE;
+  -fx-font-size: 13px;
+}
+
+/* ── SEPARATOR ── */
+.separator .line {
+  -fx-border-color: #264644;
+  -fx-border-width: 1;
+}
+
+/* ── COMBO BOX ── */
+.combo-box {
+  -fx-background-color: #4A7A76;
+  -fx-border-color: transparent;
+  -fx-background-radius: 6;
+}
+
+.combo-box .list-cell {
+  -fx-background-color: #4A7A76;
+  -fx-text-fill: white;
+}
+
+.combo-box .arrow-button {
+  -fx-background-color: #4A7A76;
+}
+
+.combo-box-popup .list-view {
+  -fx-background-color: #4A7A76;
+}
+
+.combo-box-popup .list-cell {
+  -fx-background-color: #4A7A76;
+  -fx-text-fill: white;
+}
+
+.combo-box-popup .list-cell:hover {
+  -fx-background-color: #3a6460;
+}
+
+/* ── SCROLL PANE ── */
+.scroll-pane {
+  -fx-background: #3D6B68;
+  -fx-background-color: #3D6B68;
+  -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport {
+  -fx-background-color: #3D6B68;
+}
+
+/* ── DATE PICKER ── */
+.date-picker {
+  -fx-background-color: #4A7A76;
+  -fx-border-color: transparent;
+  -fx-background-radius: 6;
+}
+
+.date-picker .text-field {
+  -fx-background-color: #4A7A76;
+  -fx-text-fill: white;
+}
+
+.date-picker .arrow-button {
+  -fx-background-color: #4A7A76;
+}
+
+/* ── PROGRESS INDICATOR ── */
+.progress-indicator .percentage {
+  -fx-fill: white;
+}
+
+.progress-indicator .progress {
+  -fx-progress-color: #7EC8C4;
+}
+
+/* ── CHAT WINDOW ── */
+.chat-window {
+  -fx-background-color: #2E5250;
+  -fx-border-color: #264644;
+  -fx-border-width: 0 0 0 2;
+}
+
+.chat-header {
+  -fx-background-color: #1E4A45;
+  -fx-border-color: #264644;
+  -fx-border-width: 0 0 1 0;
+  -fx-padding: 0 12 0 12;
+}
+
+.chat-header-label {
+  -fx-font-weight: bold;
+  -fx-font-size: 13px;
+  -fx-text-fill: white;
+}
+
+.chat-scroll {
+  -fx-background: #2E5250;
+  -fx-background-color: #2E5250;
+}
+
+.chat-messages {
+  -fx-padding: 10;
+  -fx-background-color: #2E5250;
+}
+
+.chat-sender {
+  -fx-font-weight: bold;
+  -fx-font-size: 11px;
+  -fx-text-fill: #7EC8C4;
+}
+
+.chat-time {
+  -fx-text-fill: #8ABAB7;
+  -fx-font-size: 10px;
+}
+
+.chat-bubble-other {
+  -fx-background-color: #4A7A76;
+  -fx-background-radius: 6;
+  -fx-padding: 6 8 6 8;
+  -fx-text-fill: white;
+}
+
+.chat-bubble-own {
+  -fx-background-color: #1E4A45;
+  -fx-background-radius: 6;
+  -fx-padding: 6 8 6 8;
+  -fx-text-fill: white;
+}
+
+.chat-input-bar {
+  -fx-background-color: #1E4A45;
+  -fx-border-color: #264644;
+  -fx-border-width: 1 0 0 0;
+  -fx-padding: 6;
+}
+
+.chat-input {
+  -fx-background-color: #2E5250;
+  -fx-text-fill: white;
+  -fx-prompt-text-fill: #8ABAB7;
+}
+
+.chat-send-button {
+  -fx-background-color: #3D6B68;
+  -fx-text-fill: white;
+  -fx-background-radius: 4;
+  -fx-cursor: hand;
+}

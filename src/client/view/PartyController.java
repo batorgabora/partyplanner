@@ -328,6 +328,7 @@ public class PartyController
   }
 
   private String resolveUsername(String userId) {
+    if (userId == null) return "unknown";
     for (Participant p : memberList.getItems()) {
       if (p.getUser().getId().equals(userId)) return p.getUser().getUsername();
     }
