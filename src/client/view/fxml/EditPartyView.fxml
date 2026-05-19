@@ -85,7 +85,7 @@
         <TextField fx:id="locationField" layoutX="668.0" layoutY="34.0" text="location" />
         <Label fx:id="statusLabel" layoutX="426.0" layoutY="500.0" prefHeight="17.0" prefWidth="209.0" text="status" />
         <Button fx:id="saveButton" layoutX="761.0" layoutY="420.0" mnemonicParsing="false" onAction="#onBack" text="save" />
-        <ImageView fx:id="loadingIndicator" fitHeight="80.0" fitWidth="80.0" layoutX="370.0" layoutY="240.0" visible="false">
+        <ImageView fx:id="loadingIndicator" fitHeight="80.0" fitWidth="80.0" layoutX="420.0" layoutY="215.0" visible="false">
             <image>
                 <Image url="@../cat-2.gif" />
             </image>

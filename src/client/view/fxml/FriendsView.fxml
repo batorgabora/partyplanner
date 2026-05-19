@@ -38,7 +38,7 @@
         <Button fx:id="removefriendButton" layoutX="415.0" layoutY="51.0" mnemonicParsing="false" onAction="#onRemoveFriend" text="-" />
         <ComboBox fx:id="nonFriendsDrop" layoutX="467.0" layoutY="14.0" prefWidth="150.0" promptText="users" />
         <Button fx:id="addfriendButton" layoutX="414.0" layoutY="14.0" mnemonicParsing="false" onAction="#onAddFriend" text="+" />
-        <ImageView fx:id="loadingIndicator" fitHeight="80.0" fitWidth="80.0" layoutX="370.0" layoutY="240.0" visible="false">
+        <ImageView fx:id="loadingIndicator" fitHeight="80.0" fitWidth="80.0" layoutX="420.0" layoutY="215.0" visible="false">
             <image>
                 <Image url="@../cat-2.gif" />
             </image>

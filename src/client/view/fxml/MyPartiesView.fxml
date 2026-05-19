@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.MyPartiesController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="837.0" stylesheets="@../style3.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.MyPartiesController">
     <children>
-        <Pane layoutX="-1.0" layoutY="-2.0" prefHeight="534.0" prefWidth="118.0">
+        <Pane layoutX="-1.0" layoutY="-2.0" prefHeight="534.0" prefWidth="118.0" stylesheets="@../style3.css">
             <children>
                 <Label layoutX="14.0" layoutY="14.0" onMouseClicked="#onMyParties" prefHeight="26.0" prefWidth="88.0" styleClass="nav-label" text="my parties" underline="true">
                     <font>
@@ -23,7 +23,7 @@
                         <Font size="14.0" />
                     </font>
                 </Label>
-                <Label layoutX="14.0" layoutY="84.0" onMouseClicked="#onFriends" prefHeight="25.0" prefWidth="82.0" styleClass="nav-label" text="friends">
+                <Label layoutX="14.0" layoutY="82.0" onMouseClicked="#onFriends" prefHeight="25.0" prefWidth="82.0" styleClass="nav-label" text="friends">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -38,7 +38,7 @@
         <Label fx:id="selectedLabel" layoutX="146.0" layoutY="481.0" />
         <Button fx:id="createButton" layoutX="734.0" layoutY="8.0" mnemonicParsing="false" onAction="#onCreateParty" text="+ create party" />
         <Label fx:id="errorLabel" layoutX="146.0" layoutY="505.0" prefWidth="668.0" textFill="#cc0000" wrapText="true" />
-        <ImageView fx:id="loadingIndicator" fitHeight="80.0" fitWidth="80.0" layoutX="370.0" layoutY="240.0" visible="false">
+        <ImageView fx:id="loadingIndicator" fitHeight="80.0" fitWidth="80.0" layoutX="420.0" layoutY="215.0" visible="false">
             <image>
                 <Image url="@../cat-2.gif" />
             </image>
