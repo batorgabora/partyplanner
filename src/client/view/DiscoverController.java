@@ -37,7 +37,7 @@ public class DiscoverController
         (obs, oldVal, newVal) -> viewmodel.selectedPartyProperty().set(newVal));
 
     partyList.getSelectionModel().selectedItemProperty().addListener(
-        (obs, oldVal, newVal) -> selectedLabel.setText(newVal != null ? newVal.toString() : "no selected party"));
+        (obs, oldVal, newVal) -> selectedLabel.setText(newVal != null ? newVal.toString() : ""));
 
     loadParties();
   }
@@ -47,6 +47,8 @@ public class DiscoverController
   {
     userLabel.setText(LocalUser.getUser().getUsername());
     partyList.setVisible(false);
+    selectedLabel.setVisible(false);
+    onFurtherButton.setVisible(false);
     loadingIndicator.setVisible(true);
 
     new Thread(() -> {
@@ -55,6 +57,8 @@ public class DiscoverController
       Platform.runLater(() -> {                                     // back on UI thread
         partyList.setItems(items);
         partyList.setVisible(true);
+        selectedLabel.setVisible(true);
+        onFurtherButton.setVisible(true);
         loadingIndicator.setVisible(false);
       });
     }).start();

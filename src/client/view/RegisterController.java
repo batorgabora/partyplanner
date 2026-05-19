@@ -44,7 +44,7 @@ public class RegisterController
     }
   }
 
-  @FXML public void onLogin() {
+  @FXML public void onLogout() {
     viewhandler.openView("login");
   }
 

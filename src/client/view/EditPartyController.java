@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
 import shared.model.*;
@@ -32,6 +33,19 @@ public class EditPartyController
   @FXML private TextField itemField;
   @FXML private TextField optionField;
   @FXML private Label userLabel;
+  @FXML private Button addparticipantButton;
+  @FXML private Button removeparticipantButton;
+  @FXML private Label label1;
+  @FXML private Label label2;
+  @FXML private Label label3;
+  @FXML private Button minusOption;
+  @FXML private Button plusOption;
+  @FXML private Button itemMinus;
+  @FXML private Button itemPlus;
+  @FXML private Button saveButton;
+  @FXML private Button deleteButton;
+
+  @FXML private ImageView loadingIndicator;
 
   private Party selected;
 
@@ -54,14 +68,14 @@ public class EditPartyController
     userLabel.setText(LocalUser.getUser().getUsername());
     if (selected == null) return;
 
-    // set local fields immediately
     nameField.setText(selected.getName());
     descriptionField.setText(selected.getDescription());
     dateField.setText(selected.getDate());
     locationField.setText(selected.getLocation());
     statusLabel.textProperty().bind(viewmodel.errorProperty());
 
-    // network calls in background
+    setContentVisible(false);
+
     new Thread(() -> {
       var items   = viewmodel.getItems();
       var members = viewmodel.getMembers();
@@ -88,8 +102,37 @@ public class EditPartyController
         dateField.focusedProperty().addListener((obs, was, isNow) -> {
           if (!isNow) viewmodel.updateDate(dateField.getText());
         });
+
+        setContentVisible(true);
       });
     }).start();
+  }
+
+  private void setContentVisible(boolean visible) {
+    loadingIndicator.setVisible(!visible);
+    itemList.setVisible(visible);
+    memberList.setVisible(visible);
+    timeList.setVisible(visible);
+    userDropdown.setVisible(visible);
+    roleLabel.setVisible(visible);
+    nameField.setVisible(visible);
+    descriptionField.setVisible(visible);
+    dateField.setVisible(visible);
+    locationField.setVisible(visible);
+    addparticipantButton.setVisible(visible);
+    removeparticipantButton.setVisible(visible);
+    label1.setVisible(visible);
+    label2.setVisible(visible);
+    label3.setVisible(visible);
+    statusLabel.setVisible(visible);
+    itemMinus.setVisible(visible);
+    itemPlus.setVisible(visible);
+    minusOption.setVisible(visible);
+    plusOption.setVisible(visible);
+    itemField.setVisible(visible);
+    optionField.setVisible(visible);
+    saveButton.setVisible(visible);
+    deleteButton.setVisible(visible);
   }
 
   @FXML public void onDelete() {
@@ -112,7 +155,7 @@ public class EditPartyController
   @FXML public void onMyParties() {
     viewhandler.openView("my parties");
   }
-  @FXML public void onLogOut() {viewhandler.openView("login");}
+  @FXML public void onLogout() {viewhandler.openView("login");}
   @FXML public void addFriend() {viewhandler.openView("friends");}
 
   @FXML public void onAddItem() {

@@ -26,6 +26,7 @@ public class MyPartiesController
 
   @FXML private ListView<Party> partyList;
   @FXML private Button furtherButton;
+  @FXML private Button createButton;
   @FXML private Label selectedLabel;
   @FXML private Label userLabel;
   @FXML private Label errorLabel;
@@ -43,6 +44,8 @@ public class MyPartiesController
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> viewModel.selectedPartyProperty().set(newVal));
 
+    partyList.getSelectionModel().selectedItemProperty().addListener(
+        (obs, oldVal, newVal) -> selectedLabel.setText(newVal != null ? newVal.getName() : ""));
     loadParties();
   }
 
@@ -50,7 +53,11 @@ public class MyPartiesController
     userLabel.setText(LocalUser.getUser().getUsername());
 
     partyList.setVisible(false);
+    selectedLabel.setVisible(false);
+    createButton.setVisible(false);
+    furtherButton.setVisible(false);
     loadingIndicator.setVisible(true);
+
 
     new Thread(() -> {
       var items = viewModel.updateParties(); // returns the list directly
@@ -73,6 +80,9 @@ public class MyPartiesController
         });
         partyList.setItems(items);
         partyList.setVisible(true);
+        selectedLabel.setVisible(true);
+        createButton.setVisible(true);
+        furtherButton.setVisible(true);
         loadingIndicator.setVisible(false);
       });
     }).start();

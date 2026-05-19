@@ -5,43 +5,44 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.FriendsController">
     <children>
         <Pane layoutX="-1.0" layoutY="-2.0" prefHeight="534.0" prefWidth="118.0">
             <children>
-                <Label layoutX="14.0" layoutY="14.0" onMouseClicked="#onMyParties" prefHeight="25.0" prefWidth="82.0" text="my parties">
+                <Label layoutX="14.0" layoutY="14.0" onMouseClicked="#onMyParties" prefHeight="25.0" prefWidth="82.0" styleClass="nav-label" text="my parties">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Label>
-                <Label layoutX="14.0" layoutY="48.0" onMouseClicked="#onDiscover" prefHeight="25.0" prefWidth="82.0" text="discover">
+                <Label layoutX="14.0" layoutY="48.0" onMouseClicked="#onDiscover" prefHeight="25.0" prefWidth="82.0" styleClass="nav-label" text="discover">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Label>
-                <Label layoutX="14.0" layoutY="84.0" onMouseClicked="#onFriends" prefHeight="25.0" prefWidth="82.0" text="friends" underline="true">
+                <Label layoutX="14.0" layoutY="84.0" onMouseClicked="#onFriends" prefHeight="25.0" prefWidth="82.0" styleClass="nav-label" text="friends" underline="true">
                     <font>
                         <Font size="24.0" />
                     </font>
                 </Label>
                 <Separator layoutX="123.0" layoutY="2.0" orientation="VERTICAL" prefHeight="528.0" prefWidth="0.0" />
-                <Button fx:id="logoutButton" layoutX="18.0" layoutY="494.0" mnemonicParsing="false" onAction="#onLogOut" text="log out" />
-            <Label fx:id="userLabel" layoutX="12.0" layoutY="468.0" prefHeight="17.0" prefWidth="88.0" text="username" />
+                <Button fx:id="logoutButton" layoutX="28.0" layoutY="495.0" mnemonicParsing="false" onAction="#onLogout" text="log out" />
+                <Label fx:id="userLabel" layoutX="7.0" layoutY="469.0" text="username" />
             </children>
         </Pane>
         <ListView fx:id="friendsList" layoutX="131.0" layoutY="9.0" prefHeight="514.0" prefWidth="268.0" />
         <Button fx:id="removefriendButton" layoutX="415.0" layoutY="51.0" mnemonicParsing="false" onAction="#onRemoveFriend" text="-" />
-      <ComboBox fx:id="nonFriendsDrop" layoutX="467.0" layoutY="14.0" prefWidth="150.0" promptText="users" />
-      <Button fx:id="addFriendButton" layoutX="414.0" layoutY="14.0" mnemonicParsing="false" onAction="#onAddFriend" text="+" />
-        <ImageView fx:id="loadingIndicator" layoutX="400.0" layoutY="200.0" fitHeight="80.0" fitWidth="80.0" visible="false">
+        <ComboBox fx:id="nonFriendsDrop" layoutX="467.0" layoutY="14.0" prefWidth="150.0" promptText="users" />
+        <Button fx:id="addfriendButton" layoutX="414.0" layoutY="14.0" mnemonicParsing="false" onAction="#onAddFriend" text="+" />
+        <ImageView fx:id="loadingIndicator" fitHeight="80.0" fitWidth="80.0" layoutX="370.0" layoutY="240.0" visible="false">
             <image>
                 <Image url="@../cat-2.gif" />
             </image>
-        </ImageView><Label layoutX="419.0" layoutY="490.0" text="when creating a party you can add participants from your friend list" />
+        </ImageView>
+        <Label fx:id="infoLabel" layoutX="419.0" layoutY="490.0" text="when creating/editing a party you can add participants from your friend list" />
     </children>
 </Pane>

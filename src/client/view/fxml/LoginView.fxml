@@ -13,25 +13,25 @@
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <TextField fx:id="usernameField" layoutX="275.0" layoutY="203.0" prefHeight="26.0" prefWidth="294.0" focusTraversable="true" />
+      <TextField fx:id="usernameField" focusTraversable="true" layoutX="275.0" layoutY="203.0" prefHeight="26.0" prefWidth="294.0" />
       <Label layoutX="376.0" layoutY="167.0" text="username">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="passwordField" layoutX="275.0" layoutY="279.0" prefHeight="26.0" prefWidth="296.0" focusTraversable="true" />
+      <TextField fx:id="passwordField" focusTraversable="true" layoutX="275.0" layoutY="279.0" prefHeight="26.0" prefWidth="296.0" />
       <Label layoutX="374.0" layoutY="249.0" text="password">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Button fx:id="signInButton" layoutX="379.0" layoutY="334.0" mnemonicParsing="false" onAction="#onForward" defaultButton="false" focusTraversable="false" text="sign in">
+      <Button fx:id="signInButton" defaultButton="false" focusTraversable="false" layoutX="379.0" layoutY="334.0" mnemonicParsing="false" onAction="#onForward" text="sign in">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Label layoutX="304.0" layoutY="450.0" text="no account?" />
-      <Button fx:id="registerButton" layoutX="391.0" layoutY="446.0" mnemonicParsing="false" onAction="#onRegister" defaultButton="false" focusTraversable="false" text="register here" underline="true" />
+      <Label layoutX="314.0" layoutY="451.0" text="no account?" />
+      <Button fx:id="registerButton" defaultButton="false" focusTraversable="false" layoutX="397.0" layoutY="445.0" mnemonicParsing="false" onAction="#onRegister" text="register here" underline="true" />
       <Label fx:id="errorLabel" layoutX="275.0" layoutY="390.0" prefWidth="294.0" textFill="#cc0000" wrapText="true" />
    </children>
 </Pane>
