@@ -135,9 +135,9 @@ public class ModelManager implements PartyModel
 
 
   @Override public synchronized void leaveParty(User user, Party party) {
-    new PartyUsersDAO().updateStatus(user.getId(), party.getId(), "declined");
-    //or fully remove
-    //new PartyUsersDAO().remove(user.getId(), party.getId());
+    //new PartyUsersDAO().updateStatus(user.getId(), party.getId(), "declined");
+    //fully remove
+    new PartyUsersDAO().remove(user.getId(), party.getId());
   }
 
   @Override public synchronized void deleteParty(Party party)

@@ -9,36 +9,36 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="837.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.DiscoverController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.DiscoverController">
     <children>
         <Pane layoutX="-1.0" layoutY="-2.0" prefHeight="534.0" prefWidth="118.0">
             <children>
-                <Label layoutX="14.0" layoutY="14.0" onMouseClicked="#onMyParties" prefHeight="25.0" prefWidth="82.0" text="my parties">
+                <Label layoutX="14.0" layoutY="14.0" onMouseClicked="#onMyParties" prefHeight="25.0" prefWidth="82.0" styleClass="nav-label" text="my parties">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Label>
-                <Label layoutX="14.0" layoutY="48.0" onMouseClicked="#onDiscover" prefHeight="25.0" prefWidth="82.0" text="discover" underline="true">
+                <Label layoutX="14.0" layoutY="48.0" onMouseClicked="#onDiscover" prefHeight="25.0" prefWidth="82.0" styleClass="nav-label" text="discover" underline="true">
                     <font>
                         <Font size="20.0" />
                     </font>
                 </Label>
-                <Label layoutX="14.0" layoutY="84.0" onMouseClicked="#onFriends" prefHeight="25.0" prefWidth="82.0" text="friends">
+                <Label layoutX="14.0" layoutY="84.0" onMouseClicked="#onFriends" prefHeight="25.0" prefWidth="82.0" styleClass="nav-label" text="friends">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Label>
                 <Separator layoutX="123.0" layoutY="2.0" orientation="VERTICAL" prefHeight="528.0" prefWidth="0.0" />
-            <Button fx:id="logoutButton" layoutX="32.0" layoutY="488.0" mnemonicParsing="false" onAction="#onLogout" text="log out" />
-            <Label fx:id="userLabel" layoutX="17.0" layoutY="458.0" prefHeight="17.0" prefWidth="93.0" text="username" />
+                <Button fx:id="logoutButton" layoutX="28.0" layoutY="495.0" mnemonicParsing="false" onAction="#onLogout" text="log out" />
+                <Label fx:id="userLabel" layoutX="7.0" layoutY="469.0" text="username" />
             </children>
         </Pane>
 
       <ListView fx:id="partyList" layoutX="146.0" layoutY="22.0" prefHeight="417.0" prefWidth="668.0" />
 
-      <Button fx:id="onFurtherButton" layoutX="744.0" layoutY="485.0" mnemonicParsing="false" onAction="#onFurther" text="further info" />
-      <Label fx:id="selectedLabel" layoutX="146.0" layoutY="490.0" prefHeight="17.0" prefWidth="491.0" text="no selected party" />
-        <ImageView fx:id="loadingIndicator" fitHeight="80.0" fitWidth="80.0" layoutX="370.0" layoutY="240.0" visible="false">
+      <Button fx:id="onFurtherButton" layoutX="742.0" layoutY="476.0" mnemonicParsing="false" onAction="#onFurther" text="further info" />
+      <Label fx:id="selectedLabel" layoutX="146.0" layoutY="481.0" prefHeight="17.0" prefWidth="491.0" />
+        <ImageView fx:id="loadingIndicator" fitHeight="80.0" fitWidth="80.0" layoutX="420.0" layoutY="215.0" visible="false">
             <image>
                 <Image url="@../cat-2.gif" />
             </image>

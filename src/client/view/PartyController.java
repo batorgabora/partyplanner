@@ -49,11 +49,15 @@ public class PartyController
   @FXML private VBox chatMessages;
   @FXML private TextField chatInput;
   @FXML private Label userLabel;
-  @FXML private ImageView loadingIndicator;
   @FXML private Label infoLabel;
   @FXML private Button voteButton;
   @FXML private Button removeVoteButton;
   @FXML private Button claimButton;
+  @FXML private Label label1;
+  @FXML private Label label2;
+  @FXML private Label label3;
+
+  @FXML private ImageView loadingIndicator;
 
   private Party selected;
 
@@ -62,12 +66,6 @@ public class PartyController
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
-
-    leaveButton.setVisible(false);
-    chatButton.setVisible(false);
-    chatWindow.setVisible(false);
-    descriptionLabel.setVisible(false);
-    descriptionLabel.setManaged(false);
 
     chatInput.textProperty().bindBidirectional(viewmodel.messageInputProperty());
 
@@ -112,6 +110,7 @@ public class PartyController
     if (selected == null) return;
 
     nameLabel.setText(selected.getName());
+    descriptionLabel.setText(selected.getDescription());
 
     setContentVisible(false);
 
@@ -143,6 +142,7 @@ public class PartyController
         declineButton.setVisible(!isOrganizer && isInvited);
         leaveButton.setVisible(!isOrganizer && isAccepted);
         chatButton.setVisible(isOrganizer || isAccepted);
+        claimButton.setVisible(!isOrganizer);
 
         if (hasVoted) {
           infoLabel.setText("you have already voted");
@@ -164,6 +164,7 @@ public class PartyController
   {
     loadingIndicator.setVisible(!visible);
     dateLabel.setVisible(visible);
+    descriptionLabel.setVisible(visible);
     locationLabel.setVisible(visible);
     roleLabel.setVisible(visible);
     itemList.setVisible(visible);
@@ -171,8 +172,12 @@ public class PartyController
     timeList.setVisible(visible);
     voteButton.setVisible(visible);
     removeVoteButton.setVisible(visible);
-    infoLabel.setVisible(visible);
-    claimButton.setVisible(visible);
+    infoLabel.setVisible(false); // always hidden until interaction
+    label1.setVisible(visible);
+    label2.setVisible(visible);
+    label3.setVisible(visible);
+    addfriendButton.setVisible(visible);
+    chatButton.setVisible(visible);
     if (!visible) {
       editButton.setVisible(false);
       acceptButton.setVisible(false);
@@ -220,66 +225,69 @@ public class PartyController
     }).start();
   }
 
-  @FXML public void onVote()
-  {
+  @FXML public void onVote() {
     Option option = timeList.getSelectionModel().getSelectedItem();
     if (option == null) {
+      infoLabel.setVisible(true);
       infoLabel.setText("select an option first");
-      infoLabel.setStyle("-fx-text-fill: red;");
+      infoLabel.setStyle("-fx-text-fill: #a24040;");
       return;
     }
     if (viewmodel.hasVotedInParty(selected.getId())) {
+      infoLabel.setVisible(true);
       infoLabel.setText("you already voted, remove your vote first");
-      infoLabel.setStyle("-fx-text-fill: red;");
+      infoLabel.setStyle("-fx-text-fill: #a24040;");
       return;
     }
     viewmodel.voteForOption(option.getOptionid());
+    infoLabel.setVisible(true);
     infoLabel.setText("vote cast!");
-    infoLabel.setStyle("-fx-text-fill: green;");
+    infoLabel.setStyle("-fx-text-fill: #4e794e;");
     loadParty();
   }
 
-  @FXML public void onRemoveVote()
-  {
+  @FXML public void onRemoveVote() {
     Option option = timeList.getSelectionModel().getSelectedItem();
     if (option == null) {
+      infoLabel.setVisible(true);
       infoLabel.setText("select an option first");
-      infoLabel.setStyle("-fx-text-fill: red;");
+      infoLabel.setStyle("-fx-text-fill: #a24040;");
       return;
     }
     viewmodel.removeVote(option.getOptionid());
+    infoLabel.setVisible(true);
     infoLabel.setText("vote removed");
-    infoLabel.setStyle("-fx-text-fill: orange;");
+    infoLabel.setStyle("-fx-text-fill: #ab7420;");
     loadParty();
   }
 
   @FXML public void onDiscover()   { viewhandler.openView("discover"); }
   @FXML public void onFriends()    { viewhandler.openView("friends"); }
   @FXML public void onMyParties()  { viewhandler.openView("my parties"); }
-  @FXML public void onLogOut()     { viewhandler.openView("login"); }
+  @FXML public void onLogout()     { viewhandler.openView("login"); }
   @FXML public void addFriend() {
     Participant selected = memberList.getSelectionModel().getSelectedItem();
     if (selected == null) {
       infoLabel.setText("select a member first");
-      infoLabel.setStyle("-fx-text-fill: red;");
+      infoLabel.setStyle("-fx-text-fill: #a24040;");
       return;
     }
     viewmodel.addFriend(selected.getUser());
     infoLabel.setText(selected.getUser().getUsername() + " added as friend");
-    infoLabel.setStyle("-fx-text-fill: green;");
+    infoLabel.setStyle("-fx-text-fill: #4e794e;");
   }
   @FXML public void onEditParty()  { viewhandler.openView("edit party"); }
 
   @FXML public void onSendMessage() {
     if (viewmodel.messageInputProperty().get().trim().isEmpty()) return;
-    stopMessagePolling(); // stop polling while sending
     new Thread(() -> {
-      viewmodel.sendMessage();
+      stopMessagePolling(); // stop first, lock will be released when poll finishes
+      viewmodel.sendMessage(); // now safe to acquire lock
       List<Message> messages = viewmodel.getMessages();
       Platform.runLater(() -> {
         viewmodel.messageInputProperty().set("");
         renderMessages(messages);
-        startMessagePolling(); // restart after done
+        if (chatOpen) startMessagePolling();
       });
     }).start();
   }
@@ -391,8 +399,8 @@ public class PartyController
       locationLabel.setLayoutX(684);
       locationLabel.setLayoutY(22);
       memberList.setPrefHeight(331);
-      editButton.setLayoutX(785);
-      editButton.setLayoutY(342);
+      editButton.setLayoutX(756.0);
+      editButton.setLayoutY(396.0);
       chatButton.setLayoutX(755);
       chatButton.setLayoutY(439);
       leaveButton.setLayoutX(752);

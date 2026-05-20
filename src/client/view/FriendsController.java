@@ -26,6 +26,7 @@ public class FriendsController
   @FXML private Button removefriendButton;
   @FXML private Label userLabel;
   @FXML private Label statusLabel;
+  @FXML private Label infoLabel;
   @FXML private ImageView loadingIndicator;
 
   public void init(ViewHandler viewhandler, FriendsViewModel viewmodel, Region root) {
@@ -64,6 +65,9 @@ public class FriendsController
     loadingIndicator.setVisible(true);
     friendsList.setVisible(false);
     nonFriendsDrop.setVisible(false);
+    addfriendButton.setVisible(false);
+    infoLabel.setVisible(false);
+    removefriendButton.setVisible(false);
 
     new Thread(() -> {
       var friends    = viewmodel.getFriends();
@@ -73,6 +77,9 @@ public class FriendsController
         nonFriendsDrop.setItems(FXCollections.observableArrayList(nonFriends));
         friendsList.setVisible(true);
         nonFriendsDrop.setVisible(true);
+        addfriendButton.setVisible(true);
+        removefriendButton.setVisible(true);
+        infoLabel.setVisible(true);
         loadingIndicator.setVisible(false);
       });
     }).start();
@@ -99,7 +106,7 @@ public class FriendsController
   @FXML public void onDiscover()  { viewhandler.openView("discover"); }
   @FXML public void onFriends()   { viewhandler.openView("friends"); }
   @FXML public void onMyParties() { viewhandler.openView("my parties"); }
-  @FXML public void onLogOut()    { viewhandler.openView("login"); }
+  @FXML public void onLogout()    { viewhandler.openView("login"); }
   @FXML public void addFriend()   { onAddFriend(); }
 
   public Region getRoot() { return root; }
