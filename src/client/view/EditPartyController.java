@@ -23,7 +23,7 @@ public class EditPartyController
   @FXML private Label roleLabel;
   @FXML private TextField nameField;
   @FXML private TextArea descriptionField;
-  @FXML private TextField dateField;
+  @FXML private Label dateLabel;
   @FXML private TextField locationField;
   @FXML private ListView<Item> itemList;
   @FXML private ListView timeList;
@@ -51,7 +51,7 @@ public class EditPartyController
 
 
 
-  public void init(ViewHandler viewhandler, EditPartyViewModel viewmodel, Region root){
+  public void init(ViewHandler viewhandler, EditPartyViewModel viewmodel, Region root) {
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
@@ -60,6 +60,18 @@ public class EditPartyController
     if (selected == null) return;
 
     userLabel.setText(LocalUser.getUser().getUsername());
+    statusLabel.textProperty().bind(viewmodel.errorProperty());
+
+    // add listeners once here
+    nameField.focusedProperty().addListener((obs, was, isNow) -> {
+      if (!isNow) viewmodel.updateName(nameField.getText());
+    });
+    descriptionField.focusedProperty().addListener((obs, was, isNow) -> {
+      if (!isNow) viewmodel.updateDescription(descriptionField.getText());
+    });
+    locationField.focusedProperty().addListener((obs, was, isNow) -> {
+      if (!isNow) viewmodel.updateLocation(locationField.getText());
+    });
 
     loadParty();
   }
@@ -70,9 +82,8 @@ public class EditPartyController
 
     nameField.setText(selected.getName());
     descriptionField.setText(selected.getDescription());
-    dateField.setText(selected.getDate());
+    dateLabel.setText(selected.getDate());
     locationField.setText(selected.getLocation());
-    statusLabel.textProperty().bind(viewmodel.errorProperty());
 
     setContentVisible(false);
 
@@ -89,20 +100,6 @@ public class EditPartyController
         timeList.setItems(options);
         userDropdown.setItems(friends);
         roleLabel.setText(role);
-
-        nameField.focusedProperty().addListener((obs, was, isNow) -> {
-          if (!isNow) viewmodel.updateName(nameField.getText());
-        });
-        descriptionField.focusedProperty().addListener((obs, was, isNow) -> {
-          if (!isNow) viewmodel.updateDescription(descriptionField.getText());
-        });
-        locationField.focusedProperty().addListener((obs, was, isNow) -> {
-          if (!isNow) viewmodel.updateLocation(locationField.getText());
-        });
-        dateField.focusedProperty().addListener((obs, was, isNow) -> {
-          if (!isNow) viewmodel.updateDate(dateField.getText());
-        });
-
         setContentVisible(true);
       });
     }).start();
@@ -117,7 +114,7 @@ public class EditPartyController
     roleLabel.setVisible(visible);
     nameField.setVisible(visible);
     descriptionField.setVisible(visible);
-    dateField.setVisible(visible);
+    dateLabel.setVisible(visible);
     locationField.setVisible(visible);
     addparticipantButton.setVisible(visible);
     removeparticipantButton.setVisible(visible);
@@ -141,9 +138,13 @@ public class EditPartyController
   }
 
   @FXML public void onBack() {
-    if (viewmodel.getSelectedParty() == null) {
-      return;
-    }
+    if (viewmodel.getSelectedParty() == null) return;
+
+    // force save all current field values before leaving
+    viewmodel.updateName(nameField.getText());
+    viewmodel.updateDescription(descriptionField.getText());
+    viewmodel.updateLocation(locationField.getText());
+
     viewhandler.openView("party");
   }
   @FXML public void onDiscover() {

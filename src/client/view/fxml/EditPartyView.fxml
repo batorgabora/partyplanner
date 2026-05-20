@@ -81,7 +81,6 @@
             </font>
         </TextField>
         <TextArea fx:id="descriptionField" layoutX="142.0" layoutY="66.0" prefHeight="46.0" prefWidth="687.0" text="this is the the description of the party woooooooo" />
-        <TextField fx:id="dateField" layoutX="667.0" layoutY="5.0" text="date" />
         <TextField fx:id="locationField" layoutX="668.0" layoutY="34.0" text="location" />
         <Label fx:id="statusLabel" layoutX="426.0" layoutY="500.0" prefHeight="17.0" prefWidth="209.0" text="status" />
         <Button fx:id="saveButton" layoutX="761.0" layoutY="420.0" mnemonicParsing="false" onAction="#onBack" text="save" />
@@ -90,5 +89,6 @@
                 <Image url="@../cat-2.gif" />
             </image>
         </ImageView>
+      <Label fx:id="dateLabel" layoutX="668.0" layoutY="6.0" prefHeight="25.0" prefWidth="159.0" text="date" />
     </children>
 </Pane>

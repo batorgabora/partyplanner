@@ -26,9 +26,11 @@ public class PartyUsersDAO {
   }
 
   public void remove(String userid, String partyid) {
-    String deleteVotes = "DELETE FROM votes WHERE userid = ? AND optionid IN (SELECT optionid FROM options WHERE partyid = ?)";
-    String deleteClaims = "UPDATE items SET claimedby = NULL WHERE claimedby = ? AND partyid = ?";
-    String deleteUser = "DELETE FROM partyusers WHERE userid = ? AND partyid = ?";
+    String deleteVotes = "DELETE FROM party_planner.voteoption WHERE userid = ? AND optionid IN (SELECT optionid FROM party_planner.option WHERE partyid = ?)";
+    String deleteClaims = "DELETE FROM party_planner.claimitem WHERE userid = ? AND itemid IN (SELECT itemid FROM party_planner.item WHERE partyid = ?)";
+    String deleteUser = "DELETE FROM party_planner.partyusers WHERE userid = ? AND partyid = ?";
+
+    System.out.println("remove called for userid=" + userid + " partyid=" + partyid);
 
     try (Connection conn = DataBaseConnection.getInstance().getConnection()) {
       conn.setAutoCommit(false);
@@ -39,23 +41,26 @@ public class PartyUsersDAO {
       ) {
         psVotes.setString(1, userid);
         psVotes.setString(2, partyid);
-        psVotes.executeUpdate();
+        int votesDeleted = psVotes.executeUpdate();
+        System.out.println("votes deleted: " + votesDeleted);
 
         psClaims.setString(1, userid);
         psClaims.setString(2, partyid);
-        psClaims.executeUpdate();
+        int claimsUpdated = psClaims.executeUpdate();
+        System.out.println("claims updated: " + claimsUpdated);
 
         psUser.setString(1, userid);
         psUser.setString(2, partyid);
-        psUser.executeUpdate();
+        int userDeleted = psUser.executeUpdate();
+        System.out.println("partyusers deleted: " + userDeleted);
 
         conn.commit();
       } catch (SQLException e) {
         conn.rollback();
-        log.severe("remove failed for userid=" + userid + ", partyid=" + partyid + ": " + e.getMessage());
+        System.out.println("SQL error: " + e.getMessage());
       }
     } catch (SQLException e) {
-      log.severe("connection failed: " + e.getMessage());
+      System.out.println("Connection error: " + e.getMessage());
     }
   }
 
