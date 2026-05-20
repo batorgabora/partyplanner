@@ -141,9 +141,14 @@ public class EditPartyController
   }
 
   @FXML public void onBack() {
-    if (viewmodel.getSelectedParty() == null) {
-      return;
-    }
+    if (viewmodel.getSelectedParty() == null) return;
+
+    // force save all current field values before leaving
+    viewmodel.updateName(nameField.getText());
+    viewmodel.updateDescription(descriptionField.getText());
+    viewmodel.updateLocation(locationField.getText());
+    viewmodel.updateDate(dateField.getText());
+
     viewhandler.openView("party");
   }
   @FXML public void onDiscover() {
