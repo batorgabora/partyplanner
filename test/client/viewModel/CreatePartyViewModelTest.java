@@ -9,7 +9,8 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 class CreatePartyViewModelTest {
 
@@ -19,108 +20,104 @@ class CreatePartyViewModelTest {
 
   @BeforeEach void setUp() {
     model = Mockito.mock(PartyModel.class);
-    fakeUser = new User("testuser", "password", "test@test.com");
+    fakeUser = new User("micheal jackson", "hee hee", "test@test.com");
     LocalUser.setUser(fakeUser);
     vm = new CreatePartyViewModel(model);
   }
 
   // Z — zero:
-  @Test void createParty_emptyFields_returnsFalse() {
-    when(model.createParty(any(), any(), any(), any(), any())).thenReturn(null);
+  @Test void emptyFields_blocked() {
+    boolean result = vm.createParty();
 
-    assertFalse(vm.createParty());
+    assertFalse(result);
+    verify(model, never()).createParty(any(), any(), any(), any(), any());
   }
 
-  @Test void createParty_nullDate_returnsFalse() {
-    vm.nameProperty().set("Birthday");
-    vm.locationProperty().set("Copenhagen");
+  @Test void missingDate_blocked() {
+    vm.nameProperty().set("doesn't");
+    vm.locationProperty().set("matter");
     vm.dateProperty().set(null);
-    when(model.createParty(any(), any(), any(), any(), any())).thenReturn(null);
 
-    assertFalse(vm.createParty());
+    boolean result = vm.createParty();
+
+    assertFalse(result);
+    verify(model, never()).createParty(any(), any(), any(), any(), any());
   }
 
-  // O one:
-  @Test void createParty_validInputs_returnsTrue() {
-    vm.nameProperty().set("Birthday Party");
-    vm.locationProperty().set("Copenhagen");
-    vm.dateProperty().set(LocalDate.now());
-    Party fakeParty = new Party("1", "Birthday Party", "", "Copenhagen", fakeUser);
-    when(model.createParty(any(), any(), any(), any(), any())).thenReturn(fakeParty);
+  // O — one:
+  @Test void validInputs_correctArgsForwardedToModel() {
+    LocalDate year = LocalDate.of(2027, 1, 1);
+    vm.nameProperty().set("eurovision");
+    vm.locationProperty().set("moldova");
+    vm.dateProperty().set(year);
+    Party realFutureItWillHappen = new Party("eurovision", "", "moldova", fakeUser);
 
-    assertTrue(vm.createParty());
+
+    when(model.createParty(any(), any(), any(), any(), any())).thenReturn(realFutureItWillHappen);
+    boolean result = vm.createParty();
+
+    verify(model).createParty(eq("eurovision"), eq(""), eq("moldova"), any(), eq(year));
+    assertTrue(result);
   }
 
   // M — many:
-  @Test void createParty_calledTwice_bothSucceed() {
+  @Test void calledTwice_modelReachedBothTimes() {
+    LocalDate today = LocalDate.now();
     vm.nameProperty().set("Party One");
     vm.locationProperty().set("Oslo");
-    vm.dateProperty().set(LocalDate.now());
-    Party fakeParty = new Party("1", "Party One", "", "Oslo", fakeUser);
+    vm.dateProperty().set(today);
+    Party fakeParty = new Party("Party One", "", "Oslo", fakeUser);
     when(model.createParty(any(), any(), any(), any(), any())).thenReturn(fakeParty);
 
     assertTrue(vm.createParty());
     assertTrue(vm.createParty());
+
+    verify(model, times(2)).createParty(eq("Party One"), eq(""), eq("Oslo"), eq(fakeUser.getId()), eq(today));
+
   }
 
   // B — boundary:
-  @Test void createParty_whitespaceOnlyName_returnsFalse() {
+  @Test void whitespaceOnlyName_blocked() {
     vm.nameProperty().set("   ");
-    vm.locationProperty().set("Copenhagen");
+    vm.locationProperty().set("whatever room Loke finds");
     vm.dateProperty().set(LocalDate.now());
-    when(model.createParty(any(), any(), any(), any(), any())).thenReturn(null);
 
-    assertFalse(vm.createParty());
+    boolean result = vm.createParty();
+
+    assertFalse(result);
+    verify(model, never()).createParty(any(), any(), any(), any(), any());
   }
 
-  @Test void createParty_pastDate_returnsFalse() {
-    vm.nameProperty().set("Old Party");
-    vm.locationProperty().set("Copenhagen");
+  @Test void pastDate_blocked() {
+    vm.nameProperty().set("Time traveller party");
+    vm.locationProperty().set("idk where that was");
     vm.dateProperty().set(LocalDate.of(2000, 1, 1));
-    when(model.createParty(any(), any(), any(), any(), any())).thenReturn(null);
 
-    assertFalse(vm.createParty());
-  }
+    boolean result = vm.createParty();
 
-  // I — interface:
-  @Test void createParty_modelReturnsNull_setsErrorProperty() {
-    vm.nameProperty().set("Test Party");
-    when(model.createParty(any(), any(), any(), any(), any())).thenReturn(null);
-
-    vm.createParty();
-
-    assertFalse(vm.errorProperty().get().isEmpty());
-  }
-
-  @Test void createParty_success_errorPropertyEmpty() {
-    vm.nameProperty().set("Test Party");
-    vm.locationProperty().set("Copenhagen");
-    vm.dateProperty().set(LocalDate.now());
-    Party fakeParty = new Party("1", "Test Party", "", "Copenhagen", fakeUser);
-    when(model.createParty(any(), any(), any(), any(), any())).thenReturn(fakeParty);
-
-    vm.createParty();
-
-    assertTrue(vm.errorProperty().get().isEmpty());
+    assertFalse(result);
+    verify(model, never()).createParty(any(), any(), any(), any(), any());
   }
 
   // E — exception:
   @Test void clearError_resetsErrorProperty() {
-    vm.errorProperty().set("something went wrong");
+    vm.errorProperty().set("kaboom");
 
     vm.clearError();
 
     assertTrue(vm.errorProperty().get().isEmpty());
   }
 
+  // I is its own test class
+
   // S — simple:
   @Test void properties_reflectSetValues() {
-    vm.nameProperty().set("Garden Party");
-    vm.locationProperty().set("Aarhus");
-    vm.descriptionProperty().set("Fun outdoor event");
+    vm.nameProperty().set("a");
+    vm.locationProperty().set("aa");
+    vm.descriptionProperty().set("aaa");
 
-    assertEquals("Garden Party", vm.nameProperty().get());
-    assertEquals("Aarhus", vm.locationProperty().get());
-    assertEquals("Fun outdoor event", vm.descriptionProperty().get());
+    assertEquals("a", vm.nameProperty().get());
+    assertEquals("aa", vm.locationProperty().get());
+    assertEquals("aaa", vm.descriptionProperty().get());
   }
 }

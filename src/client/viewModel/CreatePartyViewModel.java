@@ -35,6 +35,11 @@ public class CreatePartyViewModel implements PropertyChangeListener
 
   public boolean createParty()
   {
+    System.out.println("Create party function called");
+    //added validation here since existing validation is server side, cannot unit test it
+    if (name.get() == null || name.get().isBlank()) return false;
+    if (location.get() == null || location.get().isBlank()) return false;
+    if (date.get() == null || date.get().isBefore(LocalDate.now())) return false;
     Party party = model.createParty(
         name.get(),
         description.get(),
@@ -42,7 +47,13 @@ public class CreatePartyViewModel implements PropertyChangeListener
         LocalUser.getUser().getId(),
         date.get()
     );
-    if (party != null) return true;
+    System.out.println("Model create party called with arguments from view model");
+    if (party != null)
+    {
+      System.out.println("Party created successfully");
+      return true;
+    }
+    System.out.println("Party creation failed");
     error.set("Failed to create party.");
     return false;
   }
