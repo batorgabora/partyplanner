@@ -51,7 +51,7 @@ public class EditPartyController
 
 
 
-  public void init(ViewHandler viewhandler, EditPartyViewModel viewmodel, Region root){
+  public void init(ViewHandler viewhandler, EditPartyViewModel viewmodel, Region root) {
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
@@ -60,6 +60,21 @@ public class EditPartyController
     if (selected == null) return;
 
     userLabel.setText(LocalUser.getUser().getUsername());
+    statusLabel.textProperty().bind(viewmodel.errorProperty());
+
+    // add listeners once here
+    nameField.focusedProperty().addListener((obs, was, isNow) -> {
+      if (!isNow) viewmodel.updateName(nameField.getText());
+    });
+    descriptionField.focusedProperty().addListener((obs, was, isNow) -> {
+      if (!isNow) viewmodel.updateDescription(descriptionField.getText());
+    });
+    locationField.focusedProperty().addListener((obs, was, isNow) -> {
+      if (!isNow) viewmodel.updateLocation(locationField.getText());
+    });
+    dateField.focusedProperty().addListener((obs, was, isNow) -> {
+      if (!isNow) viewmodel.updateDate(dateField.getText());
+    });
 
     loadParty();
   }
@@ -72,7 +87,6 @@ public class EditPartyController
     descriptionField.setText(selected.getDescription());
     dateField.setText(selected.getDate());
     locationField.setText(selected.getLocation());
-    statusLabel.textProperty().bind(viewmodel.errorProperty());
 
     setContentVisible(false);
 
@@ -89,20 +103,6 @@ public class EditPartyController
         timeList.setItems(options);
         userDropdown.setItems(friends);
         roleLabel.setText(role);
-
-        nameField.focusedProperty().addListener((obs, was, isNow) -> {
-          if (!isNow) viewmodel.updateName(nameField.getText());
-        });
-        descriptionField.focusedProperty().addListener((obs, was, isNow) -> {
-          if (!isNow) viewmodel.updateDescription(descriptionField.getText());
-        });
-        locationField.focusedProperty().addListener((obs, was, isNow) -> {
-          if (!isNow) viewmodel.updateLocation(locationField.getText());
-        });
-        dateField.focusedProperty().addListener((obs, was, isNow) -> {
-          if (!isNow) viewmodel.updateDate(dateField.getText());
-        });
-
         setContentVisible(true);
       });
     }).start();

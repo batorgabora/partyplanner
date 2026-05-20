@@ -26,8 +26,9 @@ public class PartyUsersDAO {
   }
 
   public void remove(String userid, String partyid) {
-    String deleteVotes = "DELETE FROM votes WHERE userid = ? AND optionid IN (SELECT optionid FROM options WHERE partyid = ?)";
-    String deleteClaims = "UPDATE items SET claimedby = NULL WHERE claimedby = ? AND partyid = ?";
+    //transaction - everything works or nothing updates
+    String deleteVotes = "DELETE FROM voteoption WHERE userid = ? AND optionid IN (SELECT optionid FROM options WHERE partyid = ?)";
+    String deleteClaims = "UPDATE claimitem SET userid = NULL WHERE userid = ? AND itemid IN (SELECT id FROM items WHERE partyid = ?)";
     String deleteUser = "DELETE FROM partyusers WHERE userid = ? AND partyid = ?";
 
     try (Connection conn = DataBaseConnection.getInstance().getConnection()) {
