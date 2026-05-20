@@ -147,6 +147,9 @@ public class PartyController
         declineButton.setVisible(!isOrganizer && isInvited);
         leaveButton.setVisible(!isOrganizer && isAccepted);
         chatButton.setVisible(isOrganizer || isAccepted);
+        voteButton.setVisible(isAccepted);
+        claimButton.setVisible(isAccepted);
+        removeVoteButton.setVisible(isAccepted);
 
         if (hasVoted) {
           infoLabel.setText("you have already voted");
@@ -167,6 +170,7 @@ public class PartyController
   private void setContentVisible(boolean visible)
   {
     loadingIndicator.setVisible(!visible);
+    descriptionLabel.setVisible(visible);
     dateLabel.setVisible(visible);
     locationLabel.setVisible(visible);
     roleLabel.setVisible(visible);

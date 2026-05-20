@@ -49,7 +49,7 @@
          </font>
       </Label>
       <Label fx:id="descriptionLabel" layoutX="141.0" layoutY="52.0" prefHeight="62.0" prefWidth="675.0" text="this is the the description of the party woooooooo" wrapText="true" />
-      <Label fx:id="label1" layoutX="141.0" layoutY="118.0" prefHeight="26.0" prefWidth="184.0" text="list of items to bring:">
+      <Label fx:id="label1" layoutX="141.0" layoutY="118.0" prefHeight="26.0" prefWidth="280.0" text="list of items to bring:">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
