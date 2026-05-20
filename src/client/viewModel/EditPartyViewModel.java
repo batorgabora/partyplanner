@@ -114,19 +114,21 @@ public class EditPartyViewModel implements PropertyChangeListener
   }
 
   public void updateName(String name) {
+    if (selectedParty.get() == null || name.equals(selectedParty.get().getName())) return;
+    selectedParty.get().setName(name);
     model.updateParty(selectedParty.get(), name, selectedParty.get().getDescription(), selectedParty.get().getLocation());
   }
 
   public void updateDescription(String description) {
+    if (selectedParty.get() == null || description.equals(selectedParty.get().getDescription())) return;
+    selectedParty.get().setDescription(description);
     model.updateParty(selectedParty.get(), selectedParty.get().getName(), description, selectedParty.get().getLocation());
   }
 
   public void updateLocation(String location) {
+    if (selectedParty.get() == null || location.equals(selectedParty.get().getLocation())) return;
+    selectedParty.get().setLocation(location);
     model.updateParty(selectedParty.get(), selectedParty.get().getName(), selectedParty.get().getDescription(), location);
-  }
-
-  public void updateDate(String date) {
-    model.updatePartyDate(selectedParty.get(), date);
   }
 
   public void addItem(String name) {

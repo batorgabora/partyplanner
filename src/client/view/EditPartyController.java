@@ -23,7 +23,7 @@ public class EditPartyController
   @FXML private Label roleLabel;
   @FXML private TextField nameField;
   @FXML private TextArea descriptionField;
-  @FXML private TextField dateField;
+  @FXML private Label dateLabel;
   @FXML private TextField locationField;
   @FXML private ListView<Item> itemList;
   @FXML private ListView timeList;
@@ -72,9 +72,6 @@ public class EditPartyController
     locationField.focusedProperty().addListener((obs, was, isNow) -> {
       if (!isNow) viewmodel.updateLocation(locationField.getText());
     });
-    dateField.focusedProperty().addListener((obs, was, isNow) -> {
-      if (!isNow) viewmodel.updateDate(dateField.getText());
-    });
 
     loadParty();
   }
@@ -85,7 +82,7 @@ public class EditPartyController
 
     nameField.setText(selected.getName());
     descriptionField.setText(selected.getDescription());
-    dateField.setText(selected.getDate());
+    dateLabel.setText(selected.getDate());
     locationField.setText(selected.getLocation());
 
     setContentVisible(false);
@@ -117,7 +114,7 @@ public class EditPartyController
     roleLabel.setVisible(visible);
     nameField.setVisible(visible);
     descriptionField.setVisible(visible);
-    dateField.setVisible(visible);
+    dateLabel.setVisible(visible);
     locationField.setVisible(visible);
     addparticipantButton.setVisible(visible);
     removeparticipantButton.setVisible(visible);
@@ -147,7 +144,6 @@ public class EditPartyController
     viewmodel.updateName(nameField.getText());
     viewmodel.updateDescription(descriptionField.getText());
     viewmodel.updateLocation(locationField.getText());
-    viewmodel.updateDate(dateField.getText());
 
     viewhandler.openView("party");
   }
