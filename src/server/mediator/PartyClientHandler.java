@@ -201,6 +201,7 @@ public class PartyClientHandler implements Runnable {
   private void handleLeaveParty(JsonObject request) {
     User user   = new UserDAO().getById(request.get("userId").getAsString());
     Party party = new PartyDAO().getById(request.get("partyId").getAsString());
+    System.out.println("user=" + (user != null ? user.getId() : "null") + " party=" + (party != null ? party.getId() : "null"));
     if (user == null || party == null) { sendError("User or party not found."); return; }
     model.leaveParty(user, party);
     sendResponse("leaveParty", "ok");

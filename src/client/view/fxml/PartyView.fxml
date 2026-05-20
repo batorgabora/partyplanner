@@ -74,7 +74,7 @@
       <Label fx:id="locationLabel" layoutX="684.0" layoutY="22.0" prefHeight="17.0" prefWidth="152.0" text="location: " />
       <Button fx:id="acceptButton" layoutX="722.0" layoutY="439.0" mnemonicParsing="false" onAction="#onAccept" text="accept invitation" textFill="#2c6844" />
       <Button fx:id="addfriendButton" layoutX="565.0" layoutY="118.0" mnemonicParsing="false" onAction="#addFriend" text="add as friend" />
-      <Button fx:id="leaveButton" layoutX="752.0" layoutY="482.0" mnemonicParsing="false" onAction="#onDecline" text="leave" textFill="#e43b3b" />
+      <Button fx:id="leaveButton" layoutX="752.0" layoutY="482.0" mnemonicParsing="false" onAction="#onLeave" text="leave" textFill="#e43b3b" />
       <VBox fx:id="chatWindow" layoutX="613.0" layoutY="-2.0" prefHeight="534.0" prefWidth="224.0" styleClass="chat-window" visible="false">
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="36.0" styleClass="chat-header">
