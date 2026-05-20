@@ -17,6 +17,10 @@ import javafx.scene.layout.VBox;
 import shared.model.*;
 import client.viewModel.PartyViewModel;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -49,15 +53,11 @@ public class PartyController
   @FXML private VBox chatMessages;
   @FXML private TextField chatInput;
   @FXML private Label userLabel;
+  @FXML private ImageView loadingIndicator;
   @FXML private Label infoLabel;
   @FXML private Button voteButton;
   @FXML private Button removeVoteButton;
   @FXML private Button claimButton;
-  @FXML private Label label1;
-  @FXML private Label label2;
-  @FXML private Label label3;
-
-  @FXML private ImageView loadingIndicator;
 
   private Party selected;
 
@@ -66,6 +66,12 @@ public class PartyController
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
+
+    leaveButton.setVisible(false);
+    chatButton.setVisible(false);
+    chatWindow.setVisible(false);
+    descriptionLabel.setVisible(false);
+    descriptionLabel.setManaged(false);
 
     chatInput.textProperty().bindBidirectional(viewmodel.messageInputProperty());
 
@@ -110,7 +116,6 @@ public class PartyController
     if (selected == null) return;
 
     nameLabel.setText(selected.getName());
-    descriptionLabel.setText(selected.getDescription());
 
     setContentVisible(false);
 
@@ -142,7 +147,6 @@ public class PartyController
         declineButton.setVisible(!isOrganizer && isInvited);
         leaveButton.setVisible(!isOrganizer && isAccepted);
         chatButton.setVisible(isOrganizer || isAccepted);
-        claimButton.setVisible(!isOrganizer);
 
         if (hasVoted) {
           infoLabel.setText("you have already voted");
@@ -164,7 +168,6 @@ public class PartyController
   {
     loadingIndicator.setVisible(!visible);
     dateLabel.setVisible(visible);
-    descriptionLabel.setVisible(visible);
     locationLabel.setVisible(visible);
     roleLabel.setVisible(visible);
     itemList.setVisible(visible);
@@ -172,12 +175,8 @@ public class PartyController
     timeList.setVisible(visible);
     voteButton.setVisible(visible);
     removeVoteButton.setVisible(visible);
-    infoLabel.setVisible(false); // always hidden until interaction
-    label1.setVisible(visible);
-    label2.setVisible(visible);
-    label3.setVisible(visible);
-    addfriendButton.setVisible(visible);
-    chatButton.setVisible(visible);
+    infoLabel.setVisible(visible);
+    claimButton.setVisible(visible);
     if (!visible) {
       editButton.setVisible(false);
       acceptButton.setVisible(false);
@@ -225,69 +224,67 @@ public class PartyController
     }).start();
   }
 
-  @FXML public void onVote() {
+  @FXML public void onVote()
+  {
     Option option = timeList.getSelectionModel().getSelectedItem();
     if (option == null) {
-      infoLabel.setVisible(true);
       infoLabel.setText("select an option first");
-      infoLabel.setStyle("-fx-text-fill: #a24040;");
+      infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
     if (viewmodel.hasVotedInParty(selected.getId())) {
-      infoLabel.setVisible(true);
       infoLabel.setText("you already voted, remove your vote first");
-      infoLabel.setStyle("-fx-text-fill: #a24040;");
+      infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
     viewmodel.voteForOption(option.getOptionid());
-    infoLabel.setVisible(true);
     infoLabel.setText("vote cast!");
-    infoLabel.setStyle("-fx-text-fill: #4e794e;");
+    infoLabel.setStyle("-fx-text-fill: green;");
     loadParty();
   }
 
-  @FXML public void onRemoveVote() {
+  @FXML public void onRemoveVote()
+  {
     Option option = timeList.getSelectionModel().getSelectedItem();
     if (option == null) {
-      infoLabel.setVisible(true);
       infoLabel.setText("select an option first");
-      infoLabel.setStyle("-fx-text-fill: #a24040;");
+      infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
     viewmodel.removeVote(option.getOptionid());
-    infoLabel.setVisible(true);
     infoLabel.setText("vote removed");
-    infoLabel.setStyle("-fx-text-fill: #ab7420;");
+    infoLabel.setStyle("-fx-text-fill: orange;");
     loadParty();
   }
 
   @FXML public void onDiscover()   { viewhandler.openView("discover"); }
   @FXML public void onFriends()    { viewhandler.openView("friends"); }
   @FXML public void onMyParties()  { viewhandler.openView("my parties"); }
-  @FXML public void onLogout()     { viewhandler.openView("login"); }
+  @FXML public void onLogOut()     { viewhandler.openView("login"); }
   @FXML public void addFriend() {
     Participant selected = memberList.getSelectionModel().getSelectedItem();
     if (selected == null) {
       infoLabel.setText("select a member first");
-      infoLabel.setStyle("-fx-text-fill: #a24040;");
+      infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
     viewmodel.addFriend(selected.getUser());
     infoLabel.setText(selected.getUser().getUsername() + " added as friend");
-    infoLabel.setStyle("-fx-text-fill: #4e794e;");
+    infoLabel.setStyle("-fx-text-fill: green;");
   }
   @FXML public void onEditParty()  { viewhandler.openView("edit party"); }
+  @FXML public void onLogout()     { viewhandler.openView("login"); }
 
   @FXML public void onSendMessage() {
     if (viewmodel.messageInputProperty().get().trim().isEmpty()) return;
+    stopMessagePolling(); // stop polling while sending
     new Thread(() -> {
-      stopMessagePolling(); // stop first, lock will be released when poll finishes
-      viewmodel.sendMessage(); // now safe to acquire lock
+      viewmodel.sendMessage();
       List<Message> messages = viewmodel.getMessages();
       Platform.runLater(() -> {
         viewmodel.messageInputProperty().set("");
         renderMessages(messages);
-        if (chatOpen) startMessagePolling();
+        startMessagePolling(); // restart after done
       });
     }).start();
   }
@@ -302,10 +299,20 @@ public class PartyController
   private void renderMessages(List<Message> messages) {
     chatMessages.getChildren().clear();
     String myId = LocalUser.getUser().getId();
-    for (Message msg : messages) {
+    List<Message> sorted = messages.stream()
+        .sorted(Comparator.comparing(msg -> {
+          try {
+            String s = msg.getSentAt();
+            return LocalDateTime.parse(s.length() > 19 ? s.substring(0, 19) : s);
+          } catch (Exception e) {
+            return LocalDateTime.MIN;
+          }
+        }))
+        .collect(java.util.stream.Collectors.toList());
+    for (Message msg : sorted) {
       boolean isOwn  = myId.equals(msg.getUserId());
       String  sender = isOwn ? "You" : resolveUsername(msg.getUserId());
-      String  time   = extractTime(msg.getSentAt());
+      String  time   = formatSentAt(msg.getSentAt());
 
       Label senderLabel = new Label(sender);
       senderLabel.getStyleClass().add("chat-sender");
@@ -343,9 +350,17 @@ public class PartyController
     return userId.length() > 8 ? userId.substring(0, 8) : userId;
   }
 
-  private String extractTime(String sentAt) {
-    if (sentAt != null && sentAt.length() >= 16) return sentAt.substring(11, 16);
-    return sentAt != null ? sentAt : "";
+  private String formatSentAt(String sentAt) {
+    if (sentAt == null || sentAt.isEmpty()) return "";
+    try {
+      String normalized = sentAt.length() > 19 ? sentAt.substring(0, 19) : sentAt;
+      LocalDateTime dt = LocalDateTime.parse(normalized);
+      String timeStr = dt.format(DateTimeFormatter.ofPattern("HH:mm"));
+      if (dt.toLocalDate().equals(LocalDate.now())) return timeStr;
+      return dt.format(DateTimeFormatter.ofPattern("dd/MM HH:mm"));
+    } catch (Exception e) {
+      return sentAt.length() >= 16 ? sentAt.substring(11, 16) : sentAt;
+    }
   }
   
   private boolean chatOpen = false;
@@ -368,7 +383,7 @@ public class PartyController
 
   private void stopMessagePolling() {
     if (messagePollTask != null) messagePollTask.cancel(false);
-    if (messagePollExecutor != null) messagePollExecutor.shutdownNow();
+    if (messagePollExecutor != null) messagePollExecutor.shutdown();
     messagePollExecutor = null;
   }
 
@@ -399,8 +414,8 @@ public class PartyController
       locationLabel.setLayoutX(684);
       locationLabel.setLayoutY(22);
       memberList.setPrefHeight(331);
-      editButton.setLayoutX(756.0);
-      editButton.setLayoutY(396.0);
+      editButton.setLayoutX(785);
+      editButton.setLayoutY(342);
       chatButton.setLayoutX(755);
       chatButton.setLayoutY(439);
       leaveButton.setLayoutX(752);

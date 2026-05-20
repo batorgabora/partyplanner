@@ -65,6 +65,7 @@ public class PartyClientHandler implements Runnable {
       sendError(e.getMessage());
       return;
     }
+    try {
     switch (action) {
       case LOGIN                -> handleLogin(request);
       case CREATE_ACCOUNT       -> handleCreateAccount(request);
@@ -104,6 +105,10 @@ public class PartyClientHandler implements Runnable {
       case REMOVE_FRIEND  -> handleRemoveFriend(request);
       case SEND_MESSAGE         -> handleSendMessage(request);
       case GET_MESSAGES         -> handleGetMessages(request);
+    }
+    } catch (Exception e) {
+      System.out.println("[handleRequest] unhandled exception: " + e.getMessage());
+      sendError("Internal server error.");
     }
   }
 
