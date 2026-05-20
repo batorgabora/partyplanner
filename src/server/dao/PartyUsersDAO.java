@@ -26,14 +26,36 @@ public class PartyUsersDAO {
   }
 
   public void remove(String userid, String partyid) {
-    String sql = "DELETE FROM partyusers WHERE userid = ? AND partyid = ?";
-    try (Connection conn = DataBaseConnection.getInstance().getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, userid);
-      ps.setString(2, partyid);
-      ps.executeUpdate();
+    String deleteVotes = "DELETE FROM votes WHERE userid = ? AND optionid IN (SELECT optionid FROM options WHERE partyid = ?)";
+    String deleteClaims = "UPDATE items SET claimedby = NULL WHERE claimedby = ? AND partyid = ?";
+    String deleteUser = "DELETE FROM partyusers WHERE userid = ? AND partyid = ?";
+
+    try (Connection conn = DataBaseConnection.getInstance().getConnection()) {
+      conn.setAutoCommit(false);
+      try (
+          PreparedStatement psVotes = conn.prepareStatement(deleteVotes);
+          PreparedStatement psClaims = conn.prepareStatement(deleteClaims);
+          PreparedStatement psUser = conn.prepareStatement(deleteUser)
+      ) {
+        psVotes.setString(1, userid);
+        psVotes.setString(2, partyid);
+        psVotes.executeUpdate();
+
+        psClaims.setString(1, userid);
+        psClaims.setString(2, partyid);
+        psClaims.executeUpdate();
+
+        psUser.setString(1, userid);
+        psUser.setString(2, partyid);
+        psUser.executeUpdate();
+
+        conn.commit();
+      } catch (SQLException e) {
+        conn.rollback();
+        log.severe("remove failed for userid=" + userid + ", partyid=" + partyid + ": " + e.getMessage());
+      }
     } catch (SQLException e) {
-      log.severe("remove failed for userid=" + userid + ", partyid=" + partyid + ": " + e.getMessage());
+      log.severe("connection failed: " + e.getMessage());
     }
   }
 

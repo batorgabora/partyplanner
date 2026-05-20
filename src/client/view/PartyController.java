@@ -280,14 +280,14 @@ public class PartyController
 
   @FXML public void onSendMessage() {
     if (viewmodel.messageInputProperty().get().trim().isEmpty()) return;
-    stopMessagePolling(); // stop polling while sending
     new Thread(() -> {
-      viewmodel.sendMessage();
+      stopMessagePolling(); // stop first, lock will be released when poll finishes
+      viewmodel.sendMessage(); // now safe to acquire lock
       List<Message> messages = viewmodel.getMessages();
       Platform.runLater(() -> {
         viewmodel.messageInputProperty().set("");
         renderMessages(messages);
-        startMessagePolling(); // restart after done
+        if (chatOpen) startMessagePolling();
       });
     }).start();
   }
