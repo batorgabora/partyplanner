@@ -80,15 +80,25 @@ public class PartyDAO {
   }
 
   public void create(String partyid, String name, String description, String location, LocalDate date) {
-    String sql = "INSERT INTO party (partyid, name, description, location, date) VALUES (?, ?, ?, ?, ?)";
+    String insertParty  = "INSERT INTO party_planner.party (partyid, name, description, location, date) VALUES (?, ?, ?, ?, ?)";
+    String insertOption = "INSERT INTO party_planner.option (optionid, proposal, partyid) VALUES (?, ?, ?)";
+
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, partyid);
-      ps.setString(2, name);
-      ps.setString(3, description);
-      ps.setString(4, location);
-      ps.setDate(5, Date.valueOf(date));
-      ps.executeUpdate();
+        PreparedStatement psParty  = conn.prepareStatement(insertParty);
+        PreparedStatement psOption = conn.prepareStatement(insertOption)) {
+
+      psParty.setString(1, partyid);
+      psParty.setString(2, name);
+      psParty.setString(3, description);
+      psParty.setString(4, location);
+      psParty.setDate(5, Date.valueOf(date));
+      psParty.executeUpdate();
+
+      psOption.setString(1, "opt-" + java.util.UUID.randomUUID().toString());
+      psOption.setString(2, date.toString());
+      psOption.setString(3, partyid);
+      psOption.executeUpdate();
+
     } catch (SQLException e) {
       log.severe("create failed for partyid=" + partyid + ": " + e.getMessage());
     }
