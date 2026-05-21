@@ -1,14 +1,12 @@
 package server.dao;
 
 import server.database.DataBaseConnection;
-import shared.model.Organizer;
 import shared.model.Party;
 import shared.model.User;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class PartyDAO {
@@ -16,7 +14,7 @@ public class PartyDAO {
   private static final Logger log = Logger.getLogger(PartyDAO.class.getName());
 
   public Party getById(String partyid) {
-    String sql = "SELECT * FROM party WHERE partyid = ?";
+    String sql = "SELECT * FROM party_planner.party WHERE partyid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyid);
@@ -29,7 +27,7 @@ public class PartyDAO {
   }
 
   public ArrayList<Party> getAll() {
-    String sql = "SELECT * FROM party";
+    String sql = "SELECT * FROM party_planner.party";
     ArrayList<Party> parties = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         Statement st = conn.createStatement();
@@ -42,7 +40,7 @@ public class PartyDAO {
   }
 
   public ArrayList<Party> getAcceptedByUser(String userid) {
-    String sql = "SELECT p.* FROM party p JOIN partyusers pu ON p.partyid = pu.partyid " +
+    String sql = "SELECT p.* FROM party_planner.party p JOIN party_planner.partyusers pu ON p.partyid = pu.partyid " +
         "WHERE pu.userid = ? AND (pu.status = 'accepted' OR pu.role = 'organizer')";
     ArrayList<Party> parties = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
@@ -61,7 +59,7 @@ public class PartyDAO {
   }
 
   public ArrayList<Party> getInvitedByUser(String userid) {
-    String sql = "SELECT p.* FROM party p JOIN partyusers pu ON p.partyid = pu.partyid " +
+    String sql = "SELECT p.* FROM party_planner.party p JOIN party_planner.partyusers pu ON p.partyid = pu.partyid " +
         "WHERE pu.userid = ? AND pu.status IS NULL AND pu.role = 'participant'";
     ArrayList<Party> parties = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
@@ -105,7 +103,7 @@ public class PartyDAO {
   }
 
   public void update(String partyid, String name, String description, String location) {
-    String sql = "UPDATE party SET name = ?, description = ?, location = ? WHERE partyid = ?";
+    String sql = "UPDATE party_planner.party SET name = ?, description = ?, location = ? WHERE partyid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, name);
@@ -119,7 +117,7 @@ public class PartyDAO {
   }
 
   public void updateDate(String partyid, String date) {
-    String sql = "UPDATE party SET date = ? WHERE partyid = ?";
+    String sql = "UPDATE party_planner.party SET date = ? WHERE partyid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       try {
@@ -137,39 +135,38 @@ public class PartyDAO {
 
   public void delete(String partyid) {
     try (Connection conn = DataBaseConnection.getInstance().getConnection()) {
-      // delete votes on options belonging to this party
       try (PreparedStatement ps = conn.prepareStatement(
-          "DELETE FROM voteoption WHERE optionid IN (SELECT optionid FROM \"option\" WHERE partyid = ?)")) {
+          "DELETE FROM party_planner.voteoption WHERE optionid IN (SELECT optionid FROM party_planner.option WHERE partyid = ?)")) {
         ps.setString(1, partyid);
         ps.executeUpdate();
       }
-      // delete options
       try (PreparedStatement ps = conn.prepareStatement(
-          "DELETE FROM \"option\" WHERE partyid = ?")) {
+          "DELETE FROM party_planner.option WHERE partyid = ?")) {
         ps.setString(1, partyid);
         ps.executeUpdate();
       }
-      // delete claims on items belonging to this party
       try (PreparedStatement ps = conn.prepareStatement(
-          "DELETE FROM claimitem WHERE itemid IN (SELECT itemid FROM item WHERE partyid = ?)")) {
+          "DELETE FROM party_planner.claimitem WHERE itemid IN (SELECT itemid FROM party_planner.item WHERE partyid = ?)")) {
         ps.setString(1, partyid);
         ps.executeUpdate();
       }
-      // delete items
       try (PreparedStatement ps = conn.prepareStatement(
-          "DELETE FROM item WHERE partyid = ?")) {
+          "DELETE FROM party_planner.item WHERE partyid = ?")) {
         ps.setString(1, partyid);
         ps.executeUpdate();
       }
-      // delete partyusers
       try (PreparedStatement ps = conn.prepareStatement(
-          "DELETE FROM partyusers WHERE partyid = ?")) {
+          "DELETE FROM party_planner.messages WHERE partyid = ?")) {
         ps.setString(1, partyid);
         ps.executeUpdate();
       }
-      // finally delete the party
       try (PreparedStatement ps = conn.prepareStatement(
-          "DELETE FROM party WHERE partyid = ?")) {
+          "DELETE FROM party_planner.partyusers WHERE partyid = ?")) {
+        ps.setString(1, partyid);
+        ps.executeUpdate();
+      }
+      try (PreparedStatement ps = conn.prepareStatement(
+          "DELETE FROM party_planner.party WHERE partyid = ?")) {
         ps.setString(1, partyid);
         ps.executeUpdate();
       }
@@ -178,26 +175,23 @@ public class PartyDAO {
     }
   }
 
-  // TODO: update after Party model gains String partyid and LocalDate date fields
   private Party mapRow(ResultSet rs) throws SQLException {
-    String partyId = rs.getString("partyid");
-    String name = rs.getString("name");
+    String partyId     = rs.getString("partyid");
+    String name        = rs.getString("name");
     String description = rs.getString("description");
-    String location = rs.getString("location");
-    LocalDate date = rs.getDate("date") != null ? rs.getDate("date").toLocalDate() : null;
-    User organizer = getOrganizerForParty(partyId);
+    String location    = rs.getString("location");
+    LocalDate date     = rs.getDate("date") != null ? rs.getDate("date").toLocalDate() : null;
+    User organizer     = getOrganizerForParty(partyId);
     return new Party(partyId, name, description, location, date, organizer);
   }
 
   private User getOrganizerForParty(String partyId) {
-    String sql = "SELECT userid FROM partyusers WHERE partyid = ? AND role = 'organizer'";
+    String sql = "SELECT userid FROM party_planner.partyusers WHERE partyid = ? AND role = 'organizer'";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyId);
       ResultSet rs = ps.executeQuery();
-      if (rs.next()) {
-        return new UserDAO().getById(rs.getString("userid"));
-      }
+      if (rs.next()) return new UserDAO().getById(rs.getString("userid"));
     } catch (SQLException e) {
       log.severe("getOrganizerForParty failed for partyId=" + partyId + ": " + e.getMessage());
     }

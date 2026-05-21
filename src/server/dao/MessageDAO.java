@@ -13,7 +13,7 @@ public class MessageDAO {
   private static final Logger log = Logger.getLogger(MessageDAO.class.getName());
 
   public Message create(String messageId, String partyId, String userId, String content) {
-    String sql = "INSERT INTO messages (messageid, partyid, userid, content, sent_at) VALUES (?, ?, ?, ?, NOW() AT TIME ZONE 'Europe/Copenhagen')";
+    String sql = "INSERT INTO party_planner.messages (messageid, partyid, userid, content, sent_at) VALUES (?, ?, ?, ?, NOW() AT TIME ZONE 'Europe/Copenhagen')";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, messageId);
@@ -31,7 +31,7 @@ public class MessageDAO {
   }
 
   public Message createAt(String messageId, String partyId, String userId, String content, LocalDateTime sentAt) {
-    String sql = "INSERT INTO messages (messageid, partyid, userid, content, sent_at) VALUES (?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO party_planner.messages (messageid, partyid, userid, content, sent_at) VALUES (?, ?, ?, ?, ?)";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, messageId);
@@ -48,7 +48,7 @@ public class MessageDAO {
   }
 
   public Message getById(String messageId) {
-    String sql = "SELECT * FROM messages WHERE messageid = ?";
+    String sql = "SELECT * FROM party_planner.messages WHERE messageid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, messageId);
@@ -61,7 +61,7 @@ public class MessageDAO {
   }
 
   public List<Message> getByParty(String partyId) {
-    String sql = "SELECT * FROM messages WHERE partyid = ? ORDER BY sent_at ASC";
+    String sql = "SELECT * FROM party_planner.messages WHERE partyid = ? ORDER BY sent_at ASC";
     List<Message> messages = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -75,7 +75,7 @@ public class MessageDAO {
   }
 
   public void deleteAll() {
-    String sql = "DELETE FROM messages";
+    String sql = "DELETE FROM party_planner.messages";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       int deleted = ps.executeUpdate();

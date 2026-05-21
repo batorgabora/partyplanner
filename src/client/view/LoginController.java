@@ -18,7 +18,7 @@ public class LoginController
   private ViewHandler viewhandler;
 
   @FXML private TextField usernameField;
-  @FXML private TextField passwordField;
+  @FXML private PasswordField passwordField;
   @FXML private Button signInButton;
   @FXML private Button registerButton;
   @FXML private Label errorLabel;

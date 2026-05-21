@@ -29,7 +29,15 @@ public class PartyViewModel implements PropertyChangeListener
     this.selectedParty = selectedParty;
     errorProperty  = new SimpleStringProperty("");
     messageInput   = new SimpleStringProperty("");
-    model.addListener("something", this);
+    model.addListener("error", this); // change "something" to "error"
+  }
+
+  public StringProperty errorProperty() { return errorProperty; }
+
+  @Override public void propertyChange(PropertyChangeEvent evt) {
+    if ("error".equals(evt.getPropertyName())) {
+      Platform.runLater(() -> errorProperty.set((String) evt.getNewValue()));
+    }
   }
 
   public StringProperty messageInputProperty() { return messageInput; }
@@ -130,8 +138,4 @@ public class PartyViewModel implements PropertyChangeListener
     return model.sendMessage(party.getId(), LocalUser.getUser().getId(), content);
   }
 
-  @Override public void propertyChange(PropertyChangeEvent evt)
-  {
-
-  }
 }
