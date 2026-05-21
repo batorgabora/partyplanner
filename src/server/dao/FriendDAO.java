@@ -13,9 +13,7 @@ public class FriendDAO {
   private static final Logger log = Logger.getLogger(FriendDAO.class.getName());
 
   public void addFriend(String userId, String friendId) {
-    // one direction only — A follows B, B doesn't automatically follow A back.
-    // ON CONFLICT DO NOTHING silently skips if already following.
-    String sql = "INSERT INTO friends (userid, friendid) VALUES (?, ?) ON CONFLICT DO NOTHING";
+    String sql = "INSERT INTO party_planner.friends (userid, friendid) VALUES (?, ?) ON CONFLICT DO NOTHING";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userId);
@@ -27,8 +25,7 @@ public class FriendDAO {
   }
 
   public void removeFriend(String userId, String friendId) {
-    // only removes A -> B, leaves B -> A untouched if it exists.
-    String sql = "DELETE FROM friends WHERE userid = ? AND friendid = ?";
+    String sql = "DELETE FROM party_planner.friends WHERE userid = ? AND friendid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userId);
@@ -40,12 +37,11 @@ public class FriendDAO {
   }
 
   public List<User> getFriends(String userId) {
-    // gets everyone the user is following (A -> B means B is in A's friend list).
     String sql = """
-            SELECT u.* FROM "user" u
-            JOIN friends f ON u.userid = f.friendid
-            WHERE f.userid = ?
-        """;
+        SELECT u.* FROM party_planner."user" u
+        JOIN party_planner.friends f ON u.userid = f.friendid
+        WHERE f.userid = ?
+    """;
     List<User> friends = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -66,16 +62,13 @@ public class FriendDAO {
   }
 
   public List<User> getNonFriends(String userId) {
-    // gets everyone the user is NOT already following and is not themselves.
-    // subquery fetches all current friendids for the user,
-    // then the outer query excludes them.
     String sql = """
-            SELECT u.* FROM "user" u
-            WHERE u.userid != ?
-            AND u.userid NOT IN (
-                SELECT friendid FROM friends WHERE userid = ?
-            )
-        """;
+        SELECT u.* FROM party_planner."user" u
+        WHERE u.userid != ?
+        AND u.userid NOT IN (
+            SELECT friendid FROM party_planner.friends WHERE userid = ?
+        )
+    """;
     List<User> nonFriends = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -97,8 +90,7 @@ public class FriendDAO {
   }
 
   public boolean isFollowing(String userId, String friendId) {
-    // checks one direction only — is A following B?
-    String sql = "SELECT 1 FROM friends WHERE userid = ? AND friendid = ?";
+    String sql = "SELECT 1 FROM party_planner.friends WHERE userid = ? AND friendid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userId);

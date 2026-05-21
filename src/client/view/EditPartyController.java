@@ -77,6 +77,7 @@ public class EditPartyController
   }
 
   public void loadParty() {
+    selected = viewmodel.getSelectedParty(); // re-fetch selected every time
     userLabel.setText(LocalUser.getUser().getUsername());
     if (selected == null) return;
 
@@ -195,13 +196,13 @@ public class EditPartyController
 
     if (selectedUser == null)
     {
-      viewmodel.setError("Select a user first");
+      viewmodel.setError("select a friend first");
       return;
     }
 
     if (viewmodel.isAlreadyParticipant(selectedUser))
     {
-      viewmodel.setError("User is already in the party");
+      viewmodel.setError("friend is already in the party");
       return;
     }
 
@@ -216,14 +217,14 @@ public class EditPartyController
 
     if (selectedParticipant == null)
     {
-      viewmodel.setError("Select a participant first");
+      viewmodel.setError("select a friend first");
       return;
     }
 
     if (selected.getOrganizer() != null &&
         selected.getOrganizer().getId().equals(selectedParticipant.getUser().getId()))
     {
-      viewmodel.setError("Organizer cannot be removed");
+      viewmodel.setError("organizer cannot be removed");
       return;
     }
 

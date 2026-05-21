@@ -12,7 +12,7 @@ public class ItemDAO {
   private static final Logger log = Logger.getLogger(ItemDAO.class.getName());
 
   public Item getById(String itemid) {
-    String sql = "SELECT * FROM item WHERE itemid = ?";
+    String sql = "SELECT * FROM party_planner.item WHERE itemid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, itemid);
@@ -26,9 +26,9 @@ public class ItemDAO {
 
   public List<Item> getByParty(String partyid) {
     String sql = "SELECT i.*, c.userid AS claimer_id, u.username AS claimer_name " +
-        "FROM item i " +
-        "LEFT JOIN claimitem c ON i.itemid = c.itemid " +
-        "LEFT JOIN \"user\" u ON c.userid = u.userid " +
+        "FROM party_planner.item i " +
+        "LEFT JOIN party_planner.claimitem c ON i.itemid = c.itemid " +
+        "LEFT JOIN party_planner.\"user\" u ON c.userid = u.userid " +
         "WHERE i.partyid = ?";
     List<Item> items = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
@@ -43,7 +43,7 @@ public class ItemDAO {
   }
 
   public void create(String itemid, String name, int quantity, String partyid) {
-    String sql = "INSERT INTO item (itemid, name, quantity, partyid) VALUES (?, ?, ?, ?)";
+    String sql = "INSERT INTO party_planner.item (itemid, name, quantity, partyid) VALUES (?, ?, ?, ?)";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, itemid);
@@ -57,7 +57,7 @@ public class ItemDAO {
   }
 
   public void update(String itemid, String name, int quantity) {
-    String sql = "UPDATE item SET name = ?, quantity = ? WHERE itemid = ?";
+    String sql = "UPDATE party_planner.item SET name = ?, quantity = ? WHERE itemid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, name);
@@ -70,8 +70,8 @@ public class ItemDAO {
   }
 
   public void delete(String itemid) {
-    String deleteClaims = "DELETE FROM claimitem WHERE itemid = ?";
-    String deleteItem   = "DELETE FROM item WHERE itemid = ?";
+    String deleteClaims = "DELETE FROM party_planner.claimitem WHERE itemid = ?";
+    String deleteItem   = "DELETE FROM party_planner.item WHERE itemid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps1 = conn.prepareStatement(deleteClaims);
         PreparedStatement ps2 = conn.prepareStatement(deleteItem)) {
@@ -85,8 +85,8 @@ public class ItemDAO {
   }
 
   public void claimItem(String itemid, String userid) {
-    String delete = "DELETE FROM claimitem WHERE itemid = ?";
-    String insert = "INSERT INTO claimitem (itemid, userid, quantityclaimed) VALUES (?, ?, 1)";
+    String delete = "DELETE FROM party_planner.claimitem WHERE itemid = ?";
+    String insert = "INSERT INTO party_planner.claimitem (itemid, userid, quantityclaimed) VALUES (?, ?, 1)";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps1 = conn.prepareStatement(delete);
         PreparedStatement ps2 = conn.prepareStatement(insert)) {
@@ -101,7 +101,7 @@ public class ItemDAO {
   }
 
   public void unclaimItem(String itemid) {
-    String sql = "DELETE FROM claimitem WHERE itemid = ?";
+    String sql = "DELETE FROM party_planner.claimitem WHERE itemid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, itemid);
@@ -114,9 +114,7 @@ public class ItemDAO {
   private Item mapRow(ResultSet rs) throws SQLException {
     Item item = new Item(rs.getString("itemid"), rs.getString("name"));
     String claimerName = rs.getString("claimer_name");
-    if (claimerName != null) {
-      item.claim(claimerName);
-    }
+    if (claimerName != null) item.claim(claimerName);
     return item;
   }
 }

@@ -32,6 +32,13 @@ public class PartyClientModel implements PartyModel {
         if (raw != null) {
           try {
             JsonObject json = JsonParser.parseString(raw).getAsJsonObject();
+
+            // fire error event if it's an error response
+            if ("error".equals(json.has("type") ? json.get("type").getAsString() : "")) {
+              support.firePropertyChange("error", null,
+                  json.has("message") ? json.get("message").getAsString() : "unknown error");
+            }
+
             if (json.has("action")) {
               support.firePropertyChange(json.get("action").getAsString(), null, json);
             }
