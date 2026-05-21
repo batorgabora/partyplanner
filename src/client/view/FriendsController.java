@@ -1,7 +1,6 @@
 package client.view;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -14,8 +13,8 @@ import javafx.scene.layout.Region;
 import shared.model.*;
 import client.viewModel.FriendsViewModel;
 
-public class FriendsController
-{
+public class FriendsController {
+
   private Region root;
   private FriendsViewModel viewmodel;
   private ViewHandler viewhandler;
@@ -34,8 +33,13 @@ public class FriendsController
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
 
+    userLabel.setText(LocalUser.getUser().getUsername());
+    statusLabel.textProperty().bind(viewmodel.errorProperty());
 
-    // show username in the friends list
+    // bind lists once
+    friendsList.setItems(viewmodel.friendsProperty());
+    nonFriendsDrop.setItems(viewmodel.nonFriendsProperty());
+
     friendsList.setCellFactory(lv -> new ListCell<User>() {
       @Override protected void updateItem(User user, boolean empty) {
         super.updateItem(user, empty);
@@ -43,13 +47,13 @@ public class FriendsController
       }
     });
 
-    // show username in the dropdown
     nonFriendsDrop.setCellFactory(lv -> new ListCell<User>() {
       @Override protected void updateItem(User user, boolean empty) {
         super.updateItem(user, empty);
         setText(empty || user == null ? null : user.getUsername());
       }
     });
+
     nonFriendsDrop.setButtonCell(new ListCell<User>() {
       @Override protected void updateItem(User user, boolean empty) {
         super.updateItem(user, empty);
@@ -66,15 +70,12 @@ public class FriendsController
     friendsList.setVisible(false);
     nonFriendsDrop.setVisible(false);
     addfriendButton.setVisible(false);
-    infoLabel.setVisible(false);
     removefriendButton.setVisible(false);
+    infoLabel.setVisible(false);
 
     new Thread(() -> {
-      var friends    = viewmodel.getFriends();
-      var nonFriends = viewmodel.getNonFriends();
+      viewmodel.loadData(); // updates observable lists directly
       Platform.runLater(() -> {
-        friendsList.setItems(FXCollections.observableArrayList(friends));
-        nonFriendsDrop.setItems(FXCollections.observableArrayList(nonFriends));
         friendsList.setVisible(true);
         nonFriendsDrop.setVisible(true);
         addfriendButton.setVisible(true);
@@ -85,22 +86,22 @@ public class FriendsController
     }).start();
   }
 
-  public void reset() {
-    loadData();
-  }
-
   @FXML public void onAddFriend() {
     User selected = nonFriendsDrop.getSelectionModel().getSelectedItem();
     if (selected == null) return;
-    viewmodel.addFriend(selected);
-    loadData();
+    new Thread(() -> {
+      viewmodel.addFriend(selected);
+      viewmodel.loadData(); // refresh both lists after change
+    }).start();
   }
 
   @FXML public void onRemoveFriend() {
     User selected = friendsList.getSelectionModel().getSelectedItem();
     if (selected == null) return;
-    viewmodel.removeFriend(selected);
-    loadData();
+    new Thread(() -> {
+      viewmodel.removeFriend(selected);
+      viewmodel.loadData(); // refresh both lists after change
+    }).start();
   }
 
   @FXML public void onDiscover()  { viewhandler.openView("discover"); }
@@ -110,4 +111,5 @@ public class FriendsController
   @FXML public void addFriend()   { onAddFriend(); }
 
   public Region getRoot() { return root; }
+  public void reset()     { loadData(); }
 }

@@ -83,6 +83,8 @@ public class Party {
   public void addParticipant(Participant participant) { participants.add(participant); }
   public void removeParticipant(Participant participant) { participants.remove(participant); }
 
+  public void setDate(String date) { this.date = date; }
+
   @Override public String toString()
   {
     return  name + " at " + location + "  -  " + description;

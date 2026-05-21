@@ -1,5 +1,6 @@
 package client.viewModel;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -10,25 +11,33 @@ import shared.model.User;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 
-public class FriendsViewModel implements PropertyChangeListener
-{
+public class FriendsViewModel implements PropertyChangeListener {
+
   private final PartyModel model;
-  private final StringProperty error = new SimpleStringProperty("");
-  private final ObservableList<User> friends = FXCollections.observableArrayList();
+  private final StringProperty error       = new SimpleStringProperty("");
+  private final ObservableList<User> friends    = FXCollections.observableArrayList();
   private final ObservableList<User> nonFriends = FXCollections.observableArrayList();
 
   public FriendsViewModel(PartyModel model) {
     this.model = model;
+    model.addListener("error", this);
   }
 
-  public List<User> getFriends() {
-    return model.getFriends(LocalUser.getUser());
+  @Override public void propertyChange(PropertyChangeEvent evt) {
+    if ("error".equals(evt.getPropertyName())) {
+      Platform.runLater(() -> error.set((String) evt.getNewValue()));
+    }
   }
 
-  public List<User> getNonFriends() {
-    return model.getNonFriends(LocalUser.getUser());
+  // called once on load
+  public void loadData() {
+    var f  = model.getFriends(LocalUser.getUser());
+    var nf = model.getNonFriends(LocalUser.getUser());
+    Platform.runLater(() -> {
+      friends.setAll(f);
+      nonFriends.setAll(nf);
+    });
   }
 
   public void addFriend(User friend) {
@@ -39,7 +48,7 @@ public class FriendsViewModel implements PropertyChangeListener
     model.removeFriend(LocalUser.getUser(), friend);
   }
 
-  public StringProperty errorProperty() { return error; }
-
-  @Override public void propertyChange(PropertyChangeEvent evt) {}
+  public ObservableList<User> friendsProperty()    { return friends; }
+  public ObservableList<User> nonFriendsProperty() { return nonFriends; }
+  public StringProperty errorProperty()            { return error; }
 }

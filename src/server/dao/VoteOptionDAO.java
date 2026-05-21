@@ -12,7 +12,7 @@ public class VoteOptionDAO {
   private static final Logger log = Logger.getLogger(VoteOptionDAO.class.getName());
 
   public void addVote(int optionid, int userid) {
-    String sql = "INSERT INTO voteoption (optionid, userid) VALUES (?, ?)";
+    String sql = "INSERT INTO party_planner.voteoption (optionid, userid) VALUES (?, ?)";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setInt(1, optionid);
@@ -24,7 +24,7 @@ public class VoteOptionDAO {
   }
 
   public void removeVote(int optionid, int userid) {
-    String sql = "DELETE FROM voteoption WHERE optionid = ? AND userid = ?";
+    String sql = "DELETE FROM party_planner.voteoption WHERE optionid = ? AND userid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setInt(1, optionid);
@@ -36,7 +36,7 @@ public class VoteOptionDAO {
   }
 
   public boolean hasVoted(int optionid, int userid) {
-    String sql = "SELECT 1 FROM voteoption WHERE optionid = ? AND userid = ?";
+    String sql = "SELECT 1 FROM party_planner.voteoption WHERE optionid = ? AND userid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setInt(1, optionid);
@@ -50,7 +50,7 @@ public class VoteOptionDAO {
   }
 
   public int getVoteCount(int optionid) {
-    String sql = "SELECT COUNT(*) FROM voteoption WHERE optionid = ?";
+    String sql = "SELECT COUNT(*) FROM party_planner.voteoption WHERE optionid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setInt(1, optionid);
@@ -63,7 +63,7 @@ public class VoteOptionDAO {
   }
 
   public ArrayList<Integer> getVotersForOption(String optionId) {
-    String sql = "SELECT userid FROM voteoption WHERE optionid = ?";
+    String sql = "SELECT userid FROM party_planner.voteoption WHERE optionid = ?";
     ArrayList<Integer> voters = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {

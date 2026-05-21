@@ -13,10 +13,15 @@ public class Item
     this.id = UUID.randomUUID().toString();
     this.name = name;
   }
-  public Item(String id, String name) {
+  private String partyId;
+
+  public Item(String id, String name, String partyId) {
     this.id = id;
     this.name = name;
+    this.partyId = partyId;
   }
+
+  public String getPartyId() { return partyId; }
 
   public String getId()        { return id; }
   public String getName()      { return name; }

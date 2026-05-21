@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.PasswordField?>
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.RegisterController">
     <children>
         <Label layoutX="356.0" layoutY="48.0" text="registration" underline="true">
@@ -19,7 +20,7 @@
                 <Font size="18.0" />
             </font>
         </Label>
-        <TextField fx:id="passwordField" layoutX="277.0" layoutY="298.0" prefHeight="26.0" prefWidth="296.0" />
+        <PasswordField fx:id="passwordField" layoutX="277.0" layoutY="298.0" prefHeight="26.0" prefWidth="296.0" />
         <Label layoutX="376.0" layoutY="268.0" text="password">
             <font>
                 <Font size="18.0" />
@@ -41,7 +42,7 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="confirmpasswordField" layoutX="276.0" layoutY="370.0" prefHeight="26.0" prefWidth="296.0" />
+      <PasswordField fx:id="confirmpasswordField" layoutX="276.0" layoutY="370.0" prefHeight="26.0" prefWidth="296.0" />
       <Label layoutX="350.0" layoutY="342.0" text="confirm password">
          <font>
             <Font size="18.0" />

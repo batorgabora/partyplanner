@@ -93,8 +93,7 @@ public class PartyUsersDAO {
   }
 
   public List<Participant> getParticipantsByParty(String partyid) {
-    String sql = "SELECT u.*, pu.role FROM \"user\" u JOIN partyusers pu ON u.userid = pu.userid WHERE pu.partyid = ? AND (pu.status != 'declined' OR pu.status IS NULL)";
-    List<Participant> participants = new ArrayList<>();
+    String sql = "SELECT u.*, pu.role FROM party_planner.\"user\" u JOIN party_planner.partyusers pu ON u.userid = pu.userid WHERE pu.partyid = ? AND (pu.status != 'declined' OR pu.status IS NULL)";    List<Participant> participants = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyid);
@@ -141,19 +140,17 @@ public class PartyUsersDAO {
   }
 
   public String getStatus(String userid, String partyid) {
-    String sql = "SELECT status FROM partyusers WHERE userid = ? AND partyid = ?";
+    String sql = "SELECT status FROM party_planner.partyusers WHERE userid = ? AND partyid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
       ps.setString(2, partyid);
       ResultSet rs = ps.executeQuery();
-      if (rs.next())
-        return rs.getString("status");
+      if (rs.next()) return rs.getString("status"); // returns null if DB value is NULL
     } catch (SQLException e) {
-      log.severe("updateStatus failed for userId=" + userid
-          + " partyId=" + partyid);
+      log.severe("getStatus failed for userId=" + userid + " partyId=" + partyid);
     }
-    return "";
+    return null; // not null was returned "" before
   }
 
   public List<String> getOrganizerIds(String partyid) {

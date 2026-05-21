@@ -1,7 +1,6 @@
 package client.view;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,8 +11,7 @@ import shared.model.LocalUser;
 import client.viewModel.DiscoverViewModel;
 import shared.model.Party;
 
-public class DiscoverController
-{
+public class DiscoverController {
 
   private Region root;
   private DiscoverViewModel viewmodel;
@@ -25,26 +23,26 @@ public class DiscoverController
   @FXML private Label userLabel;
   @FXML private ImageView loadingIndicator;
 
-  public void init(ViewHandler viewhandler, DiscoverViewModel viewmodel, Region root)
-  {
+  public void init(ViewHandler viewhandler, DiscoverViewModel viewmodel, Region root) {
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
 
     userLabel.setText(LocalUser.getUser().getUsername());
 
+    // bind once — list updates automatically via Observer
+    partyList.setItems(viewmodel.partiesProperty());
+
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> viewmodel.selectedPartyProperty().set(newVal));
 
     partyList.getSelectionModel().selectedItemProperty().addListener(
-        (obs, oldVal, newVal) -> selectedLabel.setText(newVal != null ? newVal.toString() : ""));
+        (obs, oldVal, newVal) -> selectedLabel.setText(newVal != null ? newVal.getName() : ""));
 
     loadParties();
   }
 
-  // fetches parties off the UI thread to avoid freezing, then updates UI when done
-  private void loadParties()
-  {
+  private void loadParties() {
     userLabel.setText(LocalUser.getUser().getUsername());
     partyList.setVisible(false);
     selectedLabel.setVisible(false);
@@ -52,10 +50,8 @@ public class DiscoverController
     loadingIndicator.setVisible(true);
 
     new Thread(() -> {
-      viewmodel.updateParties();
-      ObservableList<Party> items = viewmodel.getInvitedParties(); // off UI thread
-      Platform.runLater(() -> {                                     // back on UI thread
-        partyList.setItems(items);
+      viewmodel.updateParties(); // updates the observable list directly
+      Platform.runLater(() -> {
         partyList.setVisible(true);
         selectedLabel.setVisible(true);
         onFurtherButton.setVisible(true);
@@ -64,10 +60,8 @@ public class DiscoverController
     }).start();
   }
 
-  @FXML public void onFurther()
-  {
-    if (viewmodel.getSelectedParty() == null)
-    {
+  @FXML public void onFurther() {
+    if (viewmodel.getSelectedParty() == null) {
       selectedLabel.setText("please select a party first");
       return;
     }
@@ -80,6 +74,5 @@ public class DiscoverController
   @FXML private void onLogout()    { viewhandler.openView("login"); }
 
   public Region getRoot() { return root; }
-
-  public void reset() { loadParties(); }
+  public void reset()     { loadParties(); }
 }

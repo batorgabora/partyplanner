@@ -11,7 +11,7 @@ public class ClaimedItemDAO {
   private static final Logger log = Logger.getLogger(ClaimedItemDAO.class.getName());
 
   public void claim(String userid, String itemid, int quantityClaimed) {
-    String sql = "INSERT INTO claimitem (userid, itemid, quantityclaimed) VALUES (?, ?, ?)";
+    String sql = "INSERT INTO party_planner.claimitem (userid, itemid, quantityclaimed) VALUES (?, ?, ?)";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
@@ -24,7 +24,7 @@ public class ClaimedItemDAO {
   }
 
   public void unclaim(String userid, String itemid) {
-    String sql = "DELETE FROM claimitem WHERE userid = ? AND itemid = ?";
+    String sql = "DELETE FROM party_planner.claimitem WHERE userid = ? AND itemid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
@@ -36,7 +36,7 @@ public class ClaimedItemDAO {
   }
 
   public void updateClaim(String userid, String itemid, int quantityClaimed) {
-    String sql = "UPDATE claimitem SET quantityclaimed = ? WHERE userid = ? AND itemid = ?";
+    String sql = "UPDATE party_planner.claimitem SET quantityclaimed = ? WHERE userid = ? AND itemid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setInt(1, quantityClaimed);
@@ -49,7 +49,7 @@ public class ClaimedItemDAO {
   }
 
   public int getTotalClaimed(String itemid) {
-    String sql = "SELECT COALESCE(SUM(quantityclaimed), 0) FROM claimitem WHERE itemid = ?";
+    String sql = "SELECT COALESCE(SUM(quantityclaimed), 0) FROM party_planner.claimitem WHERE itemid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, itemid);
@@ -62,7 +62,7 @@ public class ClaimedItemDAO {
   }
 
   public Map<String, Integer> getClaimsForItem(String itemid) {
-    String sql = "SELECT userid, quantityclaimed FROM claimitem WHERE itemid = ?";
+    String sql = "SELECT userid, quantityclaimed FROM party_planner.claimitem WHERE itemid = ?";
     Map<String, Integer> claims = new HashMap<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {

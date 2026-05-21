@@ -13,7 +13,7 @@ public class UserDAO {
   private static final Logger log = Logger.getLogger(UserDAO.class.getName());
 
   public User getById(String userid) {
-    String sql = "SELECT * FROM \"user\" WHERE userid = ?";
+    String sql = "SELECT * FROM party_planner.\"user\" WHERE userid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
@@ -26,7 +26,7 @@ public class UserDAO {
   }
 
   public User getByUsername(String username) {
-    String sql = "SELECT * FROM \"user\" WHERE username = ?";
+    String sql = "SELECT * FROM party_planner.\"user\" WHERE username = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, username);
@@ -39,7 +39,7 @@ public class UserDAO {
   }
 
   public ArrayList<User> getAll() {
-    String sql = "SELECT * FROM \"user\"";
+    String sql = "SELECT * FROM party_planner.\"user\"";
     ArrayList<User> users = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         Statement st = conn.createStatement();
@@ -52,7 +52,7 @@ public class UserDAO {
   }
 
   public String create(String userid, String username, String mail, String hashpass) {
-    String sql = "INSERT INTO \"user\" (userid, username, mail, hashpass) VALUES (?, ?, ?, ?)";
+    String sql = "INSERT INTO party_planner.\"user\" (userid, username, mail, hashpass) VALUES (?, ?, ?, ?)";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);
@@ -68,7 +68,7 @@ public class UserDAO {
   }
 
   public void update(String userid, String username, String mail, String hashpass) {
-    String sql = "UPDATE \"user\" SET username = ?, mail = ?, hashpass = ? WHERE userid = ?";
+    String sql = "UPDATE party_planner.\"user\" SET username = ?, mail = ?, hashpass = ? WHERE userid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, username);
@@ -82,7 +82,7 @@ public class UserDAO {
   }
 
   public void updatePassword(String userid, String hashpass) {
-    String sql = "UPDATE \"user\" SET hashpass = ? WHERE userid = ?";
+    String sql = "UPDATE party_planner.\"user\" SET hashpass = ? WHERE userid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, hashpass);
@@ -94,7 +94,7 @@ public class UserDAO {
   }
 
   public void delete(String userid) {
-    String sql = "DELETE FROM \"user\" WHERE userid = ?";
+    String sql = "DELETE FROM party_planner.\"user\" WHERE userid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userid);

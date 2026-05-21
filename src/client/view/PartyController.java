@@ -22,13 +22,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
-public class PartyController
-{
+public class PartyController {
 
   private Region root;
   private PartyViewModel viewmodel;
@@ -58,11 +53,14 @@ public class PartyController
   @FXML private Button voteButton;
   @FXML private Button removeVoteButton;
   @FXML private Button claimButton;
+  @FXML private Label label1;
+  @FXML private Label label2;
+  @FXML private Label label3;
 
   private Party selected;
+  private boolean chatOpen = false;
 
-  public void init(ViewHandler viewhandler, PartyViewModel viewmodel, Region root)
-  {
+  public void init(ViewHandler viewhandler, PartyViewModel viewmodel, Region root) {
     this.root = root;
     this.viewmodel = viewmodel;
     this.viewhandler = viewhandler;
@@ -75,17 +73,35 @@ public class PartyController
 
     chatInput.textProperty().bindBidirectional(viewmodel.messageInputProperty());
 
+    // bind lists once — view never pulls, Observer pattern
+    itemList.setItems(viewmodel.itemsProperty());
+    memberList.setItems(viewmodel.membersProperty());
+    timeList.setItems(viewmodel.optionsProperty());
+
+    // when user selects an option, check in background if they already voted for it
+    // and toggle vote/removeVote buttons accordingly
+    timeList.getSelectionModel().selectedItemProperty().addListener(
+        (obs, oldVal, newVal) -> {
+          if (newVal != null) {
+            new Thread(() -> {
+              boolean voted = viewmodel.hasVotedForOption(newVal.getOptionid());
+              Platform.runLater(() -> {
+                voteButton.setDisable(voted);
+                removeVoteButton.setDisable(!voted);
+              });
+            }).start();
+          }
+        });
+
     timeList.setCellFactory(lv -> new ListCell<Option>() {
-      @Override
-      protected void updateItem(Option option, boolean empty) {
+      @Override protected void updateItem(Option option, boolean empty) {
         super.updateItem(option, empty);
         setText(empty || option == null ? null : option.getProposal() + " (" + option.getVoteCount() + " votes)");
       }
     });
 
     itemList.setCellFactory(lv -> new ListCell<Item>() {
-      @Override
-      protected void updateItem(Item item, boolean empty) {
+      @Override protected void updateItem(Item item, boolean empty) {
         super.updateItem(item, empty);
         if (empty || item == null) { setText(null); return; }
         setText(item.isClaimed()
@@ -97,8 +113,21 @@ public class PartyController
     itemList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> updateClaimButton(newVal));
 
+    // listen for new messages pushed via Observer — appends each new message
+    // without clearing the chat, avoiding flicker and race conditions
+    viewmodel.messagesProperty().addListener((javafx.collections.ListChangeListener<Message>) change -> {
+      while (change.next()) {
+        if (change.wasAdded()) {
+          for (Message msg : change.getAddedSubList()) {
+            appendMessage(msg);
+          }
+        }
+      }
+      // scroll to bottom after new message appears
+      Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
+    });
+
     loadParty();
-    loadMessages();
 
     chatInput.setOnKeyPressed(event -> {
       if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
@@ -108,69 +137,51 @@ public class PartyController
     });
   }
 
-  public void loadParty()
-  {
+  public void loadParty() {
     userLabel.setText(LocalUser.getUser().getUsername());
-
     selected = viewmodel.getSelectedParty();
     if (selected == null) return;
 
     nameLabel.setText(selected.getName());
-
     setContentVisible(false);
 
     new Thread(() -> {
-      // all server calls happen off the UI thread
-      var items    = viewmodel.getItems();
-      var members  = viewmodel.getMembers();
-      var options  = viewmodel.getOptions();
+      viewmodel.loadData();
       var role     = viewmodel.getRoleForCurrentUser(selected.getId());
       var status   = viewmodel.getStatusForCurrentUser(selected.getId());
-      var hasVoted = viewmodel.hasVotedInParty(selected.getId());
       var topVoted = viewmodel.getTopVotedOption(selected.getId());
 
       Platform.runLater(() -> {
-        dateLabel.setText(topVoted != null && !topVoted.equals("no votes yet") ? topVoted : selected.getDate());
+        dateLabel.setText(topVoted != null && !topVoted.equals("no votes yet")
+            ? topVoted : selected.getDate());
         locationLabel.setText(selected.getLocation());
+        descriptionLabel.setText(selected.getDescription());
         roleLabel.setText(role != null ? role : "participant");
 
-        itemList.setItems(items);
-        memberList.setItems(members);
-        timeList.setItems(options);
-
         boolean isOrganizer = "organizer".equals(role);
-        boolean isInvited   = status == null;
         boolean isAccepted  = "accepted".equals(status);
+        boolean isInvited = !isOrganizer && (status == null || status.isEmpty());
+
+        setContentVisible(true);
 
         editButton.setVisible(isOrganizer);
-        acceptButton.setVisible(!isOrganizer && isInvited);
-        declineButton.setVisible(!isOrganizer && isInvited);
+        acceptButton.setVisible(isInvited);
+        declineButton.setVisible(isInvited);
         leaveButton.setVisible(!isOrganizer && isAccepted);
         chatButton.setVisible(isOrganizer || isAccepted);
-        voteButton.setVisible(isAccepted);
-        claimButton.setVisible(isAccepted);
-        removeVoteButton.setVisible(isAccepted);
-
-        if (hasVoted) {
-          infoLabel.setText("you have already voted");
-          voteButton.setDisable(true);
-          removeVoteButton.setDisable(false);
-        } else {
-          infoLabel.setText("");
-          voteButton.setDisable(false);
-          removeVoteButton.setDisable(true);
-        }
+        voteButton.setVisible(isAccepted || isOrganizer);
+        claimButton.setVisible(isAccepted || isOrganizer);
+        removeVoteButton.setVisible(isAccepted || isOrganizer);
 
         updateClaimButton(null);
-        setContentVisible(true);
       });
     }).start();
   }
 
-  private void setContentVisible(boolean visible)
-  {
+  private void setContentVisible(boolean visible) {
     loadingIndicator.setVisible(!visible);
     descriptionLabel.setVisible(visible);
+    descriptionLabel.setManaged(visible);
     dateLabel.setVisible(visible);
     locationLabel.setVisible(visible);
     roleLabel.setVisible(visible);
@@ -181,17 +192,22 @@ public class PartyController
     removeVoteButton.setVisible(visible);
     infoLabel.setVisible(visible);
     claimButton.setVisible(visible);
+    label1.setVisible(visible);
+    label2.setVisible(visible);
+    label3.setVisible(visible);
+    addfriendButton.setVisible(visible);
     if (!visible) {
       editButton.setVisible(false);
       acceptButton.setVisible(false);
       declineButton.setVisible(false);
       leaveButton.setVisible(false);
       claimButton.setVisible(false);
+      voteButton.setVisible(false);
+      removeVoteButton.setVisible(false);
     }
   }
 
-  private void updateClaimButton(Item item)
-  {
+  private void updateClaimButton(Item item) {
     if (item == null) {
       claimButton.setText("claim");
       claimButton.setDisable(true);
@@ -200,22 +216,18 @@ public class PartyController
     String currentUser     = LocalUser.getUser().getUsername();
     boolean claimedByMe    = item.isClaimed() && item.getClaimedBy().equals(currentUser);
     boolean claimedByOther = item.isClaimed() && !claimedByMe;
-
     claimButton.setText(claimedByMe ? "unclaim" : "claim");
     claimButton.setDisable(claimedByOther);
   }
 
-  @FXML public void onClaim()
-  {
+  @FXML public void onClaim() {
     Item item = itemList.getSelectionModel().getSelectedItem();
-    if (item == null) {
-      infoLabel.setText("select an item first");
-      return;
-    }
+    if (item == null) { infoLabel.setText("select an item first"); return; }
 
     String currentUser  = LocalUser.getUser().getUsername();
     boolean claimedByMe = item.isClaimed() && item.getClaimedBy().equals(currentUser);
 
+    // optimistic UI update — update locally before server confirms
     if (claimedByMe) item.unclaim();
     else             item.claim(currentUser);
 
@@ -228,8 +240,7 @@ public class PartyController
     }).start();
   }
 
-  @FXML public void onVote()
-  {
+  @FXML public void onVote() {
     Option option = timeList.getSelectionModel().getSelectedItem();
     if (option == null) {
       infoLabel.setText("select an option first");
@@ -241,30 +252,25 @@ public class PartyController
       infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
-    viewmodel.voteForOption(option.getOptionid());
     infoLabel.setText("vote cast!");
     infoLabel.setStyle("-fx-text-fill: green;");
-    loadParty();
+    // run on background thread — server returns updated options list
+    // which ViewModel sets via Platform.runLater, updating the bound list
+    new Thread(() -> viewmodel.voteForOption(option.getOptionid())).start();
   }
 
-  @FXML public void onRemoveVote()
-  {
+  @FXML public void onRemoveVote() {
     Option option = timeList.getSelectionModel().getSelectedItem();
     if (option == null) {
       infoLabel.setText("select an option first");
       infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
-    viewmodel.removeVote(option.getOptionid());
     infoLabel.setText("vote removed");
     infoLabel.setStyle("-fx-text-fill: orange;");
-    loadParty();
+    new Thread(() -> viewmodel.removeVote(option.getOptionid())).start();
   }
 
-  @FXML public void onDiscover()   { viewhandler.openView("discover"); }
-  @FXML public void onFriends()    { viewhandler.openView("friends"); }
-  @FXML public void onMyParties()  { viewhandler.openView("my parties"); }
-  @FXML public void onLogOut()     { viewhandler.openView("login"); }
   @FXML public void addFriend() {
     Participant selected = memberList.getSelectionModel().getSelectedItem();
     if (selected == null) {
@@ -276,76 +282,71 @@ public class PartyController
     infoLabel.setText(selected.getUser().getUsername() + " added as friend");
     infoLabel.setStyle("-fx-text-fill: green;");
   }
-  @FXML public void onEditParty()  { viewhandler.openView("edit party"); }
-  @FXML public void onLogout()     { viewhandler.openView("login"); }
 
+  // sends message on background thread — server broadcasts it to all clients
+  // the sender's own view updates via the "sendMessage" propertyChange event
   @FXML public void onSendMessage() {
     if (viewmodel.messageInputProperty().get().trim().isEmpty()) return;
-    stopMessagePolling(); // stop polling while sending
     new Thread(() -> {
       viewmodel.sendMessage();
-      List<Message> messages = viewmodel.getMessages();
-      Platform.runLater(() -> {
-        viewmodel.messageInputProperty().set("");
-        renderMessages(messages);
-        startMessagePolling(); // restart after done
-      });
+      Platform.runLater(() -> viewmodel.messageInputProperty().set(""));
     }).start();
   }
 
+  // loads existing messages from server when chat is first opened
+  // sorts by timestamp and appends each one individually
   private void loadMessages() {
+    chatMessages.getChildren().clear(); // clear before reloading on open
     new Thread(() -> {
-      List<Message> messages = viewmodel.getMessages();
-      Platform.runLater(() -> renderMessages(messages));
+      List<Message> msgs = viewmodel.getMessages();
+      msgs.stream()
+          .sorted(Comparator.comparing(msg -> {
+            try {
+              String s = msg.getSentAt();
+              return LocalDateTime.parse(s.length() > 19 ? s.substring(0, 19) : s);
+            } catch (Exception e) { return LocalDateTime.MIN; }
+          }))
+          .forEach(msg -> Platform.runLater(() -> appendMessage(msg)));
+      Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
     }).start();
   }
-  
-  private void renderMessages(List<Message> messages) {
-    chatMessages.getChildren().clear();
-    String myId = LocalUser.getUser().getId();
-    List<Message> sorted = messages.stream()
-        .sorted(Comparator.comparing(msg -> {
-          try {
-            String s = msg.getSentAt();
-            return LocalDateTime.parse(s.length() > 19 ? s.substring(0, 19) : s);
-          } catch (Exception e) {
-            return LocalDateTime.MIN;
-          }
-        }))
-        .collect(java.util.stream.Collectors.toList());
-    for (Message msg : sorted) {
-      boolean isOwn  = myId.equals(msg.getUserId());
-      String  sender = isOwn ? "You" : resolveUsername(msg.getUserId());
-      String  time   = formatSentAt(msg.getSentAt());
 
-      Label senderLabel = new Label(sender);
-      senderLabel.getStyleClass().add("chat-sender");
-      Label timeLabel = new Label(time);
-      timeLabel.getStyleClass().add("chat-time");
+  // builds and appends a single message bubble to the chat window
+  // called both on initial load and when a new message arrives via Observer
+  private void appendMessage(Message msg) {
+    String myId   = LocalUser.getUser().getId();
+    boolean isOwn = myId.equals(msg.getUserId());
+    String sender = isOwn ? "You" : resolveUsername(msg.getUserId());
+    String time   = formatSentAt(msg.getSentAt());
 
-      HBox header = new HBox(6);
-      if (isOwn) {
-        header.setAlignment(Pos.CENTER_RIGHT);
-        header.getChildren().addAll(timeLabel, senderLabel);
-      } else {
-        header.getChildren().addAll(senderLabel, timeLabel);
-      }
+    Label senderLabel = new Label(sender);
+    senderLabel.getStyleClass().add("chat-sender");
+    Label timeLabel = new Label(time);
+    timeLabel.getStyleClass().add("chat-time");
 
-      Label bubble = new Label(msg.getContent());
-      bubble.setWrapText(true);
-      bubble.setPrefWidth(190);
-      bubble.getStyleClass().add(isOwn ? "chat-bubble-own" : "chat-bubble-other");
-
-      VBox msgBox = new VBox(2);
-      msgBox.getStyleClass().add(isOwn ? "chat-message-own" : "chat-message-other");
-      if (isOwn) msgBox.setAlignment(Pos.CENTER_RIGHT);
-      msgBox.getChildren().addAll(header, bubble);
-
-      chatMessages.getChildren().add(msgBox);
+    HBox header = new HBox(6);
+    if (isOwn) {
+      header.setAlignment(Pos.CENTER_RIGHT);
+      header.getChildren().addAll(timeLabel, senderLabel);
+    } else {
+      header.getChildren().addAll(senderLabel, timeLabel);
     }
-    Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
+
+    Label bubble = new Label(msg.getContent());
+    bubble.setWrapText(true);
+    bubble.setPrefWidth(190);
+    bubble.getStyleClass().add(isOwn ? "chat-bubble-own" : "chat-bubble-other");
+
+    VBox msgBox = new VBox(2);
+    msgBox.getStyleClass().add(isOwn ? "chat-message-own" : "chat-message-other");
+    if (isOwn) msgBox.setAlignment(Pos.CENTER_RIGHT);
+    msgBox.getChildren().addAll(header, bubble);
+
+    chatMessages.getChildren().add(msgBox);
   }
 
+  // resolves a userId to a username using the already-loaded member list
+  // avoids extra network calls for username lookup
   private String resolveUsername(String userId) {
     if (userId == null) return "unknown";
     for (Participant p : memberList.getItems()) {
@@ -366,33 +367,8 @@ public class PartyController
       return sentAt.length() >= 16 ? sentAt.substring(11, 16) : sentAt;
     }
   }
-  
-  private boolean chatOpen = false;
-  private ScheduledExecutorService messagePollExecutor;
-  private ScheduledFuture<?> messagePollTask;
 
-  private void startMessagePolling() {
-    if (messagePollExecutor == null || messagePollExecutor.isShutdown()) {
-      messagePollExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
-        Thread t = new Thread(r, "message-poll");
-        t.setDaemon(true);
-        return t;
-      });
-    }
-    messagePollTask = messagePollExecutor.scheduleAtFixedRate(() -> {
-      List<Message> messages = viewmodel.getMessages();
-      Platform.runLater(() -> renderMessages(messages));
-    }, 3, 3, TimeUnit.SECONDS);
-  }
-
-  private void stopMessagePolling() {
-    if (messagePollTask != null) messagePollTask.cancel(false);
-    if (messagePollExecutor != null) messagePollExecutor.shutdown();
-    messagePollExecutor = null;
-  }
-
-  @FXML public void onChat()
-  {
+  @FXML public void onChat() {
     chatOpen = !chatOpen;
     if (chatOpen) {
       dateLabel.setLayoutX(509);
@@ -406,12 +382,12 @@ public class PartyController
       chatButton.setLayoutY(439);
       leaveButton.setLayoutX(542);
       leaveButton.setLayoutY(482);
-      addfriendButton.setLayoutX(555);
-      chatWindow.setVisible(true);
       addfriendButton.setLayoutX(535);
+      chatWindow.setVisible(true);
       memberList.setPrefWidth(175);
+      // load existing messages when chat opens
+      // new messages after this point arrive via Observer (sendMessage broadcast)
       loadMessages();
-      startMessagePolling();
     } else {
       dateLabel.setLayoutX(685);
       dateLabel.setLayoutY(1);
@@ -427,28 +403,19 @@ public class PartyController
       chatWindow.setVisible(false);
       addfriendButton.setLayoutX(596);
       memberList.setPrefWidth(216);
-      stopMessagePolling();
     }
   }
 
-  @FXML public void onAccept()
-  {
-    viewmodel.acceptInvitation();
-    viewhandler.openView("party");
-  }
-
-  @FXML public void onDecline()
-  {
-    viewmodel.declineInvitation();
-    viewhandler.openView("discover");
-  }
-
-  @FXML public void onLeave()
-  {
-    viewmodel.leaveParty();
-    viewhandler.openView("my parties");
-  }
+  @FXML public void onAccept()   { viewmodel.acceptInvitation(); viewhandler.openView("party"); }
+  @FXML public void onDecline()  { viewmodel.declineInvitation(); viewhandler.openView("discover"); }
+  @FXML public void onLeave()    { viewmodel.leaveParty(); viewhandler.openView("my parties"); }
+  @FXML public void onDiscover() { viewhandler.openView("discover"); }
+  @FXML public void onFriends()  { viewhandler.openView("friends"); }
+  @FXML public void onMyParties(){ viewhandler.openView("my parties"); }
+  @FXML public void onLogOut()   { viewhandler.openView("login"); }
+  @FXML public void onEditParty(){ viewhandler.openView("edit party"); }
+  @FXML public void onLogout()   { viewhandler.openView("login"); }
 
   public Region getRoot() { return root; }
-  public void reset()     { stopMessagePolling(); loadParty();}
+  public void reset()     { loadParty(); }
 }

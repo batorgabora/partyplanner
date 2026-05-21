@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.PasswordField?>
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="528.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.view.LoginController">
    <children>
       <Label layoutX="381.0" layoutY="99.0" text="log-in" underline="true">
@@ -19,7 +20,7 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="passwordField" focusTraversable="true" layoutX="275.0" layoutY="279.0" prefHeight="26.0" prefWidth="296.0" />
+      <PasswordField fx:id="passwordField" focusTraversable="true" layoutX="275.0" layoutY="279.0" prefHeight="26.0" prefWidth="296.0" />
       <Label layoutX="374.0" layoutY="249.0" text="password">
          <font>
             <Font size="18.0" />

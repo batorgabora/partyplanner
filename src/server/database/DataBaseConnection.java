@@ -9,35 +9,24 @@ public class DataBaseConnection {
   private static final String USER = "neondb_owner";
   private static final String PASSWORD = "npg_A6rYzvCW5Day";
 
-  private static DataBaseConnection instance;
-  private Connection connection;
+  private static final DataBaseConnection instance = new DataBaseConnection();
 
-  private DataBaseConnection() {
-    try {
-      connection = DriverManager.getConnection(URL, USER, PASSWORD);
-      connection.createStatement().execute("SET search_path TO party_planner");
-    } catch (SQLException e) {
-      throw new RuntimeException("Could not connect to database.", e);
-    }
-  }
+  // each thread gets its own connection — no sharing between threads
+  private static final ThreadLocal<Connection> threadLocalConnection = new ThreadLocal<>();
 
-  public static synchronized DataBaseConnection getInstance() {
-    if (instance == null) {
-      instance = new DataBaseConnection();
-    }
+  private DataBaseConnection() {}
+
+  public static DataBaseConnection getInstance() {
     return instance;
   }
 
-  public Connection getConnection() {
-    try {
-      if (connection == null || connection.isClosed()) {
-        connection = DriverManager.getConnection(URL, USER, PASSWORD);
-        connection.createStatement().execute("SET search_path TO party_planner");
-      }
-    } catch (SQLException e)
-    {
-      throw new RuntimeException("Could not reconnect to database.", e);
+  public Connection getConnection() throws SQLException {
+    Connection conn = threadLocalConnection.get();
+    if (conn == null || conn.isClosed()) {
+      conn = DriverManager.getConnection(URL, USER, PASSWORD);
+      conn.createStatement().execute("SET search_path TO party_planner");
+      threadLocalConnection.set(conn);
     }
-    return connection;
+    return conn;
   }
 }

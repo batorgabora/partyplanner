@@ -12,7 +12,7 @@ public class OptionDAO {
   private static final Logger log = Logger.getLogger(OptionDAO.class.getName());
 
   public Option getById(String optionid) {
-    String sql = "SELECT * FROM \"option\" WHERE optionid = ?";
+    String sql = "SELECT * FROM party_planner.option WHERE optionid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, optionid);
@@ -26,13 +26,13 @@ public class OptionDAO {
 
   public List<Option> getByParty(String partyId) {
     String sql = """
-        SELECT o.optionid, o.proposal, o.partyid, COUNT(v.userid) as votecount
-        FROM "option" o
-        LEFT JOIN voteoption v ON o.optionid = v.optionid
-        WHERE o.partyid = ?
-        GROUP BY o.optionid, o.proposal, o.partyid
-        ORDER BY votecount DESC
-    """;
+            SELECT o.optionid, o.proposal, o.partyid, COUNT(v.userid) as votecount
+            FROM party_planner.option o
+            LEFT JOIN party_planner.voteoption v ON o.optionid = v.optionid
+            WHERE o.partyid = ?
+            GROUP BY o.optionid, o.proposal, o.partyid
+            ORDER BY votecount DESC
+        """;
     List<Option> options = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -53,7 +53,7 @@ public class OptionDAO {
   }
 
   public void vote(String optionId, String userId) {
-    String sql = "INSERT INTO voteoption (optionid, userid) VALUES (?, ?) ON CONFLICT DO NOTHING";
+    String sql = "INSERT INTO party_planner.voteoption (optionid, userid) VALUES (?, ?) ON CONFLICT DO NOTHING";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, optionId);
@@ -65,7 +65,7 @@ public class OptionDAO {
   }
 
   public void removeVote(String optionId, String userId) {
-    String sql = "DELETE FROM voteoption WHERE optionid = ? AND userid = ?";
+    String sql = "DELETE FROM party_planner.voteoption WHERE optionid = ? AND userid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, optionId);
@@ -78,10 +78,10 @@ public class OptionDAO {
 
   public boolean hasVoted(String userId, String partyId) {
     String sql = """
-        SELECT COUNT(*) FROM voteoption v
-        JOIN "option" o ON v.optionid = o.optionid
-        WHERE v.userid = ? AND o.partyid = ?
-    """;
+            SELECT COUNT(*) FROM party_planner.voteoption v
+            JOIN party_planner.option o ON v.optionid = o.optionid
+            WHERE v.userid = ? AND o.partyid = ?
+        """;
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userId);
@@ -95,11 +95,11 @@ public class OptionDAO {
   }
 
   public boolean hasVotedForOption(String userId, String optionId) {
-    String sql = "SELECT COUNT(*) FROM vote WHERE userid = ? AND optionid = ?";
+    String sql = "SELECT COUNT(*) FROM party_planner.voteoption WHERE optionid = ? AND userid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, userId);
-      ps.setString(2, optionId);
+      ps.setString(1, optionId);
+      ps.setString(2, userId);
       ResultSet rs = ps.executeQuery();
       return rs.next() && rs.getInt(1) > 0;
     } catch (SQLException e) {
@@ -110,14 +110,14 @@ public class OptionDAO {
 
   public String getTopVoted(String partyId) {
     String sql = """
-        SELECT o.proposal
-        FROM "option" o
-        LEFT JOIN voteoption v ON o.optionid = v.optionid
-        WHERE o.partyid = ?
-        GROUP BY o.optionid, o.proposal
-        ORDER BY COUNT(v.userid) DESC
-        LIMIT 1
-    """;
+            SELECT o.proposal
+            FROM party_planner.option o
+            LEFT JOIN party_planner.voteoption v ON o.optionid = v.optionid
+            WHERE o.partyid = ?
+            GROUP BY o.optionid, o.proposal
+            ORDER BY COUNT(v.userid) DESC
+            LIMIT 1
+        """;
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyId);
@@ -130,7 +130,7 @@ public class OptionDAO {
   }
 
   public void create(String optionid, String proposal, String partyid) {
-    String sql = "INSERT INTO \"option\" (optionid, proposal, partyid) VALUES (?, ?, ?)";
+    String sql = "INSERT INTO party_planner.option (optionid, proposal, partyid) VALUES (?, ?, ?)";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, optionid);
@@ -143,8 +143,8 @@ public class OptionDAO {
   }
 
   public void delete(String optionid) {
-    String deleteVotes = "DELETE FROM voteoption WHERE optionid = ?";
-    String deleteOption = "DELETE FROM \"option\" WHERE optionid = ?";
+    String deleteVotes  = "DELETE FROM party_planner.voteoption WHERE optionid = ?";
+    String deleteOption = "DELETE FROM party_planner.option WHERE optionid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps1 = conn.prepareStatement(deleteVotes);
         PreparedStatement ps2 = conn.prepareStatement(deleteOption)) {

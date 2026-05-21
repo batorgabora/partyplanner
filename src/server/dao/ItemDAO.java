@@ -12,7 +12,11 @@ public class ItemDAO {
   private static final Logger log = Logger.getLogger(ItemDAO.class.getName());
 
   public Item getById(String itemid) {
-    String sql = "SELECT * FROM item WHERE itemid = ?";
+    String sql = "SELECT i.*, c.userid AS claimer_id, u.username AS claimer_name " +
+        "FROM party_planner.item i " +
+        "LEFT JOIN party_planner.claimitem c ON i.itemid = c.itemid " +
+        "LEFT JOIN party_planner.\"user\" u ON c.userid = u.userid " +
+        "WHERE i.itemid = ?";
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, itemid);
@@ -112,11 +116,9 @@ public class ItemDAO {
   }
 
   private Item mapRow(ResultSet rs) throws SQLException {
-    Item item = new Item(rs.getString("itemid"), rs.getString("name"));
+    Item item = new Item(rs.getString("itemid"), rs.getString("name"), rs.getString("partyid"));
     String claimerName = rs.getString("claimer_name");
-    if (claimerName != null) {
-      item.claim(claimerName);
-    }
+    if (claimerName != null) item.claim(claimerName);
     return item;
   }
 }

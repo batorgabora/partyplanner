@@ -1,5 +1,8 @@
 package client.viewModel;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -8,71 +11,92 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import shared.model.*;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
+public class PartyViewModel implements PropertyChangeListener {
 
-public class PartyViewModel implements PropertyChangeListener
-{
-  private PartyModel model;
-  private ObjectProperty<Party> selectedParty;
-  private final StringProperty errorProperty;
-  private final StringProperty messageInput;
-  private ObservableList<Participant> members;
-  private ObservableList<Item> items;
+  private final PartyModel model;
+  private final ObjectProperty<Party> selectedParty;
+  private final StringProperty errorProperty = new SimpleStringProperty("");
+  private final StringProperty messageInput  = new SimpleStringProperty("");
+  private final Gson gson = new Gson();
+
+  // observable lists — view binds once
+  private final ObservableList<Item> items        = FXCollections.observableArrayList();
+  private final ObservableList<Participant> members = FXCollections.observableArrayList();
+  private final ObservableList<Option> options    = FXCollections.observableArrayList();
+
+  //chat
+  private final ObservableList<Message> messages = FXCollections.observableArrayList();
+  public ObservableList<Message> messagesProperty() { return messages; }
 
   public PartyViewModel(PartyModel model, ObjectProperty<Party> selectedParty) {
     this.model = model;
     this.selectedParty = selectedParty;
-    errorProperty  = new SimpleStringProperty("");
-    messageInput   = new SimpleStringProperty("");
-    model.addListener("something", this);
+    model.addListener("error", this);
+    model.addListener("getItems", this);
+    model.addListener("getOptions", this);
+    model.addListener("getParticipants", this);
+    model.addListener("sendMessage", this); // for real-time chat
   }
 
-  public StringProperty messageInputProperty() { return messageInput; }
-
-  public ObservableList<Item> getItems() {
-    if (selectedParty.get() == null) return FXCollections.emptyObservableList();
-    return FXCollections.observableArrayList(model.getItems(selectedParty.get()));
+  @Override public void propertyChange(PropertyChangeEvent evt) {
+    switch (evt.getPropertyName()) {
+      case "error" -> Platform.runLater(() ->
+          errorProperty.set((String) evt.getNewValue()));
+      case "getItems" -> {
+        JsonObject json = (JsonObject) evt.getNewValue();
+        Type type = new TypeToken<List<Item>>(){}.getType();
+        List<Item> result = gson.fromJson(json.get("data"), type);
+        Platform.runLater(() -> items.setAll(result));
+      }
+      case "getParticipants" -> {
+        JsonObject json = (JsonObject) evt.getNewValue();
+        Type type = new TypeToken<List<Participant>>(){}.getType();
+        List<Participant> result = gson.fromJson(json.get("data"), type);
+        Platform.runLater(() -> members.setAll(result));
+      }
+      case "getOptions" -> {
+        JsonObject json = (JsonObject) evt.getNewValue();
+        Type type = new TypeToken<List<Option>>(){}.getType();
+        List<Option> result = gson.fromJson(json.get("data"), type);
+        Platform.runLater(() -> options.setAll(result));
+      }
+      case "sendMessage" -> {
+        JsonObject json = (JsonObject) evt.getNewValue();
+        Message message = gson.fromJson(json.get("data"), Message.class);
+        Platform.runLater(() -> messages.add(message));
+      }
+    }
   }
 
-  public ObservableList<Participant> getMembers() {
-    return FXCollections.observableArrayList(
-        model.getParticipants(selectedParty.get())
-    );
+  public void loadData() {
+    if (selectedParty.get() == null) return;
+    var i = model.getItems(selectedParty.get());
+    var m = model.getParticipants(selectedParty.get());
+    var o = model.getOptions(selectedParty.get());
+    Platform.runLater(() -> {
+      items.setAll(i);
+      members.setAll(m);
+      options.setAll(o);
+    });
   }
 
-  public String getRole() {
-    return model.getRole(LocalUser.getUser(), selectedParty.get());
-  }
+  public ObservableList<Item> itemsProperty()         { return items; }
+  public ObservableList<Participant> membersProperty() { return members; }
+  public ObservableList<Option> optionsProperty()     { return options; }
+  public StringProperty errorProperty()               { return errorProperty; }
+  public StringProperty messageInputProperty()        { return messageInput; }
 
-  public ObservableList<Option> getOptions() {
-    if (selectedParty.get() == null) return FXCollections.emptyObservableList();
-    return FXCollections.observableArrayList(model.getOptions(selectedParty.get()));
-  }
-
-  public Party getSelectedParty() {
-    return selectedParty.get();
-  }
+  public Party getSelectedParty() { return selectedParty.get(); }
 
   public String getRoleForCurrentUser(String partyId) {
     if (selectedParty.get() == null) return null;
     return model.getRole(LocalUser.getUser(), selectedParty.get());
-  }
-
-  public void acceptInvitation() {
-    Party party = selectedParty.get();
-    if (party == null) return;
-    model.acceptInvite(LocalUser.getUser(), party);
-  }
-
-  public void declineInvitation() {
-    Party party = selectedParty.get();
-    if (party == null) return;
-    model.declineInvite(LocalUser.getUser(), party);
   }
 
   public String getStatusForCurrentUser(String partyId) {
@@ -83,21 +107,7 @@ public class PartyViewModel implements PropertyChangeListener
     return model.getTopVotedOption(partyId);
   }
 
-  public void claimItem(String itemId) {
-    model.claimItem(itemId, LocalUser.getUser().getId());
-  }
-
-  public void unclaimItem(String itemId) {
-    model.unclaimItem(itemId);
-  }
-
-  public void leaveParty() {
-    Party party = selectedParty.get();
-    if (party == null) return;
-    model.leaveParty(LocalUser.getUser(), party);
-  }
-
-  public boolean hasVotedInParty(String id){
+  public boolean hasVotedInParty(String id) {
     return model.hasVotedInParty(LocalUser.getUser().getId(), id);
   }
 
@@ -106,11 +116,38 @@ public class PartyViewModel implements PropertyChangeListener
   }
 
   public void voteForOption(String optionId) {
-    model.voteForOption(optionId, LocalUser.getUser().getId());
+    List<Option> updated = model.voteForOption(optionId, LocalUser.getUser().getId());
+    Platform.runLater(() -> options.setAll(updated));
   }
 
   public void removeVote(String optionId) {
-    model.removeVote(optionId, LocalUser.getUser().getId());
+    List<Option> updated = model.removeVote(optionId, LocalUser.getUser().getId());
+    Platform.runLater(() -> options.setAll(updated));
+  }
+
+  public void claimItem(String itemId) {
+    List<Item> updated = model.claimItem(itemId, LocalUser.getUser().getId());
+    Platform.runLater(() -> items.setAll(updated));
+  }
+
+  public void unclaimItem(String itemId) {
+    List<Item> updated = model.unclaimItem(itemId);
+    Platform.runLater(() -> items.setAll(updated));
+  }
+
+  public void acceptInvitation() {
+    if (selectedParty.get() == null) return;
+    model.acceptInvite(LocalUser.getUser(), selectedParty.get());
+  }
+
+  public void declineInvitation() {
+    if (selectedParty.get() == null) return;
+    model.declineInvite(LocalUser.getUser(), selectedParty.get());
+  }
+
+  public void leaveParty() {
+    if (selectedParty.get() == null) return;
+    model.leaveParty(LocalUser.getUser(), selectedParty.get());
   }
 
   public void addFriend(User friend) {
@@ -124,14 +161,9 @@ public class PartyViewModel implements PropertyChangeListener
   }
 
   public Message sendMessage() {
-    Party party   = selectedParty.get();
+    Party party = selectedParty.get();
     String content = messageInput.get().trim();
     if (party == null || content.isEmpty()) return null;
     return model.sendMessage(party.getId(), LocalUser.getUser().getId(), content);
-  }
-
-  @Override public void propertyChange(PropertyChangeEvent evt)
-  {
-
   }
 }

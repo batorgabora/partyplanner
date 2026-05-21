@@ -32,6 +32,10 @@ public class PartyClientModel implements PartyModel {
         if (raw != null) {
           try {
             JsonObject json = JsonParser.parseString(raw).getAsJsonObject();
+            if ("error".equals(json.has("type") ? json.get("type").getAsString() : "")) {
+              support.firePropertyChange("error", null,
+                  json.has("message") ? json.get("message").getAsString() : "unknown error");
+            }
             if (json.has("action")) {
               support.firePropertyChange(json.get("action").getAsString(), null, json);
             }
@@ -70,6 +74,7 @@ public class PartyClientModel implements PartyModel {
     return json.has("type") && "error".equals(json.get("type").getAsString());
   }
 
+  // auth
   @Override public User login(String username, String password) {
     JsonObject json = sendAndReceive(() -> client.requestLogin(username, password));
     if (isError(json)) return null;
@@ -82,6 +87,7 @@ public class PartyClientModel implements PartyModel {
     return gson.fromJson(json.get("data"), User.class);
   }
 
+  // users
   @Override public List<User> getAllUsers() {
     JsonObject json = sendAndReceive(client::requestGetAllUsers);
     if (isError(json)) return List.of();
@@ -111,6 +117,7 @@ public class PartyClientModel implements PartyModel {
     sendAndReceive(() -> client.requestRemoveFriend(user.getId(), friend.getId()));
   }
 
+  // parties
   @Override public ArrayList<Party> getMyParties(User user) {
     JsonObject json = sendAndReceive(() -> client.requestGetMyParties(user.getId()));
     if (isError(json)) return new ArrayList<>();
@@ -149,6 +156,9 @@ public class PartyClientModel implements PartyModel {
     sendAndReceive(() -> client.requestDeleteParty(party.getId()));
   }
 
+  @Override public void manageParty(Party party, String title, String description, String location) {}
+
+  // party membership
   @Override public void joinParty(User user, Party party) {
     sendAndReceive(() -> client.requestJoinParty(user.getId(), party.getId()));
   }
@@ -177,6 +187,29 @@ public class PartyClientModel implements PartyModel {
     return getData(json);
   }
 
+  // participants
+  @Override public List<Participant> getParticipants(Party party) {
+    JsonObject json = sendAndReceive(() -> client.requestGetParticipants(party.getId()));
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Participant>>(){}.getType();
+    return gson.fromJson(json.get("data"), type);
+  }
+
+  @Override public List<Participant> addParticipant(Party party, Participant participant) {
+    JsonObject json = sendAndReceive(() -> client.requestAddParticipant(party.getId(), participant.getUser().getId()));
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Participant>>(){}.getType();
+    return gson.fromJson(json.get("data"), type);
+  }
+
+  @Override public List<Participant> removeParticipant(Party party, Participant participant) {
+    JsonObject json = sendAndReceive(() -> client.requestRemoveParticipant(party.getId(), participant.getUser().getId()));
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Participant>>(){}.getType();
+    return gson.fromJson(json.get("data"), type);
+  }
+
+  // items
   @Override public List<Item> getItems(Party party) {
     JsonObject json = sendAndReceive(() -> client.requestGetItems(party.getId()));
     if (isError(json)) return List.of();
@@ -184,22 +217,35 @@ public class PartyClientModel implements PartyModel {
     return gson.fromJson(json.get("data"), type);
   }
 
-  @Override public void addItem(Party party, String name) {
-    sendAndReceive(() -> client.requestAddItem(party.getId(), name));
+  @Override public List<Item> addItem(Party party, String name) {
+    JsonObject json = sendAndReceive(() -> client.requestAddItem(party.getId(), name));
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Item>>(){}.getType();
+    return gson.fromJson(json.get("data"), type);
   }
 
-  @Override public void removeItem(Item item) {
-    sendAndReceive(() -> client.requestRemoveItem(item.getId()));
+  @Override public List<Item> removeItem(Item item) {
+    JsonObject json = sendAndReceive(() -> client.requestRemoveItem(item.getId()));
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Item>>(){}.getType();
+    return gson.fromJson(json.get("data"), type);
   }
 
-  @Override public void claimItem(String itemId, String userId) {
-    sendAndReceive(() -> client.requestClaimItem(itemId, userId));
+  @Override public List<Item> claimItem(String itemId, String userId) {
+    JsonObject json = sendAndReceive(() -> client.requestClaimItem(itemId, userId));
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Item>>(){}.getType();
+    return gson.fromJson(json.get("data"), type);
   }
 
-  @Override public void unclaimItem(String itemId) {
-    sendAndReceive(() -> client.requestUnclaimItem(itemId));
+  @Override public List<Item> unclaimItem(String itemId) {
+    JsonObject json = sendAndReceive(() -> client.requestUnclaimItem(itemId));
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Item>>(){}.getType();
+    return gson.fromJson(json.get("data"), type);
   }
 
+  // options
   @Override public List<Option> getOptions(Party party) {
     JsonObject json = sendAndReceive(() -> client.requestGetOptions(party.getId()));
     if (isError(json)) return List.of();
@@ -207,27 +253,32 @@ public class PartyClientModel implements PartyModel {
     return gson.fromJson(json.get("data"), type);
   }
 
-  @Override public void addOption(Party party, String proposal) {
-    sendAndReceive(() -> client.requestAddOption(party.getId(), proposal));
+  @Override public List<Option> addOption(Party party, String proposal) {
+    JsonObject json = sendAndReceive(() -> client.requestAddOption(party.getId(), proposal));
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Option>>(){}.getType();
+    return gson.fromJson(json.get("data"), type);
   }
 
-  @Override public void removeOption(Option option) {
-    sendAndReceive(() -> client.requestRemoveOption(option.getOptionid()));
+  @Override public List<Option> removeOption(Option option) {
+    JsonObject json = sendAndReceive(() -> client.requestRemoveOption(option.getOptionid()));
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Option>>(){}.getType();
+    return gson.fromJson(json.get("data"), type);
   }
 
-  @Override public void voteForOption(String optionId, String userId) {
-    sendAndReceive(() -> client.requestVoteForOption(optionId, userId));
+  @Override public List<Option> voteForOption(String optionId, String userId) {
+    JsonObject json = sendAndReceive(() -> client.requestVoteForOption(optionId, userId));
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Option>>(){}.getType();
+    return gson.fromJson(json.get("data"), type);
   }
 
-  @Override public void removeVote(String optionId, String userId) {
-    sendAndReceive(() -> client.requestRemoveVote(optionId, userId));
-  }
-
-  @Override public String getTopVotedOption(String partyId) {
-    JsonObject json = sendAndReceive(() -> client.requestGetTopVotedOption(partyId));
-    if (isError(json)) return "no votes yet";
-    String data = getData(json);
-    return data != null && !data.isEmpty() ? data : "no votes yet";
+  @Override public List<Option> removeVote(String optionId, String userId) {
+    JsonObject json = sendAndReceive(() -> client.requestRemoveVote(optionId, userId));
+    if (isError(json)) return List.of();
+    Type type = new TypeToken<List<Option>>(){}.getType();
+    return gson.fromJson(json.get("data"), type);
   }
 
   @Override public boolean hasVotedInParty(String userId, String partyId) {
@@ -242,23 +293,14 @@ public class PartyClientModel implements PartyModel {
     return Boolean.parseBoolean(getData(json));
   }
 
-  @Override public List<Participant> getParticipants(Party party) {
-    JsonObject json = sendAndReceive(() -> client.requestGetParticipants(party.getId()));
-    if (isError(json)) return List.of();
-    Type type = new TypeToken<List<Participant>>(){}.getType();
-    return gson.fromJson(json.get("data"), type);
+  @Override public String getTopVotedOption(String partyId) {
+    JsonObject json = sendAndReceive(() -> client.requestGetTopVotedOption(partyId));
+    if (isError(json)) return "no votes yet";
+    String data = getData(json);
+    return data != null && !data.isEmpty() ? data : "no votes yet";
   }
 
-  @Override public void addParticipant(Party party, Participant participant) {
-    sendAndReceive(() -> client.requestAddParticipant(party.getId(), participant.getUser().getId()));
-  }
-
-  @Override public void removeParticipant(Party party, Participant participant) {
-    sendAndReceive(() -> client.requestRemoveParticipant(party.getId(), participant.getUser().getId()));
-  }
-
-  @Override public void manageParty(Party party, String title, String description, String location) {}
-
+  // messages
   @Override public Message sendMessage(String partyId, String userId, String content) {
     JsonObject json = sendAndReceive(() -> client.requestSendMessage(partyId, userId, content));
     if (isError(json)) return null;

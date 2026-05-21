@@ -26,8 +26,10 @@ public class PartyClientHandler implements Runnable {
   private final PrintWriter outputWriter;
   private final Gson gson;
   private final PropertyChangeSupport support = new PropertyChangeSupport(this);
+  private final List<PartyClientHandler> handlers;
 
-  public PartyClientHandler(Socket socket, PartyModel model) {
+  public PartyClientHandler(Socket socket, PartyModel model, List<PartyClientHandler> handlers) {
+    this.handlers = handlers;
     this.socket = socket;
     this.model = model;
     this.gson = new Gson();
@@ -37,6 +39,22 @@ public class PartyClientHandler implements Runnable {
     } catch (IOException e) {
       throw new IllegalStateException("Could not initialize client handler.", e);
     }
+  }
+
+  // sends a response to all connected clients except the one that made the request
+  private void broadcastToOthers(String action, String data) {
+    synchronized (handlers) {
+      for (PartyClientHandler handler : handlers) {
+        if (handler != this) {
+          handler.sendResponse(action, data);
+        }
+      }
+    }
+  }
+
+  private void close() {
+    handlers.remove(this);
+    try { socket.close(); } catch (IOException ignored) {}
   }
 
   @Override public void run() {
@@ -66,72 +84,84 @@ public class PartyClientHandler implements Runnable {
       return;
     }
     try {
-    switch (action) {
-      case LOGIN                -> handleLogin(request);
-      case CREATE_ACCOUNT       -> handleCreateAccount(request);
-      case GET_ALL_USERS        -> handleGetAllUsers();
-      case ADD_FRIEND           -> handleAddFriend(request);
-      case GET_ALL              -> handleGetAll(request);
-      case GET_MY_PARTIES       -> handleGetMyParties(request);
-      case GET_INVITED_PARTIES  -> handleGetInvitedParties(request);
-      case CREATE_PARTY         -> handleCreateParty(request);
-      case UPDATE_PARTY         -> handleUpdateParty(request);
-      case UPDATE_PARTY_DATE    -> handleUpdatePartyDate(request);
-      case DELETE_PARTY         -> handleDeleteParty(request);
-      case JOIN_PARTY           -> handleJoinParty(request);
-      case LEAVE_PARTY          -> handleLeaveParty(request);
-      case ACCEPT_INVITE        -> handleAcceptInvite(request);
-      case DECLINE_INVITE       -> handleDeclineInvite(request);
-      case GET_STATUS           -> handleGetStatus(request);
-      case GET_ROLE             -> handleGetRole(request);
-      case GET_ITEMS            -> handleGetItems(request);
-      case ADD_ITEM             -> handleAddItem(request);
-      case REMOVE_ITEM          -> handleRemoveItem(request);
-      case GET_OPTIONS          -> handleGetOptions(request);
-      case ADD_OPTION           -> handleAddOption(request);
-      case REMOVE_OPTION        -> handleRemoveOption(request);
-      case VOTE_FOR_OPTION      -> handleVoteForOption(request);
-      case REMOVE_VOTE          -> handleRemoveVote(request);
-      case GET_TOP_VOTED_OPTION -> handleGetTopVotedOption(request);
-      case HAS_VOTED            -> handleHasVoted(request);
-      case HAS_VOTED_FOR_OPTION -> handleHasVotedForOption(request);
-      case GET_PARTICIPANTS     -> handleGetParticipants(request);
-      case ADD_PARTICIPANT      -> handleAddParticipant(request);
-      case REMOVE_PARTICIPANT   -> handleRemoveParticipant(request);
-      case CLAIM_ITEM           -> handleClaimItem(request);
-      case UNCLAIM_ITEM         -> handleUnclaimItem(request);
-      case GET_FRIENDS    -> handleGetFriends(request);
-      case GET_NON_FRIENDS -> handleGetNonFriends(request);
-      case REMOVE_FRIEND  -> handleRemoveFriend(request);
-      case SEND_MESSAGE         -> handleSendMessage(request);
-      case GET_MESSAGES         -> handleGetMessages(request);
-    }
+      switch (action) {
+        case LOGIN                -> handleLogin(request);
+        case CREATE_ACCOUNT       -> handleCreateAccount(request);
+        case GET_ALL_USERS        -> handleGetAllUsers();
+        case ADD_FRIEND           -> handleAddFriend(request);
+        case GET_ALL              -> handleGetAll(request);
+        case GET_MY_PARTIES       -> handleGetMyParties(request);
+        case GET_INVITED_PARTIES  -> handleGetInvitedParties(request);
+        case CREATE_PARTY         -> handleCreateParty(request);
+        case UPDATE_PARTY         -> handleUpdateParty(request);
+        case UPDATE_PARTY_DATE    -> handleUpdatePartyDate(request);
+        case DELETE_PARTY         -> handleDeleteParty(request);
+        case JOIN_PARTY           -> handleJoinParty(request);
+        case LEAVE_PARTY          -> handleLeaveParty(request);
+        case ACCEPT_INVITE        -> handleAcceptInvite(request);
+        case DECLINE_INVITE       -> handleDeclineInvite(request);
+        case GET_STATUS           -> handleGetStatus(request);
+        case GET_ROLE             -> handleGetRole(request);
+        case GET_ITEMS            -> handleGetItems(request);
+        case ADD_ITEM             -> handleAddItem(request);
+        case REMOVE_ITEM          -> handleRemoveItem(request);
+        case CLAIM_ITEM           -> handleClaimItem(request);
+        case UNCLAIM_ITEM         -> handleUnclaimItem(request);
+        case GET_OPTIONS          -> handleGetOptions(request);
+        case ADD_OPTION           -> handleAddOption(request);
+        case REMOVE_OPTION        -> handleRemoveOption(request);
+        case VOTE_FOR_OPTION      -> handleVoteForOption(request);
+        case REMOVE_VOTE          -> handleRemoveVote(request);
+        case GET_TOP_VOTED_OPTION -> handleGetTopVotedOption(request);
+        case HAS_VOTED            -> handleHasVoted(request);
+        case HAS_VOTED_FOR_OPTION -> handleHasVotedForOption(request);
+        case GET_PARTICIPANTS     -> handleGetParticipants(request);
+        case ADD_PARTICIPANT      -> handleAddParticipant(request);
+        case REMOVE_PARTICIPANT   -> handleRemoveParticipant(request);
+        case GET_FRIENDS          -> handleGetFriends(request);
+        case GET_NON_FRIENDS      -> handleGetNonFriends(request);
+        case REMOVE_FRIEND        -> handleRemoveFriend(request);
+        case SEND_MESSAGE         -> handleSendMessage(request);
+        case GET_MESSAGES         -> handleGetMessages(request);
+      }
     } catch (Exception e) {
       System.out.println("[handleRequest] unhandled exception: " + e.getMessage());
       sendError("Internal server error.");
     }
   }
 
+  // auth
   private void handleLogin(JsonObject request) {
-    String username = request.get("username").getAsString();
-    String password  = request.get("password").getAsString();
-    User user = model.login(username, password);
+    User user = model.login(request.get("username").getAsString(), request.get("password").getAsString());
     if (user != null) sendResponse("login", gson.toJson(user));
     else sendError("Invalid credentials.");
   }
 
   private void handleCreateAccount(JsonObject request) {
-    String username        = request.get("username").getAsString();
-    String password        = request.get("password").getAsString();
-    String confirmPassword = request.get("confirmPassword").getAsString();
-    String mail            = request.get("mail").getAsString();
-    User user = model.createAccount(username, password, confirmPassword, mail);
+    User user = model.createAccount(
+        request.get("username").getAsString(),
+        request.get("password").getAsString(),
+        request.get("confirmPassword").getAsString(),
+        request.get("mail").getAsString());
     if (user != null) sendResponse("createAccount", gson.toJson(user));
     else sendError("Failed to create account.");
   }
 
+  // users
   private void handleGetAllUsers() {
     sendResponse("getAllUsers", gson.toJson(model.getAllUsers()));
+  }
+
+  private void handleGetFriends(JsonObject request) {
+    User user = new UserDAO().getById(request.get("userId").getAsString());
+    if (user == null) { sendError("User not found."); return; }
+    sendResponse("getFriends", gson.toJson(model.getFriends(user)));
+  }
+
+  private void handleGetNonFriends(JsonObject request) {
+    User user = new UserDAO().getById(request.get("userId").getAsString());
+    if (user == null) { sendError("User not found."); return; }
+    sendResponse("getNonFriends", gson.toJson(model.getNonFriends(user)));
   }
 
   private void handleAddFriend(JsonObject request) {
@@ -142,6 +172,15 @@ public class PartyClientHandler implements Runnable {
     sendResponse("addFriend", "ok");
   }
 
+  private void handleRemoveFriend(JsonObject request) {
+    User user   = new UserDAO().getById(request.get("userId").getAsString());
+    User friend = new UserDAO().getById(request.get("friendId").getAsString());
+    if (user == null || friend == null) { sendError("User not found."); return; }
+    model.removeFriend(user, friend);
+    sendResponse("removeFriend", "ok");
+  }
+
+  // parties
   private void handleGetAll(JsonObject request) {
     if (!request.has("userId")) { sendResponse("getAll", "[]"); return; }
     User user = new UserDAO().getById(request.get("userId").getAsString());
@@ -176,8 +215,10 @@ public class PartyClientHandler implements Runnable {
   private void handleUpdateParty(JsonObject request) {
     Party party = new PartyDAO().getById(request.get("partyId").getAsString());
     if (party == null) { sendError("Party not found."); return; }
-    model.updateParty(party, request.get("name").getAsString(),
-        request.get("description").getAsString(), request.get("location").getAsString());
+    model.updateParty(party,
+        request.get("name").getAsString(),
+        request.get("description").getAsString(),
+        request.get("location").getAsString());
     sendResponse("updateParty", "ok");
   }
 
@@ -195,6 +236,7 @@ public class PartyClientHandler implements Runnable {
     sendResponse("deleteParty", "ok");
   }
 
+  // party membership
   private void handleJoinParty(JsonObject request) {
     User user   = new UserDAO().getById(request.get("userId").getAsString());
     Party party = new PartyDAO().getById(request.get("partyId").getAsString());
@@ -206,9 +248,11 @@ public class PartyClientHandler implements Runnable {
   private void handleLeaveParty(JsonObject request) {
     User user   = new UserDAO().getById(request.get("userId").getAsString());
     Party party = new PartyDAO().getById(request.get("partyId").getAsString());
-    System.out.println("user=" + (user != null ? user.getId() : "null") + " party=" + (party != null ? party.getId() : "null"));
     if (user == null || party == null) { sendError("User or party not found."); return; }
     model.leaveParty(user, party);
+    // broadcast updated participant list so other clients reflect the departure
+    List<Participant> updated = model.getParticipants(party);
+    broadcastToOthers("getParticipants", gson.toJson(updated));
     sendResponse("leaveParty", "ok");
   }
 
@@ -242,116 +286,7 @@ public class PartyClientHandler implements Runnable {
     sendResponse("getRole", model.getRole(user, party));
   }
 
-
-  //items
-  private void handleGetItems(JsonObject request) {
-    Party party = new PartyDAO().getById(request.get("partyId").getAsString());
-    if (party == null) { sendError("Party not found."); return; }
-    sendResponse("getItems", gson.toJson(model.getItems(party)));
-  }
-
-  private void handleAddItem(JsonObject request) {
-    Party party = new PartyDAO().getById(request.get("partyId").getAsString());
-    if (party == null) { sendError("Party not found."); return; }
-    model.addItem(party, request.get("name").getAsString());
-    sendResponse("addItem", "ok");
-  }
-
-  private void handleRemoveItem(JsonObject request) {
-    String itemId = request.get("itemId").getAsString();
-    Item item = new ItemDAO().getById(itemId);
-    if (item == null) { sendError("Item not found."); return; }
-    model.removeItem(item);
-    sendResponse("removeItem", "ok");
-  }
-
-  private void handleClaimItem(JsonObject request) {
-    String itemId = request.get("itemId").getAsString();
-    String userId = request.get("userId").getAsString();
-    model.claimItem(itemId, userId);
-    sendResponse("claimItem", "ok");
-  }
-
-  private void handleUnclaimItem(JsonObject request) {
-    String itemId = request.get("itemId").getAsString();
-    model.unclaimItem(itemId);
-    sendResponse("unclaimItem", "ok");
-  }
-
-
-  //options
-  private void handleGetOptions(JsonObject request) {
-    Party party = new PartyDAO().getById(request.get("partyId").getAsString());
-    if (party == null) { sendError("Party not found."); return; }
-    sendResponse("getOptions", gson.toJson(model.getOptions(party)));
-  }
-
-  private void handleAddOption(JsonObject request) {
-    Party party = new PartyDAO().getById(request.get("partyId").getAsString());
-    if (party == null) { sendError("Party not found."); return; }
-    model.addOption(party, request.get("proposal").getAsString());
-    sendResponse("addOption", "ok");
-  }
-
-  private void handleRemoveOption(JsonObject request) {
-    String optionId = request.get("optionId").getAsString();
-    Option option = new OptionDAO().getById(optionId);
-    if (option == null) { sendError("Option not found."); return; }
-    model.removeOption(option);
-    sendResponse("removeOption", "ok");
-  }
-
-  private void handleVoteForOption(JsonObject request) {
-    model.voteForOption(request.get("optionId").getAsString(), request.get("userId").getAsString());
-    sendResponse("voteForOption", "ok");
-  }
-
-  private void handleRemoveVote(JsonObject request) {
-    model.removeVote(request.get("optionId").getAsString(), request.get("userId").getAsString());
-    sendResponse("removeVote", "ok");
-  }
-
-  private void handleGetTopVotedOption(JsonObject request) {
-    String top = model.getTopVotedOption(request.get("partyId").getAsString());
-    sendResponse("getTopVotedOption", top != null ? top : "");
-  }
-
-  private void handleHasVoted(JsonObject request) {
-    boolean result = model.hasVotedInParty(request.get("userId").getAsString(), request.get("partyId").getAsString());
-    sendResponse("hasVoted", String.valueOf(result));
-  }
-
-  private void handleHasVotedForOption(JsonObject request) {
-    boolean result = model.hasVotedForOption(
-        request.get("userId").getAsString(),
-        request.get("optionId").getAsString());
-    sendResponse("hasVotedForOption", String.valueOf(result));
-  }
-
-
-  //friends
-
-  private void handleGetFriends(JsonObject request) {
-    User user = new UserDAO().getById(request.get("userId").getAsString());
-    if (user == null) { sendError("User not found."); return; }
-    sendResponse("getFriends", gson.toJson(model.getFriends(user)));
-  }
-
-  private void handleGetNonFriends(JsonObject request) {
-    User user = new UserDAO().getById(request.get("userId").getAsString());
-    if (user == null) { sendError("User not found."); return; }
-    sendResponse("getNonFriends", gson.toJson(model.getNonFriends(user)));
-  }
-
-  private void handleRemoveFriend(JsonObject request) {
-    User user   = new UserDAO().getById(request.get("userId").getAsString());
-    User friend = new UserDAO().getById(request.get("friendId").getAsString());
-    if (user == null || friend == null) { sendError("User not found."); return; }
-    model.removeFriend(user, friend);
-    sendResponse("removeFriend", "ok");
-  }
-
-//participants
+  // participants
   private void handleGetParticipants(JsonObject request) {
     Party party = new PartyDAO().getById(request.get("partyId").getAsString());
     if (party == null) { sendError("Party not found."); return; }
@@ -362,40 +297,149 @@ public class PartyClientHandler implements Runnable {
     Party party = new PartyDAO().getById(request.get("partyId").getAsString());
     User user   = new UserDAO().getById(request.get("userId").getAsString());
     if (party == null || user == null) { sendError("Party or user not found."); return; }
-    model.addParticipant(party, new Participant(party, user));
-    sendResponse("addParticipant", "ok");
+    List<Participant> updated = model.addParticipant(party, new Participant(party, user));
+    String data = gson.toJson(updated);
+    sendResponse("getParticipants", data);
+    broadcastToOthers("getParticipants", data);
   }
 
   private void handleRemoveParticipant(JsonObject request) {
     Party party = new PartyDAO().getById(request.get("partyId").getAsString());
     User user   = new UserDAO().getById(request.get("userId").getAsString());
     if (party == null || user == null) { sendError("Party or user not found."); return; }
-    model.removeParticipant(party, new Participant(party, user));
-    sendResponse("removeParticipant", "ok");
+    List<Participant> updated = model.removeParticipant(party, new Participant(party, user));
+    String data = gson.toJson(updated);
+    sendResponse("getParticipants", data);
+    broadcastToOthers("getParticipants", data);
   }
 
+  // items
+  private void handleGetItems(JsonObject request) {
+    Party party = new PartyDAO().getById(request.get("partyId").getAsString());
+    if (party == null) { sendError("Party not found."); return; }
+    sendResponse("getItems", gson.toJson(model.getItems(party)));
+  }
+
+  private void handleAddItem(JsonObject request) {
+    Party party = new PartyDAO().getById(request.get("partyId").getAsString());
+    if (party == null) { sendError("Party not found."); return; }
+    List<Item> updated = model.addItem(party, request.get("name").getAsString());
+    String data = gson.toJson(updated);
+    sendResponse("getItems", data);
+    broadcastToOthers("getItems", data);
+  }
+
+  private void handleRemoveItem(JsonObject request) {
+    Item item = new ItemDAO().getById(request.get("itemId").getAsString());
+    if (item == null) { sendError("Item not found."); return; }
+    List<Item> updated = model.removeItem(item);
+    String data = gson.toJson(updated);
+    sendResponse("getItems", data);
+    broadcastToOthers("getItems", data);
+  }
+
+  private void handleClaimItem(JsonObject request) {
+    String itemId = request.get("itemId").getAsString();
+    String userId = request.get("userId").getAsString();
+    List<Item> updated = model.claimItem(itemId, userId);
+    String data = gson.toJson(updated);
+    sendResponse("getItems", data);
+    broadcastToOthers("getItems", data);
+  }
+
+  private void handleUnclaimItem(JsonObject request) {
+    String itemId = request.get("itemId").getAsString();
+    List<Item> updated = model.unclaimItem(itemId);
+    String data = gson.toJson(updated);
+    sendResponse("getItems", data);
+    broadcastToOthers("getItems", data);
+  }
+
+  // options
+  private void handleGetOptions(JsonObject request) {
+    Party party = new PartyDAO().getById(request.get("partyId").getAsString());
+    if (party == null) { sendError("Party not found."); return; }
+    sendResponse("getOptions", gson.toJson(model.getOptions(party)));
+  }
+
+  private void handleAddOption(JsonObject request) {
+    Party party = new PartyDAO().getById(request.get("partyId").getAsString());
+    if (party == null) { sendError("Party not found."); return; }
+    List<Option> updated = model.addOption(party, request.get("proposal").getAsString());
+    String data = gson.toJson(updated);
+    sendResponse("getOptions", data);
+    broadcastToOthers("getOptions", data);
+  }
+
+  private void handleRemoveOption(JsonObject request) {
+    // option is fetched to get its partyId for the model call
+    Option option = new OptionDAO().getById(request.get("optionId").getAsString());
+    if (option == null) { sendError("Option not found."); return; }
+    List<Option> updated = model.removeOption(option);
+    String data = gson.toJson(updated);
+    sendResponse("getOptions", data);
+    broadcastToOthers("getOptions", data);
+  }
+
+  private void handleVoteForOption(JsonObject request) {
+    String optionId = request.get("optionId").getAsString();
+    String userId   = request.get("userId").getAsString();
+    // vote returns updated list with new vote counts for all options in the party
+    List<Option> updated = model.voteForOption(optionId, userId);
+    String data = gson.toJson(updated);
+    sendResponse("getOptions", data);
+    broadcastToOthers("getOptions", data);
+  }
+
+  private void handleRemoveVote(JsonObject request) {
+    String optionId = request.get("optionId").getAsString();
+    String userId   = request.get("userId").getAsString();
+    List<Option> updated = model.removeVote(optionId, userId);
+    String data = gson.toJson(updated);
+    sendResponse("getOptions", data);
+    broadcastToOthers("getOptions", data);
+  }
+
+  private void handleGetTopVotedOption(JsonObject request) {
+    String top = model.getTopVotedOption(request.get("partyId").getAsString());
+    sendResponse("getTopVotedOption", top != null ? top : "");
+  }
+
+  private void handleHasVoted(JsonObject request) {
+    boolean result = model.hasVotedInParty(
+        request.get("userId").getAsString(),
+        request.get("partyId").getAsString());
+    sendResponse("hasVoted", String.valueOf(result));
+  }
+
+  private void handleHasVotedForOption(JsonObject request) {
+    boolean result = model.hasVotedForOption(
+        request.get("userId").getAsString(),
+        request.get("optionId").getAsString());
+    sendResponse("hasVotedForOption", String.valueOf(result));
+  }
+
+  // messages
   private void handleSendMessage(JsonObject request) {
     String partyId = request.get("partyId").getAsString();
     String userId  = request.get("userId").getAsString();
     String content = request.get("content").getAsString();
-    System.out.println("[sendMessage] partyId=" + partyId + " userId=" + userId + " content=" + content);
-    if (content.trim().isEmpty()) { System.out.println("[sendMessage] rejected: empty content"); sendError("Message content cannot be empty."); return; }
+    if (content.trim().isEmpty()) { sendError("Message content cannot be empty."); return; }
     Party party = new PartyDAO().getById(partyId);
-    if (party == null) { System.out.println("[sendMessage] rejected: party not found"); sendError("Party not found."); return; }
+    if (party == null) { sendError("Party not found."); return; }
     Message message = model.sendMessage(partyId, userId, content);
-    if (message == null) { System.out.println("[sendMessage] DAO returned null — INSERT failed"); sendError("Failed to send message."); return; }
-    System.out.println("[sendMessage] OK — messageId=" + message.getMessageId());
-    sendResponse("sendMessage", gson.toJson(message));
+    if (message == null) { sendError("Failed to send message."); return; }
+    String data = gson.toJson(message);
+    sendResponse("sendMessage", data);
+    // broadcast new message so other clients' chats update in real time
+    broadcastToOthers("sendMessage", data);
   }
 
   private void handleGetMessages(JsonObject request) {
     String partyId = request.get("partyId").getAsString();
-    System.out.println("[getMessages] partyId=" + partyId);
     Party party = new PartyDAO().getById(partyId);
-    if (party == null) { System.out.println("[getMessages] party not found"); sendError("Party not found."); return; }
-    List<Message> msgs = model.getMessages(partyId);
-    System.out.println("[getMessages] returning " + msgs.size() + " messages");
-    sendResponse("getMessages", gson.toJson(msgs));
+    if (party == null) { sendError("Party not found."); return; }
+    sendResponse("getMessages", gson.toJson(model.getMessages(partyId)));
   }
 
   private void sendResponse(String action, String data) {
@@ -415,9 +459,5 @@ public class PartyClientHandler implements Runnable {
     response.addProperty("type", "error");
     response.addProperty("message", message);
     outputWriter.println(gson.toJson(response));
-  }
-
-  private void close() {
-    try { socket.close(); } catch (IOException ignored) {}
   }
 }
