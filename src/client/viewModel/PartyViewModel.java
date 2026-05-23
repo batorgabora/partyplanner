@@ -11,6 +11,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import shared.model.*;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import shared.model.service.PartyViewService;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Type;
@@ -19,7 +23,7 @@ import java.util.List;
 
 public class PartyViewModel implements PropertyChangeListener {
 
-  private final PartyModel model;
+  private final PartyViewService model;
   private final ObjectProperty<Party> selectedParty;
   private final StringProperty errorProperty = new SimpleStringProperty("");
   private final StringProperty messageInput  = new SimpleStringProperty("");
@@ -34,7 +38,7 @@ public class PartyViewModel implements PropertyChangeListener {
   private final ObservableList<Message> messages = FXCollections.observableArrayList();
   public ObservableList<Message> messagesProperty() { return messages; }
 
-  public PartyViewModel(PartyModel model, ObjectProperty<Party> selectedParty) {
+  public PartyViewModel(PartyViewService model, ObjectProperty<Party> selectedParty) {
     this.model = model;
     this.selectedParty = selectedParty;
     model.addListener("error", this);
@@ -158,6 +162,21 @@ public class PartyViewModel implements PropertyChangeListener {
     Party party = selectedParty.get();
     if (party == null) return new ArrayList<>();
     return model.getMessages(party.getId());
+  }
+
+  public void loadMessages() {
+    Party party = selectedParty.get();
+    if (party == null) return;
+    List<Message> msgs = model.getMessages(party.getId());
+    if (msgs == null) return;
+    List<Message> sorted = new ArrayList<>(msgs);
+    sorted.sort(Comparator.comparing(m -> {
+      try {
+        String s = m.getSentAt();
+        return LocalDateTime.parse(s.length() > 19 ? s.substring(0, 19) : s);
+      } catch (Exception e) { return LocalDateTime.MIN; }
+    }));
+    Platform.runLater(() -> messages.setAll(sorted));
   }
 
   public Message sendMessage() {

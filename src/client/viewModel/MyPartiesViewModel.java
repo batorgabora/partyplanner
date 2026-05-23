@@ -11,7 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import shared.model.LocalUser;
 import shared.model.Party;
-import shared.model.PartyModel;
+import shared.model.service.PartyService;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -20,13 +20,13 @@ import java.util.List;
 
 public class MyPartiesViewModel implements PropertyChangeListener {
 
-  private final PartyModel model;
+  private final PartyService model;
   private final ObjectProperty<Party> selectedParty;
   private final StringProperty error  = new SimpleStringProperty("");
   private final ObservableList<Party> parties = FXCollections.observableArrayList();
   private final Gson gson = new Gson();
 
-  public MyPartiesViewModel(PartyModel model, ObjectProperty<Party> selectedParty) {
+  public MyPartiesViewModel(PartyService model, ObjectProperty<Party> selectedParty) {
     this.model = model;
     this.selectedParty = selectedParty;
     model.addListener("getMyParties", this);

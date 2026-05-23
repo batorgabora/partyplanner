@@ -10,7 +10,10 @@ import shared.util.Action;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,6 +30,7 @@ public class PartyClientHandler implements Runnable {
   private final Gson gson;
   private final PropertyChangeSupport support = new PropertyChangeSupport(this);
   private final List<PartyClientHandler> handlers;
+  private final Map<Action, Consumer<JsonObject>> dispatch = new EnumMap<>(Action.class);
 
   public PartyClientHandler(Socket socket, PartyModel model, List<PartyClientHandler> handlers) {
     this.handlers = handlers;
@@ -39,17 +43,70 @@ public class PartyClientHandler implements Runnable {
     } catch (IOException e) {
       throw new IllegalStateException("Could not initialize client handler.", e);
     }
+    registerHandlers();
   }
 
-  // sends a response to all connected clients except the one that made the request
+  private void registerHandlers() {
+    dispatch.put(Action.LOGIN,                this::handleLogin);
+    dispatch.put(Action.CREATE_ACCOUNT,       this::handleCreateAccount);
+    dispatch.put(Action.GET_ALL_USERS,        req -> handleGetAllUsers());
+    dispatch.put(Action.ADD_FRIEND,           this::handleAddFriend);
+    dispatch.put(Action.GET_ALL,              this::handleGetAll);
+    dispatch.put(Action.GET_MY_PARTIES,       this::handleGetMyParties);
+    dispatch.put(Action.GET_INVITED_PARTIES,  this::handleGetInvitedParties);
+    dispatch.put(Action.CREATE_PARTY,         this::handleCreateParty);
+    dispatch.put(Action.UPDATE_PARTY,         this::handleUpdateParty);
+    dispatch.put(Action.UPDATE_PARTY_DATE,    this::handleUpdatePartyDate);
+    dispatch.put(Action.DELETE_PARTY,         this::handleDeleteParty);
+    dispatch.put(Action.JOIN_PARTY,           this::handleJoinParty);
+    dispatch.put(Action.LEAVE_PARTY,          this::handleLeaveParty);
+    dispatch.put(Action.ACCEPT_INVITE,        this::handleAcceptInvite);
+    dispatch.put(Action.DECLINE_INVITE,       this::handleDeclineInvite);
+    dispatch.put(Action.GET_STATUS,           this::handleGetStatus);
+    dispatch.put(Action.GET_ROLE,             this::handleGetRole);
+    dispatch.put(Action.GET_ITEMS,            this::handleGetItems);
+    dispatch.put(Action.ADD_ITEM,             this::handleAddItem);
+    dispatch.put(Action.REMOVE_ITEM,          this::handleRemoveItem);
+    dispatch.put(Action.CLAIM_ITEM,           this::handleClaimItem);
+    dispatch.put(Action.UNCLAIM_ITEM,         this::handleUnclaimItem);
+    dispatch.put(Action.GET_OPTIONS,          this::handleGetOptions);
+    dispatch.put(Action.ADD_OPTION,           this::handleAddOption);
+    dispatch.put(Action.REMOVE_OPTION,        this::handleRemoveOption);
+    dispatch.put(Action.VOTE_FOR_OPTION,      this::handleVoteForOption);
+    dispatch.put(Action.REMOVE_VOTE,          this::handleRemoveVote);
+    dispatch.put(Action.GET_TOP_VOTED_OPTION, this::handleGetTopVotedOption);
+    dispatch.put(Action.HAS_VOTED,            this::handleHasVoted);
+    dispatch.put(Action.HAS_VOTED_FOR_OPTION, this::handleHasVotedForOption);
+    dispatch.put(Action.GET_PARTICIPANTS,     this::handleGetParticipants);
+    dispatch.put(Action.ADD_PARTICIPANT,      this::handleAddParticipant);
+    dispatch.put(Action.REMOVE_PARTICIPANT,   this::handleRemoveParticipant);
+    dispatch.put(Action.GET_FRIENDS,          this::handleGetFriends);
+    dispatch.put(Action.GET_NON_FRIENDS,      this::handleGetNonFriends);
+    dispatch.put(Action.REMOVE_FRIEND,        this::handleRemoveFriend);
+    dispatch.put(Action.SEND_MESSAGE,         this::handleSendMessage);
+    dispatch.put(Action.GET_MESSAGES,         this::handleGetMessages);
+  }
+  
   private void broadcastToOthers(String action, String data) {
     synchronized (handlers) {
       for (PartyClientHandler handler : handlers) {
         if (handler != this) {
-          handler.sendResponse(action, data);
+          handler.sendBroadcast(action, data);
         }
       }
     }
+  }
+
+  private void sendBroadcast(String action, String data) {
+    JsonObject msg = new JsonObject();
+    msg.addProperty("type", "broadcast");
+    msg.addProperty("action", action);
+    try {
+      msg.add("data", JsonParser.parseString(data));
+    } catch (Exception e) {
+      msg.addProperty("data", data);
+    }
+    outputWriter.println(gson.toJson(msg));
   }
 
   private void close() {
@@ -83,47 +140,10 @@ public class PartyClientHandler implements Runnable {
       sendError(e.getMessage());
       return;
     }
+    Consumer<JsonObject> handler = dispatch.get(action);
+    if (handler == null) { sendError("Unknown action."); return; }
     try {
-      switch (action) {
-        case LOGIN                -> handleLogin(request);
-        case CREATE_ACCOUNT       -> handleCreateAccount(request);
-        case GET_ALL_USERS        -> handleGetAllUsers();
-        case ADD_FRIEND           -> handleAddFriend(request);
-        case GET_ALL              -> handleGetAll(request);
-        case GET_MY_PARTIES       -> handleGetMyParties(request);
-        case GET_INVITED_PARTIES  -> handleGetInvitedParties(request);
-        case CREATE_PARTY         -> handleCreateParty(request);
-        case UPDATE_PARTY         -> handleUpdateParty(request);
-        case UPDATE_PARTY_DATE    -> handleUpdatePartyDate(request);
-        case DELETE_PARTY         -> handleDeleteParty(request);
-        case JOIN_PARTY           -> handleJoinParty(request);
-        case LEAVE_PARTY          -> handleLeaveParty(request);
-        case ACCEPT_INVITE        -> handleAcceptInvite(request);
-        case DECLINE_INVITE       -> handleDeclineInvite(request);
-        case GET_STATUS           -> handleGetStatus(request);
-        case GET_ROLE             -> handleGetRole(request);
-        case GET_ITEMS            -> handleGetItems(request);
-        case ADD_ITEM             -> handleAddItem(request);
-        case REMOVE_ITEM          -> handleRemoveItem(request);
-        case CLAIM_ITEM           -> handleClaimItem(request);
-        case UNCLAIM_ITEM         -> handleUnclaimItem(request);
-        case GET_OPTIONS          -> handleGetOptions(request);
-        case ADD_OPTION           -> handleAddOption(request);
-        case REMOVE_OPTION        -> handleRemoveOption(request);
-        case VOTE_FOR_OPTION      -> handleVoteForOption(request);
-        case REMOVE_VOTE          -> handleRemoveVote(request);
-        case GET_TOP_VOTED_OPTION -> handleGetTopVotedOption(request);
-        case HAS_VOTED            -> handleHasVoted(request);
-        case HAS_VOTED_FOR_OPTION -> handleHasVotedForOption(request);
-        case GET_PARTICIPANTS     -> handleGetParticipants(request);
-        case ADD_PARTICIPANT      -> handleAddParticipant(request);
-        case REMOVE_PARTICIPANT   -> handleRemoveParticipant(request);
-        case GET_FRIENDS          -> handleGetFriends(request);
-        case GET_NON_FRIENDS      -> handleGetNonFriends(request);
-        case REMOVE_FRIEND        -> handleRemoveFriend(request);
-        case SEND_MESSAGE         -> handleSendMessage(request);
-        case GET_MESSAGES         -> handleGetMessages(request);
-      }
+      handler.accept(request);
     } catch (Exception e) {
       System.out.println("[handleRequest] unhandled exception: " + e.getMessage());
       sendError("Internal server error.");

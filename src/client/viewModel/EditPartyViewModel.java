@@ -10,6 +10,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import shared.model.*;
+import shared.model.service.EditPartyViewService;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -18,7 +19,7 @@ import java.util.List;
 
 public class EditPartyViewModel implements PropertyChangeListener {
 
-  private final PartyModel model;
+  private final EditPartyViewService model;
   private final ObjectProperty<Party> selectedParty;
   private final StringProperty error = new SimpleStringProperty("");
   private final Gson gson = new Gson();
@@ -30,7 +31,7 @@ public class EditPartyViewModel implements PropertyChangeListener {
   private final ObservableList<User> friends     = FXCollections.observableArrayList();
   private final StringProperty errorProperty = new SimpleStringProperty("");
 
-  public EditPartyViewModel(PartyModel model, ObjectProperty<Party> selectedParty) {
+  public EditPartyViewModel(EditPartyViewService model, ObjectProperty<Party> selectedParty) {
     this.model = model;
     this.selectedParty = selectedParty;
     model.addListener("error", this);

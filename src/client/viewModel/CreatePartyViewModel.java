@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import shared.model.LocalUser;
 import shared.model.Party;
-import shared.model.PartyModel;
+import shared.model.service.PartyService;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 
 public class CreatePartyViewModel implements PropertyChangeListener {
 
-  private final PartyModel model;
+  private final PartyService model;
   private final StringProperty name        = new SimpleStringProperty("");
   private final StringProperty description = new SimpleStringProperty("");
   private final StringProperty location    = new SimpleStringProperty("");
@@ -23,7 +23,7 @@ public class CreatePartyViewModel implements PropertyChangeListener {
   private final StringProperty error       = new SimpleStringProperty("");
   private final ObjectProperty<Party> createdParty = new SimpleObjectProperty<>(null);
 
-  public CreatePartyViewModel(PartyModel model) {
+  public CreatePartyViewModel(PartyService model) {
     this.model = model;
     model.addListener("error", this);
   }

@@ -4,21 +4,19 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import shared.model.LocalUser;
-import shared.model.Party;
-import shared.model.PartyModel;
 import shared.model.User;
-import shared.util.PasswordUtil;
+import shared.model.service.UserService;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class LoginViewModel implements PropertyChangeListener {
-  private final PartyModel model;
+  private final UserService model;
   private final StringProperty username = new SimpleStringProperty("");
   private final StringProperty password = new SimpleStringProperty("");
   private final StringProperty error    = new SimpleStringProperty("");
 
-  public LoginViewModel(PartyModel model) {
+  public LoginViewModel(UserService model) {
     this.model = model;
     model.addListener("error", this);
   }

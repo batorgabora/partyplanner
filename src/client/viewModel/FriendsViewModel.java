@@ -6,20 +6,20 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import shared.model.LocalUser;
-import shared.model.PartyModel;
 import shared.model.User;
+import shared.model.service.FriendService;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class FriendsViewModel implements PropertyChangeListener {
 
-  private final PartyModel model;
+  private final FriendService model;
   private final StringProperty error       = new SimpleStringProperty("");
   private final ObservableList<User> friends    = FXCollections.observableArrayList();
   private final ObservableList<User> nonFriends = FXCollections.observableArrayList();
 
-  public FriendsViewModel(PartyModel model) {
+  public FriendsViewModel(FriendService model) {
     this.model = model;
     model.addListener("error", this);
   }

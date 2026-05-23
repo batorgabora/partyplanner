@@ -113,18 +113,18 @@ public class PartyController {
     itemList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> updateClaimButton(newVal));
 
-    // listen for new messages pushed via Observer — appends each new message
-    // without clearing the chat, avoiding flicker and race conditions
     viewmodel.messagesProperty().addListener((javafx.collections.ListChangeListener<Message>) change -> {
       while (change.next()) {
+        if (change.wasReplaced()) {
+          chatMessages.getChildren().clear();
+        }
         if (change.wasAdded()) {
           for (Message msg : change.getAddedSubList()) {
             appendMessage(msg);
           }
         }
       }
-      // scroll to bottom after new message appears
-      Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
+      Platform.runLater(() -> Platform.runLater(() -> chatScrollPane.setVvalue(1.0)));
     });
 
     loadParty();
@@ -293,22 +293,8 @@ public class PartyController {
     }).start();
   }
 
-  // loads existing messages from server when chat is first opened
-  // sorts by timestamp and appends each one individually
   private void loadMessages() {
-    chatMessages.getChildren().clear(); // clear before reloading on open
-    new Thread(() -> {
-      List<Message> msgs = viewmodel.getMessages();
-      msgs.stream()
-          .sorted(Comparator.comparing(msg -> {
-            try {
-              String s = msg.getSentAt();
-              return LocalDateTime.parse(s.length() > 19 ? s.substring(0, 19) : s);
-            } catch (Exception e) { return LocalDateTime.MIN; }
-          }))
-          .forEach(msg -> Platform.runLater(() -> appendMessage(msg)));
-      Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
-    }).start();
+    new Thread(() -> viewmodel.loadMessages()).start();
   }
 
   // builds and appends a single message bubble to the chat window

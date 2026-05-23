@@ -3,22 +3,22 @@ package client.viewModel;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import shared.model.PartyModel;
 import shared.model.User;
+import shared.model.service.UserService;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class RegisterViewModel implements PropertyChangeListener {
 
-  private final PartyModel model;
+  private final UserService model;
   private final StringProperty username        = new SimpleStringProperty("");
   private final StringProperty password        = new SimpleStringProperty("");
   private final StringProperty confirmPassword = new SimpleStringProperty("");
   private final StringProperty mail            = new SimpleStringProperty("");
   private final StringProperty error           = new SimpleStringProperty("");
 
-  public RegisterViewModel(PartyModel model) {
+  public RegisterViewModel(UserService model) {
     this.model = model;
     model.addListener("error", this);
   }
