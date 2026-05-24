@@ -6,6 +6,7 @@ import org.mockito.Mockito;
 import shared.model.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,9 +28,9 @@ class CreatePartyViewModelTest {
 
   // Z — zero:
   @Test void emptyFields_blocked() {
-    boolean result = vm.createParty();
+    vm.createParty();
 
-    assertFalse(result);
+    assertFalse(vm.errorProperty().get().isEmpty());
     verify(model, never()).createParty(any(), any(), any(), any(), any());
   }
 
@@ -38,42 +39,42 @@ class CreatePartyViewModelTest {
     vm.locationProperty().set("matter");
     vm.dateProperty().set(null);
 
-    boolean result = vm.createParty();
+    vm.createParty();
 
-    assertFalse(result);
+    assertFalse(vm.errorProperty().get().isEmpty());
     verify(model, never()).createParty(any(), any(), any(), any(), any());
   }
 
   // O — one:
-  @Test void validInputs_correctArgsForwardedToModel() {
+  @Test void validInputs_correctArgsForwardedToModel() throws InterruptedException {
     LocalDate year = LocalDate.of(2027, 1, 1);
     vm.nameProperty().set("eurovision");
     vm.locationProperty().set("moldova");
     vm.dateProperty().set(year);
-    Party realFutureItWillHappen = new Party("eurovision", "", "moldova", fakeUser);
-
+    Party realFutureItWillHappen = new Party(UUID.randomUUID().toString(), "eurovision", "", "moldova", year, fakeUser);
 
     when(model.createParty(any(), any(), any(), any(), any())).thenReturn(realFutureItWillHappen);
-    boolean result = vm.createParty();
+    vm.createParty();
+    Thread.sleep(200);
 
     verify(model).createParty(eq("eurovision"), eq(""), eq("moldova"), any(), eq(year));
-    assertTrue(result);
+    assertTrue(vm.errorProperty().get().isEmpty());
   }
 
   // M — many:
-  @Test void calledTwice_modelReachedBothTimes() {
+  @Test void calledTwice_modelReachedBothTimes() throws InterruptedException {
     LocalDate today = LocalDate.now();
     vm.nameProperty().set("Party One");
     vm.locationProperty().set("Oslo");
     vm.dateProperty().set(today);
-    Party fakeParty = new Party("Party One", "", "Oslo", fakeUser);
+    Party fakeParty = new Party(UUID.randomUUID().toString(), "Party One", "", "Oslo", today, fakeUser);
     when(model.createParty(any(), any(), any(), any(), any())).thenReturn(fakeParty);
 
-    assertTrue(vm.createParty());
-    assertTrue(vm.createParty());
+    vm.createParty();
+    vm.createParty();
+    Thread.sleep(200);
 
     verify(model, times(2)).createParty(eq("Party One"), eq(""), eq("Oslo"), eq(fakeUser.getId()), eq(today));
-
   }
 
   // B — boundary:
@@ -82,9 +83,9 @@ class CreatePartyViewModelTest {
     vm.locationProperty().set("whatever room Loke finds");
     vm.dateProperty().set(LocalDate.now());
 
-    boolean result = vm.createParty();
+    vm.createParty();
 
-    assertFalse(result);
+    assertFalse(vm.errorProperty().get().isEmpty());
     verify(model, never()).createParty(any(), any(), any(), any(), any());
   }
 
@@ -93,9 +94,9 @@ class CreatePartyViewModelTest {
     vm.locationProperty().set("idk where that was");
     vm.dateProperty().set(LocalDate.of(2000, 1, 1));
 
-    boolean result = vm.createParty();
+    vm.createParty();
 
-    assertFalse(result);
+    assertFalse(vm.errorProperty().get().isEmpty());
     verify(model, never()).createParty(any(), any(), any(), any(), any());
   }
 
@@ -103,7 +104,7 @@ class CreatePartyViewModelTest {
   @Test void clearError_resetsErrorProperty() {
     vm.errorProperty().set("kaboom");
 
-    vm.clearError();
+    vm.clear();
 
     assertTrue(vm.errorProperty().get().isEmpty());
   }
