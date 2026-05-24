@@ -124,8 +124,11 @@ public class PartyController {
           }
         }
       }
-      Platform.runLater(() -> Platform.runLater(() -> chatScrollPane.setVvalue(1.0)));
+      Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
     });
+
+    chatMessages.heightProperty().addListener((obs, oldH, newH) ->
+        Platform.runLater(() -> chatScrollPane.setVvalue(1.0)));
 
     loadParty();
 
