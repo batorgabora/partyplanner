@@ -37,12 +37,8 @@ public class PartyClient
 
   public String receive()
   {
-    try {
-      return inputReader.readLine();
-    }
-    catch (IOException e) {
-      throw new IllegalStateException("Connection to server was lost.", e);
-    }
+    try { return inputReader.readLine(); }
+    catch (IOException e) { throw new IllegalStateException("Connection to server was lost.", e);}
   }
 
   private JsonObject createRequest(Action action)
