@@ -34,25 +34,25 @@ public class Party {
         participants, itemList);
   }
 
-  public Party(String name, String description, String location, User organizer) {
-    this.id = UUID.randomUUID().toString();
-    this.name = name;
-    this.description = description;
-    this.location = location;
-    this.organizer = organizer;
-    this.participants = new ArrayList<>();
-    this.itemList = new ItemList();
-  }
-
-  public Party(String id, String name, String description, String location, User organizer) {
-    this.id = id;  // use DB id instead of generating new UUID
-    this.name = name;
-    this.description = description;
-    this.location = location;
-    this.organizer = organizer;
-    this.participants = new ArrayList<>();
-    this.itemList = new ItemList();
-  }
+//  public Party(String name, String description, String location, User organizer) {
+//    this.id = UUID.randomUUID().toString();
+//    this.name = name;
+//    this.description = description;
+//    this.location = location;
+//    this.organizer = organizer;
+//    this.participants = new ArrayList<>();
+//    this.itemList = new ItemList();
+//  }
+//
+//  public Party(String id, String name, String description, String location, User organizer) {
+//    this.id = id;  // use DB id instead of generating new UUID
+//    this.name = name;
+//    this.description = description;
+//    this.location = location;
+//    this.organizer = organizer;
+//    this.participants = new ArrayList<>();
+//    this.itemList = new ItemList();
+//  }
 
   public Party(String id, String name, String description, String location, LocalDate date, User organizer) {
     this.id = id;
@@ -71,17 +71,12 @@ public class Party {
   public String getLocation() { return location; }
   public User getOrganizer() { return organizer; }
   public String getDate() { return date; }
-  public ArrayList<Participant> getParticipants() { return participants; }
-  public ItemList getItemList() { return itemList; }
 
 
   public void setName(String name) { this.name = name; }
   public void setDescription(String description) { this.description = description; }
   public void setLocation(String location) { this.location = location; }
 
-
-  public void addParticipant(Participant participant) { participants.add(participant); }
-  public void removeParticipant(Participant participant) { participants.remove(participant); }
 
   public void setDate(String date) { this.date = date; }
 

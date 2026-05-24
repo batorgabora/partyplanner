@@ -21,8 +21,7 @@ public class PartyClient
 
   public PartyClient(String host, int port)
   {
-    try
-    {
+    try {
       socket = new Socket(host, port);
       inputReader = new BufferedReader(
           new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
@@ -31,20 +30,17 @@ public class PartyClient
           true);
       gson = new Gson();
     }
-    catch (IOException e)
-    {
+    catch (IOException e) {
       throw new IllegalStateException("Could not connect to server.", e);
     }
   }
 
   public String receive()
   {
-    try
-    {
+    try {
       return inputReader.readLine();
     }
-    catch (IOException e)
-    {
+    catch (IOException e) {
       throw new IllegalStateException("Connection to server was lost.", e);
     }
   }
@@ -92,10 +88,6 @@ public class PartyClient
   }
 
   // Party operations
-  public void requestGetAll() {
-    JsonObject request = createRequest(Action.GET_ALL);
-    sendRequest(request);
-  }
 
   public void requestGetMyParties(String userId) {
     JsonObject request = createRequest(Action.GET_MY_PARTIES);

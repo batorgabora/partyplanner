@@ -178,7 +178,7 @@ public class PartyDAO {
     }
   }
 
-  // TODO: update after Party model gains String partyid and LocalDate date fields
+
   private Party mapRow(ResultSet rs) throws SQLException {
     String partyId = rs.getString("partyid");
     String name = rs.getString("name");

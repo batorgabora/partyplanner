@@ -30,9 +30,7 @@ public class MyPartiesController {
   @FXML private Label userLabel;
   @FXML private Label errorLabel;
   @FXML private ImageView loadingIndicator;
-  private volatile boolean loading = false;
-  //always read from and written to main memory rather than a thread's local CPU cache
-  //every read and write goes straight to main memory so all threads always see the latest value instantly
+
 
   public void init(ViewHandler viewHandler, MyPartiesViewModel viewModel, Region root) {
     this.root = root;
