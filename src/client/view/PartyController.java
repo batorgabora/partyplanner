@@ -247,8 +247,8 @@ public class PartyController {
       infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
-    if (viewmodel.hasVotedInParty(selected.getId())) {
-      infoLabel.setText("you already voted, remove your vote first");
+    if (viewmodel.hasVotedForOption(option.toString())) {
+      infoLabel.setText("you already voted on this");
       infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
@@ -263,6 +263,11 @@ public class PartyController {
     Option option = timeList.getSelectionModel().getSelectedItem();
     if (option == null) {
       infoLabel.setText("select an option first");
+      infoLabel.setStyle("-fx-text-fill: red;");
+      return;
+    }
+    if (!viewmodel.hasVotedForOption(option.toString())) {
+      infoLabel.setText("no vote to remov ehere");
       infoLabel.setStyle("-fx-text-fill: red;");
       return;
     }
