@@ -26,13 +26,13 @@ public class OptionDAO {
 
   public List<Option> getByParty(String partyId) {
     String sql = """
-            SELECT o.optionid, o.proposal, o.partyid, COUNT(v.userid) as votecount
-            FROM party_planner.option o
-            LEFT JOIN party_planner.voteoption v ON o.optionid = v.optionid
-            WHERE o.partyid = ?
-            GROUP BY o.optionid, o.proposal, o.partyid
-            ORDER BY votecount DESC
-        """;
+        SELECT o.optionid, o.proposal, o.partyid, COUNT(v.userid) as votecount
+        FROM party_planner.option o
+        LEFT JOIN party_planner.voteoption v ON o.optionid = v.optionid
+        WHERE o.partyid = ?
+        GROUP BY o.optionid, o.proposal, o.partyid
+        ORDER BY votecount DESC
+    """;
     List<Option> options = new ArrayList<>();
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -78,10 +78,10 @@ public class OptionDAO {
 
   public boolean hasVoted(String userId, String partyId) {
     String sql = """
-            SELECT COUNT(*) FROM party_planner.voteoption v
-            JOIN party_planner.option o ON v.optionid = o.optionid
-            WHERE v.userid = ? AND o.partyid = ?
-        """;
+        SELECT COUNT(*) FROM party_planner.voteoption v
+        JOIN party_planner.option o ON v.optionid = o.optionid
+        WHERE v.userid = ? AND o.partyid = ?
+    """;
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, userId);
@@ -110,14 +110,14 @@ public class OptionDAO {
 
   public String getTopVoted(String partyId) {
     String sql = """
-            SELECT o.proposal
-            FROM party_planner.option o
-            LEFT JOIN party_planner.voteoption v ON o.optionid = v.optionid
-            WHERE o.partyid = ?
-            GROUP BY o.optionid, o.proposal
-            ORDER BY COUNT(v.userid) DESC
-            LIMIT 1
-        """;
+        SELECT o.proposal
+        FROM party_planner.option o
+        LEFT JOIN party_planner.voteoption v ON o.optionid = v.optionid
+        WHERE o.partyid = ?
+        GROUP BY o.optionid, o.proposal
+        ORDER BY COUNT(v.userid) DESC
+        LIMIT 1
+    """;
     try (Connection conn = DataBaseConnection.getInstance().getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyId);

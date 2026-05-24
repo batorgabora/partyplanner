@@ -1,14 +1,12 @@
 package server.dao;
 
 import server.database.DataBaseConnection;
-import shared.model.Organizer;
 import shared.model.Party;
 import shared.model.User;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class PartyDAO {
@@ -137,37 +135,36 @@ public class PartyDAO {
 
   public void delete(String partyid) {
     try (Connection conn = DataBaseConnection.getInstance().getConnection()) {
-      // delete votes on options belonging to this party
       try (PreparedStatement ps = conn.prepareStatement(
-          "DELETE FROM party_planner.voteoption WHERE optionid IN (SELECT optionid FROM \"option\" WHERE partyid = ?)")) {
+          "DELETE FROM party_planner.voteoption WHERE optionid IN (SELECT optionid FROM party_planner.option WHERE partyid = ?)")) {
         ps.setString(1, partyid);
         ps.executeUpdate();
       }
-      // delete options
       try (PreparedStatement ps = conn.prepareStatement(
-          "DELETE FROM party_planner.\"option\" WHERE partyid = ?")) {
+          "DELETE FROM party_planner.option WHERE partyid = ?")) {
         ps.setString(1, partyid);
         ps.executeUpdate();
       }
-      // delete claims on items belonging to this party
       try (PreparedStatement ps = conn.prepareStatement(
-          "DELETE FROM party_planner.claimitem WHERE itemid IN (SELECT itemid FROM item WHERE partyid = ?)")) {
+          "DELETE FROM party_planner.claimitem WHERE itemid IN (SELECT itemid FROM party_planner.item WHERE partyid = ?)")) {
         ps.setString(1, partyid);
         ps.executeUpdate();
       }
-      // delete items
       try (PreparedStatement ps = conn.prepareStatement(
           "DELETE FROM party_planner.item WHERE partyid = ?")) {
         ps.setString(1, partyid);
         ps.executeUpdate();
       }
-      // delete partyusers
+      try (PreparedStatement ps = conn.prepareStatement(
+          "DELETE FROM party_planner.messages WHERE partyid = ?")) {
+        ps.setString(1, partyid);
+        ps.executeUpdate();
+      }
       try (PreparedStatement ps = conn.prepareStatement(
           "DELETE FROM party_planner.partyusers WHERE partyid = ?")) {
         ps.setString(1, partyid);
         ps.executeUpdate();
       }
-      // finally delete the party
       try (PreparedStatement ps = conn.prepareStatement(
           "DELETE FROM party_planner.party WHERE partyid = ?")) {
         ps.setString(1, partyid);
@@ -178,14 +175,13 @@ public class PartyDAO {
     }
   }
 
-
   private Party mapRow(ResultSet rs) throws SQLException {
-    String partyId = rs.getString("partyid");
-    String name = rs.getString("name");
+    String partyId     = rs.getString("partyid");
+    String name        = rs.getString("name");
     String description = rs.getString("description");
-    String location = rs.getString("location");
-    LocalDate date = rs.getDate("date") != null ? rs.getDate("date").toLocalDate() : null;
-    User organizer = getOrganizerForParty(partyId);
+    String location    = rs.getString("location");
+    LocalDate date     = rs.getDate("date") != null ? rs.getDate("date").toLocalDate() : null;
+    User organizer     = getOrganizerForParty(partyId);
     return new Party(partyId, name, description, location, date, organizer);
   }
 
@@ -195,9 +191,7 @@ public class PartyDAO {
         PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, partyId);
       ResultSet rs = ps.executeQuery();
-      if (rs.next()) {
-        return new UserDAO().getById(rs.getString("userid"));
-      }
+      if (rs.next()) return new UserDAO().getById(rs.getString("userid"));
     } catch (SQLException e) {
       log.severe("getOrganizerForParty failed for partyId=" + partyId + ": " + e.getMessage());
     }
