@@ -51,11 +51,12 @@ public class PartyController {
   @FXML private ImageView loadingIndicator;
   @FXML private Label infoLabel;
   @FXML private Button voteButton;
-  @FXML private Button removeVoteButton;
   @FXML private Button claimButton;
   @FXML private Label label1;
   @FXML private Label label2;
   @FXML private Label label3;
+
+  @FXML private Label errorLabel;
 
   private Party selected;
   private boolean chatOpen = false;
@@ -69,27 +70,29 @@ public class PartyController {
     chatButton.setVisible(false);
     chatWindow.setVisible(false);
     descriptionLabel.setVisible(false);
-    descriptionLabel.setManaged(false);
+    descriptionLabel.setVisible(false);
+
+    errorLabel.textProperty().bind(viewmodel.errorProperty());
 
     chatInput.textProperty().bindBidirectional(viewmodel.messageInputProperty());
 
-    // bind lists once — view never pulls, Observer pattern
     itemList.setItems(viewmodel.itemsProperty());
     memberList.setItems(viewmodel.membersProperty());
     timeList.setItems(viewmodel.optionsProperty());
 
-    // when user selects an option, check in background if they already voted for it
-    // and toggle vote/removeVote buttons accordingly
     timeList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> {
           if (newVal != null) {
             new Thread(() -> {
               boolean voted = viewmodel.hasVotedForOption(newVal.getOptionid());
               Platform.runLater(() -> {
-                voteButton.setDisable(voted);
-                removeVoteButton.setDisable(!voted);
+                voteButton.setDisable(false);
+                voteButton.setText(voted ? "remove vote" : "vote");
               });
             }).start();
+          } else {
+            voteButton.setText("vote");
+            voteButton.setDisable(true);
           }
         });
 
@@ -167,14 +170,16 @@ public class PartyController {
 
         setContentVisible(true);
 
+        setContentVisible(true); // sets everything visible first
+
+        // then override specific buttons based on role/status
         editButton.setVisible(isOrganizer);
         acceptButton.setVisible(isInvited);
         declineButton.setVisible(isInvited);
         leaveButton.setVisible(!isOrganizer && isAccepted);
         chatButton.setVisible(isOrganizer || isAccepted);
-        voteButton.setVisible(isAccepted || isOrganizer);
-        claimButton.setVisible(isAccepted || isOrganizer);
-        removeVoteButton.setVisible(isAccepted || isOrganizer);
+        voteButton.setVisible(isAccepted);
+        claimButton.setVisible(isAccepted);
 
         updateClaimButton(null);
       });
@@ -191,10 +196,9 @@ public class PartyController {
     itemList.setVisible(visible);
     memberList.setVisible(visible);
     timeList.setVisible(visible);
-    voteButton.setVisible(visible);
-    removeVoteButton.setVisible(visible);
     infoLabel.setVisible(visible);
     claimButton.setVisible(visible);
+    errorLabel.setVisible(visible);
     label1.setVisible(visible);
     label2.setVisible(visible);
     label3.setVisible(visible);
@@ -206,7 +210,6 @@ public class PartyController {
       leaveButton.setVisible(false);
       claimButton.setVisible(false);
       voteButton.setVisible(false);
-      removeVoteButton.setVisible(false);
     }
   }
 
@@ -246,53 +249,39 @@ public class PartyController {
   @FXML public void onVote() {
     Option option = timeList.getSelectionModel().getSelectedItem();
     if (option == null) {
+      infoLabel.setVisible(true);
       infoLabel.setText("select an option first");
-      infoLabel.setStyle("-fx-text-fill: red;");
+      infoLabel.setStyle("-fx-text-fill: #ef6464;");
       return;
     }
-    if (viewmodel.hasVotedForOption(option.toString())) {
-      infoLabel.setText("you already voted on this");
-      infoLabel.setStyle("-fx-text-fill: red;");
-      return;
+    boolean isVoting = voteButton.getText().equals("vote");
+    if (isVoting) {
+      infoLabel.setVisible(true);
+      infoLabel.setText("vote cast!");
+      infoLabel.setStyle("-fx-text-fill: #4a934a;");
+      voteButton.setText("remove vote");
+      new Thread(() -> viewmodel.voteForOption(option.getOptionid())).start();
+    } else {
+      infoLabel.setVisible(true);
+      infoLabel.setText("vote removed");
+      infoLabel.setStyle("-fx-text-fill: #dca948;");
+      voteButton.setText("vote");
+      new Thread(() -> viewmodel.removeVote(option.getOptionid())).start();
     }
-    infoLabel.setText("vote cast!");
-    infoLabel.setStyle("-fx-text-fill: green;");
-    // run on background thread — server returns updated options list
-    // which ViewModel sets via Platform.runLater, updating the bound list
-    new Thread(() -> viewmodel.voteForOption(option.getOptionid())).start();
-  }
-
-  @FXML public void onRemoveVote() {
-    Option option = timeList.getSelectionModel().getSelectedItem();
-    if (option == null) {
-      infoLabel.setText("select an option first");
-      infoLabel.setStyle("-fx-text-fill: red;");
-      return;
-    }
-    if (!viewmodel.hasVotedForOption(option.toString())) {
-      infoLabel.setText("no vote to remov ehere");
-      infoLabel.setStyle("-fx-text-fill: red;");
-      return;
-    }
-    infoLabel.setText("vote removed");
-    infoLabel.setStyle("-fx-text-fill: orange;");
-    new Thread(() -> viewmodel.removeVote(option.getOptionid())).start();
   }
 
   @FXML public void addFriend() {
     Participant selected = memberList.getSelectionModel().getSelectedItem();
     if (selected == null) {
       infoLabel.setText("select a member first");
-      infoLabel.setStyle("-fx-text-fill: red;");
+      infoLabel.setStyle("-fx-text-fill: #ef6464;");
       return;
     }
     viewmodel.addFriend(selected.getUser());
     infoLabel.setText(selected.getUser().getUsername() + " added as friend");
-    infoLabel.setStyle("-fx-text-fill: green;");
+    infoLabel.setStyle("-fx-text-fill: #4a934a;");
   }
 
-  // sends message on background thread — server broadcasts it to all clients
-  // the sender's own view updates via the "sendMessage" propertyChange event
   @FXML public void onSendMessage() {
     if (viewmodel.messageInputProperty().get().trim().isEmpty()) return;
     new Thread(() -> {
@@ -388,8 +377,8 @@ public class PartyController {
       locationLabel.setLayoutX(684);
       locationLabel.setLayoutY(22);
       memberList.setPrefHeight(331);
-      editButton.setLayoutX(785);
-      editButton.setLayoutY(342);
+      editButton.setLayoutX(755);
+      editButton.setLayoutY(400);
       chatButton.setLayoutX(755);
       chatButton.setLayoutY(439);
       leaveButton.setLayoutX(752);

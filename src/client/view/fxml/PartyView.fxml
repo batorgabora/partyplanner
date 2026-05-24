@@ -49,7 +49,7 @@
          </font>
       </Label>
       <Label fx:id="descriptionLabel" layoutX="141.0" layoutY="52.0" prefHeight="62.0" prefWidth="675.0" text="this is the the description of the party woooooooo" wrapText="true" />
-      <Label fx:id="label1" layoutX="141.0" layoutY="118.0" prefHeight="26.0" prefWidth="280.0" text="list of items to bring:">
+      <Label fx:id="label1" layoutX="141.0" layoutY="118.0" prefHeight="26.0" prefWidth="280.0" text="item list:">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
@@ -69,7 +69,7 @@
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <ListView fx:id="memberList" layoutX="437.0" layoutY="153.0" prefHeight="345.0" prefWidth="216.0" />
+      <ListView fx:id="memberList" layoutX="437.0" layoutY="153.0" prefHeight="342.0" prefWidth="216.0" />
       <Label fx:id="dateLabel" layoutX="685.0" layoutY="1.0" prefHeight="24.0" prefWidth="152.0" text="date:" />
       <Label fx:id="locationLabel" layoutX="684.0" layoutY="22.0" prefHeight="17.0" prefWidth="152.0" text="location: " />
       <Button fx:id="acceptButton" layoutX="722.0" layoutY="439.0" mnemonicParsing="false" onAction="#onAccept" text="accept invitation" textFill="#2c6844" />
@@ -97,12 +97,12 @@
       </VBox>
       <Button fx:id="chatButton" layoutX="755.0" layoutY="439.0" mnemonicParsing="false" onAction="#onChat" text="chat" />
       <Label fx:id="infoLabel" layoutX="364.0" layoutY="500.0" prefHeight="17.0" prefWidth="304.0" />
-      <Button fx:id="voteButton" layoutX="146.0" layoutY="496.0" mnemonicParsing="false" onAction="#onVote" text="vote" />
-      <Button fx:id="removeVoteButton" layoutX="200.0" layoutY="495.0" mnemonicParsing="false" onAction="#onRemoveVote" text="remove vote" />
+      <Button fx:id="voteButton" layoutX="138.0" layoutY="497.0" mnemonicParsing="false" onAction="#onVote" text="vote" />
       <ImageView fx:id="loadingIndicator" fitHeight="80.0" fitWidth="80.0" layoutX="420.0" layoutY="215.0" visible="false">
          <image>
             <Image url="@../cat-2.gif" />
          </image>
       </ImageView>
+      <Label fx:id="errorLabel" layoutX="327.0" layoutY="501.0" prefHeight="17.0" prefWidth="327.0" textFill="#e45e5e" />
    </children>
 </Pane>

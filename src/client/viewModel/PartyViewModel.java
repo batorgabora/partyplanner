@@ -45,7 +45,7 @@ public class PartyViewModel implements PropertyChangeListener {
     model.addListener("getItems", this);
     model.addListener("getOptions", this);
     model.addListener("getParticipants", this);
-    model.addListener("sendMessage", this); // for real-time chat
+    model.addListener("sendMessage", this);
   }
 
   @Override public void propertyChange(PropertyChangeEvent evt) {

@@ -4,8 +4,6 @@ import server.database.DataBaseConnection;
 import shared.model.User;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 public class UserDAO {
@@ -33,7 +31,7 @@ public class UserDAO {
       ResultSet rs = ps.executeQuery();
       if (rs.next()) return mapRow(rs);
     } catch (SQLException e) {
-      log.severe("getById failed for username=" + username + ": " + e.getMessage());
+      log.severe("getByUsername failed for username=" + username + ": " + e.getMessage());
     }
     return null;
   }
