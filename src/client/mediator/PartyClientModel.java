@@ -20,7 +20,6 @@ public class PartyClientModel implements PartyModel {
   private final Gson gson;
   private final PropertyChangeSupport support = new PropertyChangeSupport(this);
   private final LinkedBlockingQueue<JsonObject> responseQueue = new LinkedBlockingQueue<>();
-  private final ReentrantLock requestLock = new ReentrantLock();
 
   public PartyClientModel(String host, int port) {
     this.client = new PartyClient(host, port);
@@ -35,13 +34,17 @@ public class PartyClientModel implements PartyModel {
             String msgType = json.has("type") ? json.get("type").getAsString() : "";
 
             if ("error".equals(msgType)) {
+              // errors go through Observer and also unblock sendAndReceive
               support.firePropertyChange("error", null,
                   json.has("message") ? json.get("message").getAsString() : "unknown error");
-            }
-            if (json.has("action")) {
-              support.firePropertyChange(json.get("action").getAsString(), null, json);
-            }
-            if (!"broadcast".equals(msgType)) {
+              responseQueue.put(json);
+            } else if ("broadcast".equals(msgType)) {
+              // broadcasts only go through Observer — no sendAndReceive is waiting
+              if (json.has("action")) {
+                support.firePropertyChange(json.get("action").getAsString(), null, json);
+              }
+            } else {
+              // direct responses only go in the queue — sendAndReceive handles the rest
               responseQueue.put(json);
             }
           } catch (Exception e) {
@@ -54,16 +57,13 @@ public class PartyClientModel implements PartyModel {
     listenerThread.start();
   }
 
-  private JsonObject sendAndReceive(Runnable sendAction) {
-    requestLock.lock();
+  private synchronized JsonObject sendAndReceive(Runnable sendAction) {
     try {
       sendAction.run();
       return responseQueue.take();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new IllegalStateException("Interrupted waiting for response");
-    } finally {
-      requestLock.unlock();
     }
   }
 

@@ -86,7 +86,19 @@ public class PartyClientHandler implements Runnable {
     dispatch.put(Action.SEND_MESSAGE,         this::handleSendMessage);
     dispatch.put(Action.GET_MESSAGES,         this::handleGetMessages);
   }
-  
+
+  private void sendBroadcast(String action, String data) {
+    JsonObject response = new JsonObject();
+    response.addProperty("type", "broadcast");
+    response.addProperty("action", action);
+    try {
+      response.add("data", JsonParser.parseString(data));
+    } catch (Exception e) {
+      response.addProperty("data", data);
+    }
+    outputWriter.println(gson.toJson(response));
+  }
+
   private void broadcastToOthers(String action, String data) {
     synchronized (handlers) {
       for (PartyClientHandler handler : handlers) {
@@ -95,18 +107,6 @@ public class PartyClientHandler implements Runnable {
         }
       }
     }
-  }
-
-  private void sendBroadcast(String action, String data) {
-    JsonObject msg = new JsonObject();
-    msg.addProperty("type", "broadcast");
-    msg.addProperty("action", action);
-    try {
-      msg.add("data", JsonParser.parseString(data));
-    } catch (Exception e) {
-      msg.addProperty("data", data);
-    }
-    outputWriter.println(gson.toJson(msg));
   }
 
   private void close() {
