@@ -149,7 +149,7 @@ public class PartyUsersDAO {
     } catch (SQLException e) {
       log.severe("getStatus failed for userId=" + userid + " partyId=" + partyid);
     }
-    return "";
+    return null; // not null was returned "" before
   }
 
   public List<String> getOrganizerIds(String partyid) {

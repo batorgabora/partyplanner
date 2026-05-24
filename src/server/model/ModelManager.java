@@ -10,25 +10,35 @@ import server.dao.*;
 import shared.model.*;
 import shared.util.PasswordUtil;
 
-public class ModelManager implements PartyModel
-{
-  private List<User> users;
-  private List<Party> parties;
+public class ModelManager implements PartyModel {
+
   private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-  public ModelManager() {
-    this.users = new ArrayList<>();
-    this.parties = new ArrayList<>();
+  public ModelManager() {}
+
+  // auth
+  @Override public User login(String username, String password) {
+    User user = new UserDAO().getByUsername(username);
+    if (user == null) return null;
+    return PasswordUtil.verify(password, user.getPassword()) ? user : null;
   }
 
-  @Override public User login(String username, String password) {
+  @Override public User createAccount(String username, String password, String confirmPassword, String mail) {
+    if (username == null || username.trim().isEmpty()) { fireError("Username is required."); return null; }
+    if (password == null || password.isEmpty())        { fireError("Password is required."); return null; }
+    if (mail == null || mail.trim().isEmpty())          { fireError("Email is required."); return null; }
+    if (!password.equals(confirmPassword))              { fireError("Passwords do not match."); return null; }
+
     UserDAO userDAO = new UserDAO();
-    User user = userDAO.getByUsername(username);
-    if (user == null) return null;
-    if (PasswordUtil.verify(password, user.getPassword())) {
-      return user;
-    }
-    return null;
+    if (userDAO.getByUsername(username) != null) { fireError("Username already taken."); return null; }
+    String userId = userDAO.create(UUID.randomUUID().toString(), username, mail, PasswordUtil.hash(password));
+    if (userId == null) { fireError("Failed to create account."); return null; }
+    return new User(userId, username, PasswordUtil.hash(password), mail);
+  }
+
+  // users
+  @Override public List<User> getAllUsers() {
+    return new UserDAO().getAll();
   }
 
   @Override public List<User> getFriends(User user) {
@@ -47,19 +57,61 @@ public class ModelManager implements PartyModel
     new FriendDAO().removeFriend(user.getId(), friend.getId());
   }
 
-
-  @Override public synchronized ArrayList<Party> getInvitedParties(User user)
-  {
+  // parties
+  @Override public ArrayList<Party> getMyParties(User user) {
     if (user == null) return new ArrayList<>();
-    PartyDAO partyDAO = new PartyDAO();
-    return partyDAO.getInvitedByUser((user.getId()));
+    return new PartyDAO().getAcceptedByUser(user.getId());
   }
 
-  @Override public synchronized ArrayList<Party> getMyParties(User user)
-  {
+  @Override public ArrayList<Party> getInvitedParties(User user) {
     if (user == null) return new ArrayList<>();
-    PartyDAO partyDAO = new PartyDAO();
-    return partyDAO.getAcceptedByUser((user.getId()));
+    return new PartyDAO().getInvitedByUser(user.getId());
+  }
+
+  @Override public Party getParty(int id) { return null; }
+
+  @Override public Party createParty(String name, String description, String location, String organizerId, LocalDate date) {
+    String partyId = UUID.randomUUID().toString();
+    new PartyDAO().create(partyId, name, description, location, date != null ? date : LocalDate.now());
+    new PartyUsersDAO().add(organizerId, partyId, "organizer");
+    Party party = new PartyDAO().getById(partyId);
+    if (party == null) fireError("Failed to create party.");
+    return party;
+  }
+
+  @Override public Party createParty(String name, String description, String location, String organizerId) {
+    return null;
+  }
+
+  @Override public void updateParty(Party party, String name, String description, String location) {
+    party.setName(name);
+    party.setDescription(description);
+    party.setLocation(location);
+    new PartyDAO().update(party.getId(), name, description, location);
+  }
+
+  @Override public void updatePartyDate(Party party, String date) {
+    new PartyDAO().updateDate(party.getId(), date);
+  }
+
+  @Override public void deleteParty(Party party) {
+    new PartyDAO().delete(party.getId());
+  }
+
+  @Override public void manageParty(Party party, String title, String description, String location) {
+    if (party == null) return;
+    party.setName(title);
+    party.setDescription(description);
+    party.setLocation(location);
+  }
+
+  // party membership
+  @Override public void joinParty(User user, Party party) {
+    new PartyUsersDAO().add(user.getId(), party.getId(), "participant");
+  }
+
+  @Override public void leaveParty(User user, Party party) {
+    new PartyUsersDAO().remove(user.getId(), party.getId());
   }
 
   @Override public void acceptInvite(User user, Party party) {
@@ -74,194 +126,115 @@ public class ModelManager implements PartyModel
     return new PartyUsersDAO().getStatus(user.getId(), party.getId());
   }
 
-
-  @Override public synchronized List<Item> getItems(Party party) {
-    return new ItemDAO().getByParty(party.getId());
-  }
-
-
-  @Override public synchronized String getRole(User user, Party party) {
+  @Override public String getRole(User user, Party party) {
     return new PartyUsersDAO().getRole(user.getId(), party.getId());
   }
 
-
-  @Override public synchronized List<Participant> getParticipants(Party party) {
+  // participants
+  @Override public List<Participant> getParticipants(Party party) {
     if (party == null) return new ArrayList<>();
     return new PartyUsersDAO().getParticipantsByParty(party.getId());
   }
 
-  @Override public synchronized List<Option> getOptions(Party party) {
+  @Override public List<Participant> addParticipant(Party party, Participant participant) {
+    if (party == null || participant == null) return getParticipants(party);
+    PartyUsersDAO dao = new PartyUsersDAO();
+    if (!dao.isMember(participant.getUser().getId(), party.getId())) {
+      dao.add(participant.getUser().getId(), party.getId(), "participant");
+    }
+    return getParticipants(party);
+  }
+
+  @Override public List<Participant> removeParticipant(Party party, Participant participant) {
+    if (party == null || participant == null) return getParticipants(party);
+    if (party.getOrganizer() != null &&
+        party.getOrganizer().getId().equals(participant.getUser().getId())) {
+      return getParticipants(party);
+    }
+    new PartyUsersDAO().remove(participant.getUser().getId(), party.getId());
+    return getParticipants(party);
+  }
+
+  // items
+  @Override public List<Item> getItems(Party party) {
+    return new ItemDAO().getByParty(party.getId());
+  }
+
+  @Override public List<Item> addItem(Party party, String name) {
+    String id = "item-" + UUID.randomUUID().toString().substring(0, 8);
+    new ItemDAO().create(id, name, 1, party.getId());
+    return getItems(party);
+  }
+
+  @Override public List<Item> removeItem(Item item) {
+    Party party = new PartyDAO().getById(item.getPartyId());
+    new ItemDAO().delete(item.getId());
+    return party != null ? getItems(party) : List.of();
+  }
+
+  @Override public List<Item> claimItem(String itemId, String userId) {
+    new ItemDAO().claimItem(itemId, userId);
+    Item item = new ItemDAO().getById(itemId);
+    Party party = item != null ? new PartyDAO().getById(item.getPartyId()) : null;
+    return party != null ? getItems(party) : List.of();
+  }
+
+  @Override public List<Item> unclaimItem(String itemId) {
+    new ItemDAO().unclaimItem(itemId);
+    Item item = new ItemDAO().getById(itemId);
+    Party party = item != null ? new PartyDAO().getById(item.getPartyId()) : null;
+    return party != null ? getItems(party) : List.of();
+  }
+
+  // options
+  @Override public List<Option> getOptions(Party party) {
     return new OptionDAO().getByParty(party.getId());
   }
 
-  @Override public synchronized Party createParty(String name, String description,
-      String location, String organizerId, LocalDate date)
-  {
-    String partyId = UUID.randomUUID().toString();
-    PartyDAO partyDAO = new PartyDAO();
-    partyDAO.create(
-        partyId,
-        name,
-        description,
-        location, date != null ? date : LocalDate.now()
-    );
-    new PartyUsersDAO().add(organizerId, partyId, "organizer");
-    Party party = partyDAO.getById(partyId);
-    if (party == null) fireError("Failed to create party. Please try again.");
-    return party;
-  }
-
-  @Override public Party createParty(String name, String description,
-      String location, String organizerId)
-  {
-    return null;
-  }
-
-  @Override public synchronized Party getParty(int id)
-  {
-    if (id < 0 || id >= parties.size())
-    {
-      return null;
-    }
-    return parties.get(id);
-  }
-
-  @Override public synchronized void joinParty(User user, Party party)
-  {
-    Participant participant = new Participant(party, user);
-    party.addParticipant(participant);
-    user.joinParty(party);
-  }
-
-
-  @Override public synchronized void leaveParty(User user, Party party) {
-    //new PartyUsersDAO().updateStatus(user.getId(), party.getId(), "declined");
-    //fully remove
-    new PartyUsersDAO().remove(user.getId(), party.getId());
-  }
-
-  @Override public synchronized void deleteParty(Party party)
-  {
-    String partyId = party.getId();
-    for (Option option : new OptionDAO().getByParty(partyId))
-      new OptionDAO().delete(option.getOptionid());
-    for (Item item : new ItemDAO().getByParty(partyId))
-      new ItemDAO().delete(item.getId());
-    new PartyUsersDAO().removeByParty(partyId);
-    new PartyDAO().delete(partyId);
-  }
-
-
-  @Override public synchronized void manageParty(Party party, String title,
-      String description, String location)
-  {
-    if (party == null)
-    {
-      return;
-    }
-    party.setName(title);
-    party.setDescription(description);
-    party.setLocation(location);
-  }
-
-  @Override public synchronized void addParticipant(Party party, Participant participant)
-  {
-    if (party == null || participant == null)
-    {
-      return;
-    }
-
-    PartyUsersDAO partyUsersDAO = new PartyUsersDAO();
-    String userId = participant.getUser().getId();
-    String partyId = party.getId();
-
-    if (!partyUsersDAO.isMember(userId, partyId))
-    {
-      partyUsersDAO.add(userId, partyId, "participant");
-    }
-  }
-
-  @Override public synchronized void removeParticipant(Party party, Participant participant)
-  {
-    if (party == null || participant == null)
-    {
-      return;
-    }
-
-    if (party.getOrganizer() != null &&
-        party.getOrganizer().getId().equals(participant.getUser().getId()))
-    {
-      return;
-    }
-
-    new PartyUsersDAO().remove(participant.getUser().getId(), party.getId());
-
-    if (participant.getParty() == party)
-    {
-      participant.setParty(null);
-    }
-  }
-
-
-  // ModelManager
-  @Override public void updateParty(Party party, String name, String description, String location) {
-    party.setName(name);
-    party.setDescription(description);
-    party.setLocation(location);
-    new PartyDAO().update(party.getId(), name, description, location);
-  }
-
-  @Override public void voteForOption(String optionId, String userId) {
-    new OptionDAO().vote(optionId, userId);
-  }
-  @Override public boolean hasVotedForOption(String userId, String optionId) {
-    return new OptionDAO().hasVotedForOption(userId, optionId);
-  }
-  @Override public String getTopVotedOption(String partyId) {
-    return new OptionDAO().getTopVoted(partyId);
-  }
-  @Override public void removeVote(String optionId, String userId) {
-    new OptionDAO().removeVote(optionId, userId);
-  }
-  @Override public void claimItem(String itemId, String userId) {
-    new ItemDAO().claimItem(itemId, userId);
-  }
-  @Override public void unclaimItem(String itemId) {
-    new ItemDAO().unclaimItem(itemId);
-  }
-
-  @Override public void updatePartyDate(Party party, String date) {
-    new PartyDAO().updateDate(party.getId(), date);
-  }
-
-  @Override public void addItem(Party party, String name) {
-    String id = "item-" + UUID.randomUUID().toString().substring(0, 8);
-    new ItemDAO().create(id, name, 1, party.getId());
-  }
-
-  @Override public void removeItem(Item item) {
-    new ItemDAO().delete(item.getId());
-  }
-
-  @Override public void addOption(Party party, String proposal) {
+  @Override public List<Option> addOption(Party party, String proposal) {
     String id = "opt-" + UUID.randomUUID().toString().substring(0, 8);
     new OptionDAO().create(id, proposal, party.getId());
+    return getOptions(party);
   }
 
-  @Override public void removeOption(Option option) {
+  @Override public List<Option> removeOption(Option option) {
+    Party party = new PartyDAO().getById(option.getPartyid());
     new OptionDAO().delete(option.getOptionid());
+    return party != null ? getOptions(party) : List.of();
+  }
+
+  @Override public List<Option> voteForOption(String optionId, String userId) {
+    new OptionDAO().vote(optionId, userId);
+    Option option = new OptionDAO().getById(optionId);
+    Party party = option != null ? new PartyDAO().getById(option.getPartyid()) : null;
+    return party != null ? getOptions(party) : List.of();
+  }
+
+  @Override public List<Option> removeVote(String optionId, String userId) {
+    new OptionDAO().removeVote(optionId, userId);
+    Option option = new OptionDAO().getById(optionId);
+    Party party = option != null ? new PartyDAO().getById(option.getPartyid()) : null;
+    return party != null ? getOptions(party) : List.of();
   }
 
   @Override public boolean hasVotedInParty(String userId, String partyId) {
     return new OptionDAO().hasVoted(userId, partyId);
   }
 
-  @Override public synchronized Message sendMessage(String partyId, String userId, String content) {
-    String messageId = UUID.randomUUID().toString();
-    return new MessageDAO().create(messageId, partyId, userId, content);
+  @Override public boolean hasVotedForOption(String userId, String optionId) {
+    return new OptionDAO().hasVotedForOption(userId, optionId);
   }
 
-  @Override public synchronized List<Message> getMessages(String partyId) {
+  @Override public String getTopVotedOption(String partyId) {
+    return new OptionDAO().getTopVoted(partyId);
+  }
+
+  // messages
+  @Override public Message sendMessage(String partyId, String userId, String content) {
+    return new MessageDAO().create(UUID.randomUUID().toString(), partyId, userId, content);
+  }
+
+  @Override public List<Message> getMessages(String partyId) {
     return new MessageDAO().getByParty(partyId);
   }
 
@@ -269,37 +242,11 @@ public class ModelManager implements PartyModel
     support.firePropertyChange("error", null, message);
   }
 
-  @Override public void addListener(String propertyName, PropertyChangeListener listener)
-  {
+  @Override public void addListener(String propertyName, PropertyChangeListener listener) {
     support.addPropertyChangeListener(propertyName, listener);
   }
 
-  @Override public void removeListener(String propertyName,
-      PropertyChangeListener listener)
-  {
+  @Override public void removeListener(String propertyName, PropertyChangeListener listener) {
     support.removePropertyChangeListener(propertyName, listener);
   }
-
-  @Override
-  public synchronized User createAccount(String username, String password, String confirmPassword, String mail) {
-    if (username == null || username.trim().isEmpty()) { fireError("Username is required.");               return null; }
-    if (password == null || password.isEmpty())        { fireError("Password is required.");               return null; }
-    if (mail == null || mail.trim().isEmpty())          { fireError("Email is required.");                 return null; }
-    if (confirmPassword == null || confirmPassword.isEmpty()) { fireError("Please confirm your password."); return null; }
-    if (!password.equals(confirmPassword))              { fireError("Passwords do not match.");            return null; }
-
-    UserDAO userDAO = new UserDAO();
-    if (userDAO.getByUsername(username) != null) { fireError("Username is already taken."); return null; }
-
-    String userId = userDAO.create(UUID.randomUUID().toString(), username, mail, PasswordUtil.hash(password));
-    if (userId == null) { fireError("Failed to create account. Please try again."); return null; }
-    return new User(userId, username, PasswordUtil.hash(password), mail);
-  }
-  @Override public List<User> getAllUsers()
-  {
-    return new UserDAO().getAll();
-  }
-
-
-
 }

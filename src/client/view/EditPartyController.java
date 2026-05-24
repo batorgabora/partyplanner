@@ -9,7 +9,6 @@ import javafx.scene.layout.Region;
 
 import shared.model.*;
 import client.viewModel.EditPartyViewModel;
-import client.viewModel.PartyViewModel;
 
 import java.util.ArrayList;
 
@@ -62,7 +61,13 @@ public class EditPartyController
     userLabel.setText(LocalUser.getUser().getUsername());
     statusLabel.textProperty().bind(viewmodel.errorProperty());
 
-    // add listeners once here
+    // bind lists once
+    itemList.setItems(viewmodel.itemsProperty());
+    memberList.setItems(viewmodel.membersProperty());
+    timeList.setItems(viewmodel.optionsProperty());
+    userDropdown.setItems(viewmodel.friendsProperty());
+
+    // add listeners once
     nameField.focusedProperty().addListener((obs, was, isNow) -> {
       if (!isNow) viewmodel.updateName(nameField.getText());
     });
@@ -77,7 +82,7 @@ public class EditPartyController
   }
 
   public void loadParty() {
-    selected = viewmodel.getSelectedParty(); // re-fetch selected every time
+    selected = viewmodel.getSelectedParty();
     userLabel.setText(LocalUser.getUser().getUsername());
     if (selected == null) return;
 
@@ -89,17 +94,10 @@ public class EditPartyController
     setContentVisible(false);
 
     new Thread(() -> {
-      var items   = viewmodel.getItems();
-      var members = viewmodel.getMembers();
-      var options = viewmodel.getOptions();
-      var friends = viewmodel.getFriends();
-      var role    = viewmodel.getRoleForCurrentUser(selected.getId());
-
+      viewmodel.loadData();
+      viewmodel.loadFriends();
+      var role = viewmodel.getRoleForCurrentUser(selected.getId());
       Platform.runLater(() -> {
-        itemList.setItems(items);
-        memberList.setItems(members);
-        timeList.setItems(options);
-        userDropdown.setItems(friends);
         roleLabel.setText(role);
         setContentVisible(true);
       });
@@ -108,15 +106,15 @@ public class EditPartyController
 
   private void setContentVisible(boolean visible) {
     loadingIndicator.setVisible(!visible);
-    itemList.setVisible(visible);
-    memberList.setVisible(visible);
-    timeList.setVisible(visible);
-    userDropdown.setVisible(visible);
     roleLabel.setVisible(visible);
     nameField.setVisible(visible);
     descriptionField.setVisible(visible);
     dateLabel.setVisible(visible);
     locationField.setVisible(visible);
+    itemList.setVisible(visible);
+    memberList.setVisible(visible);
+    timeList.setVisible(visible);
+    userDropdown.setVisible(visible);
     addparticipantButton.setVisible(visible);
     removeparticipantButton.setVisible(visible);
     label1.setVisible(visible);
@@ -133,113 +131,74 @@ public class EditPartyController
     deleteButton.setVisible(visible);
   }
 
+  @FXML public void onBack() {
+    if (viewmodel.getSelectedParty() == null) return;
+    viewmodel.updateName(nameField.getText());
+    viewmodel.updateDescription(descriptionField.getText());
+    viewmodel.updateLocation(locationField.getText());
+    viewhandler.openView("party");
+  }
+
   @FXML public void onDelete() {
     viewmodel.deleteParty();
     viewhandler.openView("discover");
   }
 
-  @FXML public void onBack() {
-    if (viewmodel.getSelectedParty() == null) return;
-
-    // force save all current field values before leaving
-    viewmodel.updateName(nameField.getText());
-    viewmodel.updateDescription(descriptionField.getText());
-    viewmodel.updateLocation(locationField.getText());
-
-    viewhandler.openView("party");
-  }
-  @FXML public void onDiscover() {
-    viewhandler.openView("discover");
-  }
-  @FXML public void onFriends() {
-    viewhandler.openView("friends");
-  }
-  @FXML public void onMyParties() {
-    viewhandler.openView("my parties");
-  }
-  @FXML public void onLogout() {viewhandler.openView("login");}
-  @FXML public void addFriend() {viewhandler.openView("friends");}
-
   @FXML public void onAddItem() {
     String name = itemField.getText().trim();
     if (name.isEmpty()) return;
-    viewmodel.addItem(name);
-    itemList.setItems(viewmodel.getItems());
     itemField.clear();
+    new Thread(() -> viewmodel.addItem(name)).start();
   }
 
   @FXML public void onRemoveItem() {
     Item selected = itemList.getSelectionModel().getSelectedItem();
-    if (selected == null) { viewmodel.setError("Select an item first"); return; }
-    viewmodel.removeItem(selected);
-    itemList.setItems(viewmodel.getItems());
+    if (selected == null) { viewmodel.setError("select an item first"); return; }
+    new Thread(() -> viewmodel.removeItem(selected)).start();
   }
 
   @FXML public void onAddOption() {
     String proposal = optionField.getText().trim();
     if (proposal.isEmpty()) return;
-    viewmodel.addOption(proposal);
-    timeList.setItems(viewmodel.getOptions());
     optionField.clear();
+    new Thread(() -> viewmodel.addOption(proposal)).start();
   }
 
   @FXML public void onRemoveOption() {
     Option selected = (Option) timeList.getSelectionModel().getSelectedItem();
-    if (selected == null) { viewmodel.setError("Select an option first"); return; }
-    viewmodel.removeOption(selected);
-    timeList.setItems(viewmodel.getOptions());
+    if (selected == null) { viewmodel.setError("select an option first"); return; }
+    new Thread(() -> viewmodel.removeOption(selected)).start();
   }
 
-  @FXML public void onAddParticipant()
-  {
+  @FXML public void onAddParticipant() {
     User selectedUser = userDropdown.getSelectionModel().getSelectedItem();
-
-    if (selectedUser == null)
-    {
-      viewmodel.setError("select a friend first");
-      return;
-    }
-
-    if (viewmodel.isAlreadyParticipant(selectedUser))
-    {
-      viewmodel.setError("friend is already in the party");
-      return;
-    }
-
-    viewmodel.addParticipant(selectedUser);
-    memberList.setItems(viewmodel.getMembers());
-    viewmodel.setError(selectedUser.getUsername() + " added to the party");
+    if (selectedUser == null) { viewmodel.setError("select a user first"); return; }
+    if (viewmodel.isAlreadyParticipant(selectedUser)) { viewmodel.setError("user is already in the party"); return; }
+    new Thread(() -> {
+      viewmodel.addParticipant(selectedUser);
+      Platform.runLater(() -> viewmodel.setError(selectedUser.getUsername() + " added to the party"));
+    }).start();
   }
 
-  @FXML public void onRemoveParticipant()
-  {
+  @FXML public void onRemoveParticipant() {
     Participant selectedParticipant = memberList.getSelectionModel().getSelectedItem();
-
-    if (selectedParticipant == null)
-    {
-      viewmodel.setError("select a friend first");
-      return;
-    }
-
+    if (selectedParticipant == null) { viewmodel.setError("Select a participant first"); return; }
     if (selected.getOrganizer() != null &&
-        selected.getOrganizer().getId().equals(selectedParticipant.getUser().getId()))
-    {
-      viewmodel.setError("organizer cannot be removed");
-      return;
+        selected.getOrganizer().getId().equals(selectedParticipant.getUser().getId())) {
+      viewmodel.setError("Organizer cannot be removed"); return;
     }
-
-    viewmodel.removeParticipant(selectedParticipant);
-    memberList.setItems(viewmodel.getMembers());
-    viewmodel.setError(selectedParticipant.getUser().getUsername() + " removed from the party");
+    new Thread(() -> {
+      viewmodel.removeParticipant(selectedParticipant);
+      Platform.runLater(() -> viewmodel.setError(selectedParticipant.getUser().getUsername() + " removed from the party"));
+    }).start();
   }
 
-  public Region getRoot()
-  {
-    return root;
-  }
+  @FXML public void onDiscover()  { viewhandler.openView("discover"); }
+  @FXML public void onFriends()   { viewhandler.openView("friends"); }
+  @FXML public void onMyParties() { viewhandler.openView("my parties"); }
+  @FXML public void onLogout()    { viewhandler.openView("login"); }
 
-  public void reset(){
-    loadParty();
-  }
+  public Region getRoot() { return root; }
+  public void reset()     { loadParty(); }
 
 }

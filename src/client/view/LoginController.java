@@ -2,12 +2,8 @@ package client.view;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Region;
 
-import shared.model.LocalUser;
-import shared.model.User;
+import javafx.scene.layout.Region;
 import client.viewModel.LoginViewModel;
 
 public class LoginController

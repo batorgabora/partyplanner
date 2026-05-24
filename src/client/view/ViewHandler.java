@@ -32,7 +32,8 @@ public class ViewHandler
   {
     this.primaryStage = stage;
     primaryStage.setResizable(false);
-    currentScene.getStylesheets().add(getClass().getResource("/client/view/style3.css").toExternalForm());
+    currentScene.getStylesheets().add(getClass().getResource(
+        "/client/view/style.css").toExternalForm());
     openView("login"); // use id strings instead of fxml filenames
   }
 

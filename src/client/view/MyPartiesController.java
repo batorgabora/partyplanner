@@ -1,8 +1,6 @@
 package client.view;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,11 +12,12 @@ import shared.model.LocalUser;
 import shared.model.Party;
 import client.viewModel.MyPartiesViewModel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class MyPartiesController
-{
+public class MyPartiesController {
 
   private Region root;
   private MyPartiesViewModel viewModel;
@@ -32,53 +31,48 @@ public class MyPartiesController
   @FXML private Label errorLabel;
   @FXML private ImageView loadingIndicator;
 
-  public void init(ViewHandler viewHandler, MyPartiesViewModel viewModel, Region root)
-  {
+
+  public void init(ViewHandler viewHandler, MyPartiesViewModel viewModel, Region root) {
     this.root = root;
     this.viewModel = viewModel;
     this.viewHandler = viewHandler;
 
     errorLabel.textProperty().bind(viewModel.errorProperty());
 
+    // bind list once
+    partyList.setItems(viewModel.partiesProperty());
+
+    partyList.setCellFactory(lv -> new ListCell<Party>() {
+      @Override protected void updateItem(Party party, boolean empty) {
+        super.updateItem(party, empty);
+        if (empty || party == null) { setText(null); setStyle(""); return; }
+        boolean isOrganizer = party.getOrganizer() != null &&
+            party.getOrganizer().getId().equals(LocalUser.getUser().getId());
+        setText(party.getName() + (isOrganizer ? " (organizer)" : ""));
+        setStyle(isOrganizer ? "-fx-font-weight: bold;" : "");
+      }
+    });
 
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> viewModel.selectedPartyProperty().set(newVal));
 
     partyList.getSelectionModel().selectedItemProperty().addListener(
         (obs, oldVal, newVal) -> selectedLabel.setText(newVal != null ? newVal.getName() : ""));
+
     loadParties();
   }
 
   private void loadParties() {
     userLabel.setText(LocalUser.getUser().getUsername());
-
     partyList.setVisible(false);
     selectedLabel.setVisible(false);
     createButton.setVisible(false);
     furtherButton.setVisible(false);
     loadingIndicator.setVisible(true);
 
-
     new Thread(() -> {
-      var items = viewModel.updateParties(); // returns the list directly
-
-      Map<String, String> roles = new HashMap<>();
-      for (Party party : items) {
-        roles.put(party.getId(), viewModel.getRoleForParty(party));
-      }
-
+      viewModel.updateParties();
       Platform.runLater(() -> {
-        partyList.setCellFactory(lv -> new ListCell<Party>() {
-          @Override
-          protected void updateItem(Party party, boolean empty) {
-            super.updateItem(party, empty);
-            if (empty || party == null) { setText(null); setStyle(""); return; }
-            String role = roles.getOrDefault(party.getId(), "participant");
-            setText(party.getName() + " (" + role + ")");
-            setStyle("organizer".equals(role) ? "-fx-font-weight: bold;" : "-fx-text-fill: inherit;");
-          }
-        });
-        partyList.setItems(items);
         partyList.setVisible(true);
         selectedLabel.setVisible(true);
         createButton.setVisible(true);
@@ -88,10 +82,8 @@ public class MyPartiesController
     }).start();
   }
 
-  @FXML public void onFurther()
-  {
-    if (viewModel.getSelectedParty() == null)
-    {
+  @FXML public void onFurther() {
+    if (viewModel.getSelectedParty() == null) {
       selectedLabel.setText("please select a party first");
       return;
     }
