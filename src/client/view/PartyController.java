@@ -178,8 +178,8 @@ public class PartyController {
         declineButton.setVisible(isInvited);
         leaveButton.setVisible(!isOrganizer && isAccepted);
         chatButton.setVisible(isOrganizer || isAccepted);
-        voteButton.setVisible(isAccepted);
-        claimButton.setVisible(isAccepted);
+        voteButton.setVisible(isOrganizer || isAccepted);
+        claimButton.setVisible(isOrganizer || isAccepted);
 
         updateClaimButton(null);
       });
