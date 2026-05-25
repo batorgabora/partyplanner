@@ -287,6 +287,7 @@ public class PartyController {
     new Thread(() -> {
       viewmodel.sendMessage();
       Platform.runLater(() -> viewmodel.messageInputProperty().set(""));
+      loadMessages();
     }).start();
   }
 
